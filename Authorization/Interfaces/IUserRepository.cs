@@ -10,6 +10,7 @@ namespace Authorization.Interfaces
         bool UserAlreadyExists(string userName);
         bool Save();
         string GetMyName();
+        bool CheckPasswordStrength(string password);
 
     }
 }

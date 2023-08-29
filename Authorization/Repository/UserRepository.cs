@@ -9,7 +9,7 @@ using System.Security.Cryptography;
 
 namespace Authorization.Repository
 {
-    public class UserRepository:IUserRepository
+    public class UserRepository: IUserRepository
     {
         private readonly DataContext _dc;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -92,6 +92,13 @@ namespace Authorization.Repository
         {
             var saved = _dc.SaveChanges();
             return saved > 0 ? true : false;
+        }
+        public bool CheckPasswordStrength(string password)
+        {
+            if (password.Any(char.IsDigit) && password.Any(char.IsLower) && password.Any(char.IsUpper) && password.Length >= 8 &&
+                password.IndexOfAny("!@#$%^&*?_~-£().,".ToCharArray()) != -1)
+                return true;
+            return false;
         }
     }
 }

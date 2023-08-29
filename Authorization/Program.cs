@@ -10,6 +10,7 @@ using Authorization.Data;
 using Microsoft.EntityFrameworkCore;
 using Authorization.Interfaces;
 using Authorization.Repository;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 

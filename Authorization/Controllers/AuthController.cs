@@ -7,6 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Cryptography;
 using Authorization.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace Authorization.Controllers
 {
@@ -18,14 +19,16 @@ namespace Authorization.Controllers
         public readonly IConfiguration _configuration;
         private readonly IUserRepository _userService;
 
+
         public AuthController(IConfiguration configuration, IUserRepository userService)
 
         {
             _userService = userService;
-            _configuration = configuration; 
-
+            _configuration = configuration;
         }
         [HttpGet, Authorize]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+
         public ActionResult<string> GetMe()
         {
             var userName = _userService.GetMyName();
@@ -56,6 +59,13 @@ namespace Authorization.Controllers
                 ModelState.AddModelError("Title", "User already exists, please try different user name");
                 return BadRequest(ModelState);
             }
+
+            if (!_userService.CheckPasswordStrength(request.Password))
+            {
+                ModelState.AddModelError("Title", "Password must include uppercase and lowercase and digit and specail char and min length 8");
+                return BadRequest(ModelState);
+            }
+
             // check if error happened will saving
             if (!_userService.Register(request.Username, request.Password))
             {
