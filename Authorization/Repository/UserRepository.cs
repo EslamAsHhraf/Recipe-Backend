@@ -1,9 +1,6 @@
 ﻿using Authorization.Data;
 using Authorization.Interfaces;
 using Authorization.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using System.Security.Claims;
 using System.Security.Cryptography;
 
@@ -23,7 +20,7 @@ namespace Authorization.Repository
         public User Authenticate(string username, string passwordText)
         {
             var user = _dc.Users.FirstOrDefault(x => x.Username == username);
-            Console.WriteLine("Nour");
+            // user found or not
             if (user == null || user.PasswordSalt == null)
                 return null;
 
@@ -38,11 +35,6 @@ namespace Authorization.Repository
             using (var hmac = new HMACSHA512(passwordKey))
             {
                 var passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(passwordText));
-
-                Console.WriteLine("Eslam");
-                Console.WriteLine(password);
-                Console.WriteLine(passwordHash);
-
                 // check equality password
                 for (int i = 0; i < passwordHash.Length; i++)
                 {
@@ -57,14 +49,14 @@ namespace Authorization.Repository
         public bool Register(string username, string password)
         {
             byte[] passwordHash, passwordKey;
-
+            // get passwordKey
             using (var hmac = new HMACSHA512())
             {
                 passwordKey = hmac.Key;
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
 
             }
-
+          
             User user = new User();
             user.Username = username;
             user.PasswordHash = passwordHash;

@@ -5,9 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Cryptography;
 using Authorization.Interfaces;
-using Microsoft.AspNetCore.Identity;
 
 namespace Authorization.Controllers
 {
@@ -17,21 +15,21 @@ namespace Authorization.Controllers
     {
         public static User user= new User();
         public readonly IConfiguration _configuration;
-        private readonly IUserRepository _userService;
+        private readonly IUserRepository _userRepository;
 
 
         public AuthController(IConfiguration configuration, IUserRepository userService)
 
         {
-            _userService = userService;
+            _userRepository = userService;
             _configuration = configuration;
         }
         [HttpGet, Authorize]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
 
         public ActionResult<string> GetMe()
         {
-            var userName = _userService.GetMyName();
+            var userName = _userRepository.GetMyName();
             //var userName = User?.Identity?.Name;
             return Ok(userName);
         }
@@ -42,32 +40,26 @@ namespace Authorization.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<User> Register(UserDto request)
         {
-            //string passwordHash=
-            //    BCrypt.Net.BCrypt.HashPassword(request.Password);  
-            //user.Username = request.Username;
-            //user.PasswordHash = passwordHash;
-            //return Ok(user);
-
             // check if ModelState is valid
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
             // check uniqueness of user name
-            if (_userService.UserAlreadyExists(request.Username))
+            if (_userRepository.UserAlreadyExists(request.Username))
             {
                 ModelState.AddModelError("Title", "User already exists, please try different user name");
                 return BadRequest(ModelState);
             }
 
-            if (!_userService.CheckPasswordStrength(request.Password))
+            if (!_userRepository.CheckPasswordStrength(request.Password))
             {
                 ModelState.AddModelError("Title", "Password must include uppercase and lowercase and digit and specail char and min length 8");
                 return BadRequest(ModelState);
             }
 
             // check if error happened will saving
-            if (!_userService.Register(request.Username, request.Password))
+            if (!_userRepository.Register(request.Username, request.Password))
             {
                 ModelState.AddModelError("", "Something went wrong while saving");
                 return StatusCode(500, ModelState);
@@ -81,43 +73,20 @@ namespace Authorization.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<User> Login(UserDto request)
         {
-            //if(user.Username != request.Username) {
-            //    return BadRequest("User not found.");
-            //}
-            //if(!BCrypt.Net.BCrypt.Verify(request.Password,user.PasswordHash))
-            //{
-            //    return BadRequest("Wrong Password.");
-
-            //}
-            //string token = CreateToken(user);
-
-
-            //return Ok(token);
-            //if (user.Username != request.Username)
-            //{
-            //    return BadRequest("User not found.");
-            //}
-
-            //if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
-            //{
-            //    return BadRequest("Wrong password.");
-            //}
-
-            //string token = CreateToken(user);
-
-            //return Ok(token);
+            // check if model isn't correct
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var user = _userService.Authenticate(request.Username, request.Password);
+            // get user
+            var user = _userRepository.Authenticate(request.Username, request.Password);
 
             if (user == null)
             {
                 ModelState.AddModelError("Title", "Invalid user name or password");
                 return BadRequest(ModelState);
             }
-
+            // create token
             string token = CreateToken(user);
             return Ok(token);
         }
@@ -141,23 +110,5 @@ namespace Authorization.Controllers
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
             return jwt;
         }
-        //private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        //{
-        //    using (var hmac = new HMACSHA512())
-        //    {
-        //        passwordSalt = hmac.Key;
-        //        passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-        //    }
-        //}
-
-
-        //private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
-        //{
-        //    using (var hmac = new HMACSHA512(passwordSalt))
-        //    {
-        //        var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-        //        return computedHash.SequenceEqual(passwordHash);
-        //    }
-        //}
     }
 }
