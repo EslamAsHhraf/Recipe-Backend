@@ -2,11 +2,10 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Authorization.Data;
 using Microsoft.EntityFrameworkCore;
 using Authorization.Interfaces;
 using Authorization.Repository;
-
+using Data_Access_layer.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 

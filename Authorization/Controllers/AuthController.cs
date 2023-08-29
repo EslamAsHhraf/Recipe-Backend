@@ -1,4 +1,4 @@
-﻿using Authorization.Models;
+﻿using Authorization.Model;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
@@ -6,6 +6,7 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Authorization.Interfaces;
+using Data_Access_layer.Model;
 
 namespace Authorization.Controllers
 {
@@ -17,22 +18,27 @@ namespace Authorization.Controllers
         public readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
 
+        private Business_Access_Layer.UserBAL _BAL;
+   
 
         public AuthController(IConfiguration configuration, IUserRepository userService)
 
         {
             _userRepository = userService;
             _configuration = configuration;
+            _BAL = new Business_Access_Layer.UserBAL(configuration,userService);
         }
+
         [HttpGet, Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
 
         public ActionResult<string> GetMe()
-        {
-            var userName = _userRepository.GetMyName();
-            //var userName = User?.Identity?.Name;
-            return Ok(userName);
+        {   
+            return _BAL.GetMe();
         }
+
+
+
 
         [HttpPost("register")]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -67,6 +73,12 @@ namespace Authorization.Controllers
             // create user successfully
             return StatusCode(201);
         }
+
+
+
+
+
+
 
         [HttpPost("login")]
         [ProducesResponseType(StatusCodes.Status200OK)]
