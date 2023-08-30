@@ -2,11 +2,11 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Authorization.Data;
 using Microsoft.EntityFrameworkCore;
 using Authorization.Interfaces;
 using Authorization.Repository;
-
+using Data_Access_layer.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +44,18 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
     };
 });
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+}).AddCookie(options =>
+    {
+        options.Cookie.Name = "YourTokenCookieName"; // Set a custom name for your cookie
+        options.Cookie.HttpOnly = true;
+        options.ExpireTimeSpan = TimeSpan.FromHours(2); // Set the expiration time for the cookie
+                                                        // Other options as needed
+    });
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -56,6 +68,7 @@ app.UseCors(builder => builder
      .AllowAnyOrigin()
      .AllowAnyMethod()
      .AllowAnyHeader());
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

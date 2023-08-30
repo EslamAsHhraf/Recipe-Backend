@@ -1,4 +1,4 @@
-﻿using Authorization.Models;
+﻿using Authorization.Model;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
@@ -6,6 +6,9 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Authorization.Interfaces;
+using Data_Access_layer.Model;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Authorization.Controllers
 {
@@ -13,9 +16,11 @@ namespace Authorization.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        public static User user= new User();
+        public static User user = new User();
         public readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
+
+        private Business_Access_Layer.UserBAL _BAL;
 
 
         public AuthController(IConfiguration configuration, IUserRepository userService)
@@ -23,16 +28,20 @@ namespace Authorization.Controllers
         {
             _userRepository = userService;
             _configuration = configuration;
+            _BAL = new Business_Access_Layer.UserBAL(configuration, userService);
         }
+
         [HttpGet, Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
 
         public ActionResult<string> GetMe()
         {
-            var userName = _userRepository.GetMyName();
-            //var userName = User?.Identity?.Name;
-            return Ok(userName);
+            var name = _BAL.GetMe();
+            return Ok(new { name });
         }
+
+
+
 
         [HttpPost("register")]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -68,6 +77,12 @@ namespace Authorization.Controllers
             return StatusCode(201);
         }
 
+
+
+
+
+
+
         [HttpPost("login")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -88,7 +103,13 @@ namespace Authorization.Controllers
             }
             // create token
             string token = CreateToken(user);
-            return Ok(token);
+            SetTokenInCookie(token, request.Username);
+            //var res = {
+            //        "token":token
+            // };
+            //HttpContext.Response.Cookies.Append("token", token,
+            //             new Microsoft.AspNetCore.Http.CookieOptions { Expires = DateTime.Now.AddDays(1)});
+            return Ok(new { token });
         }
         private string CreateToken(User user)
         {
@@ -109,6 +130,27 @@ namespace Authorization.Controllers
                 );
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
             return jwt;
+        }
+        private void SetTokenInCookie(string token,string username)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, username), // Set user information
+                new Claim("CustomTokenClaim", token) // Add your token as a custom claim
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = true // You can set whether the cookie is persistent
+            };
+
+            HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                authProperties);
+
         }
     }
 }
