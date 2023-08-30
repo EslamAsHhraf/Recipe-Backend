@@ -6,9 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Authorization.Interfaces;
 using Authorization.Repository;
 using Data_Access_layer.Data;
-using System;
-using Microsoft.AspNetCore.Identity;
-using Data_Access_layer.Model;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,15 +27,10 @@ builder.Services.AddSwaggerGen(options =>
     });
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 }) ;
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(connectionString));
-
-builder.Services.AddCors(options => options.AddPolicy(name: "RecipeOrigins",
-            policy =>
-            {
-                policy.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
-            }
-        ));
+builder.Services.AddDbContext<DataContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 
 builder.Services.AddAuthentication().AddJwtBearer(options =>
 {
@@ -51,8 +44,19 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
     };
 });
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+}).AddCookie(options =>
+    {
+        options.Cookie.Name = "YourTokenCookieName"; // Set a custom name for your cookie
+        options.Cookie.HttpOnly = true;
+        options.ExpireTimeSpan = TimeSpan.FromHours(2); // Set the expiration time for the cookie
+                                                        // Other options as needed
+    });
 var app = builder.Build();
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -64,8 +68,9 @@ app.UseCors(builder => builder
      .AllowAnyOrigin()
      .AllowAnyMethod()
      .AllowAnyHeader());
+
 app.UseHttpsRedirection();
-app.UseCors("RecipeOrigins");
+
 app.UseAuthorization();
 
 app.MapControllers();
