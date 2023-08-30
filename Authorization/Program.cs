@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Authorization.Interfaces;
 using Authorization.Repository;
 using Data_Access_layer.Data;
+using System;
+using Microsoft.AspNetCore.Identity;
+using Data_Access_layer.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,10 +29,15 @@ builder.Services.AddSwaggerGen(options =>
     });
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 }) ;
-builder.Services.AddDbContext<DataContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(connectionString));
+
+builder.Services.AddCors(options => options.AddPolicy(name: "RecipeOrigins",
+            policy =>
+            {
+                policy.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
+            }
+        ));
 
 builder.Services.AddAuthentication().AddJwtBearer(options =>
 {
@@ -45,6 +53,7 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -56,7 +65,7 @@ app.UseCors(builder => builder
      .AllowAnyMethod()
      .AllowAnyHeader());
 app.UseHttpsRedirection();
-
+app.UseCors("RecipeOrigins");
 app.UseAuthorization();
 
 app.MapControllers();

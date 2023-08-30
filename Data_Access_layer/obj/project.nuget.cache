@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "IIN8sRurKJZHvC7V5zR3P710kHf1OFvGAgzVOKDsHxlPoIMHAYnNX3huQmsI5IHamHFXYlh0z861ufGSQxN8+A==",
+  "dgSpecHash": "rasWTw5GMlVrrqU3F5HZEybag5ZnBuX9sFh0ud7QOoz/eUzC0eQduBKGcCDde2c72xCKNoaNCZv3eNt3NJD2UQ==",
   "success": true,
   "projectFilePath": "D:\\recipe\\Recipe-Backend\\Data_Access_layer\\Data_Access_layer.csproj",
   "expectedPackageFiles": [
@@ -11,6 +11,7 @@
     "C:\\Users\\LAPTOP\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\7.0.10\\microsoft.aspnetcore.authentication.jwtbearer.7.0.10.nupkg.sha512",
     "C:\\Users\\LAPTOP\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\7.0.10\\microsoft.aspnetcore.cryptography.internal.7.0.10.nupkg.sha512",
     "C:\\Users\\LAPTOP\\.nuget\\packages\\microsoft.aspnetcore.cryptography.keyderivation\\7.0.10\\microsoft.aspnetcore.cryptography.keyderivation.7.0.10.nupkg.sha512",
+    "C:\\Users\\LAPTOP\\.nuget\\packages\\microsoft.aspnetcore.identity.entityframeworkcore\\7.0.10\\microsoft.aspnetcore.identity.entityframeworkcore.7.0.10.nupkg.sha512",
     "C:\\Users\\LAPTOP\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.10\\microsoft.aspnetcore.openapi.7.0.10.nupkg.sha512",
     "C:\\Users\\LAPTOP\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\1.1.1\\microsoft.bcl.asyncinterfaces.1.1.1.nupkg.sha512",
     "C:\\Users\\LAPTOP\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
@@ -31,6 +32,7 @@
     "C:\\Users\\LAPTOP\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\7.0.0\\microsoft.extensions.dependencyinjection.abstractions.7.0.0.nupkg.sha512",
     "C:\\Users\\LAPTOP\\.nuget\\packages\\microsoft.extensions.dependencymodel\\7.0.0\\microsoft.extensions.dependencymodel.7.0.0.nupkg.sha512",
     "C:\\Users\\LAPTOP\\.nuget\\packages\\microsoft.extensions.identity.core\\7.0.10\\microsoft.extensions.identity.core.7.0.10.nupkg.sha512",
+    "C:\\Users\\LAPTOP\\.nuget\\packages\\microsoft.extensions.identity.stores\\7.0.10\\microsoft.extensions.identity.stores.7.0.10.nupkg.sha512",
     "C:\\Users\\LAPTOP\\.nuget\\packages\\microsoft.extensions.logging\\7.0.0\\microsoft.extensions.logging.7.0.0.nupkg.sha512",
     "C:\\Users\\LAPTOP\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\7.0.0\\microsoft.extensions.logging.abstractions.7.0.0.nupkg.sha512",
     "C:\\Users\\LAPTOP\\.nuget\\packages\\microsoft.extensions.options\\7.0.1\\microsoft.extensions.options.7.0.1.nupkg.sha512",
