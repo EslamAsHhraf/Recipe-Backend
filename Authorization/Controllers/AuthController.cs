@@ -16,7 +16,6 @@ namespace Authorization.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        public static User user = new User();
         public readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
 
@@ -38,6 +37,23 @@ namespace Authorization.Controllers
         {
             var name = _BAL.GetMe();
             return Ok(new { name });
+            //var tokenHandler = new JwtSecurityTokenHandler();
+            //var SecretKey = _configuration.GetSection("AppSettings:Token").Value;
+            //var key = Encoding.ASCII.GetBytes(SecretKey);
+            //var token = HttpContext.Request.Headers["Authorization"];
+
+            //tokenHandler.ValidateToken(token, new TokenValidationParameters
+            //{
+            //    ValidateIssuerSigningKey = true,
+            //    IssuerSigningKey = new SymmetricSecurityKey(key),
+            //    ValidateIssuer = false,
+            //    ValidateAudience = false,
+            //    ClockSkew = TimeSpan.Zero
+            //}, out SecurityToken validatedToken);
+
+            //var jwtToken = (JwtSecurityToken)validatedToken;
+            //var name = jwtToken.Claims.First(x => x.Type == "Name").Value;
+            //return Ok(new { name });
         }
 
 
@@ -102,16 +118,22 @@ namespace Authorization.Controllers
                 return BadRequest(ModelState);
             }
             // create token
-            string token = CreateToken(user);
-            SetTokenInCookie(token, request.Username);
+            var token = CreateToken(user);
+            //Response.Cookies.Append("X-Access-Token", token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
+            //HttpContext.Response.Cookies.Append("Token-Expired", token, new CookieOptions { HttpOnly = true });
+            //using (var client = new HttpClient())
+            //{
+            //    client.DefaultRequestHeaders.Add("Authorization", "Bearer" + token);
+            //}
+            //SetTokenInCookie(token, request.Username);
             //var res = {
             //        "token":token
             // };
             //HttpContext.Response.Cookies.Append("token", token,
             //             new Microsoft.AspNetCore.Http.CookieOptions { Expires = DateTime.Now.AddDays(1)});
-            return Ok(new { token });
+            return Ok();
         }
-        private string CreateToken(User user)
+        private dynamic CreateToken(User user)
         {
             List<Claim> claims = new List<Claim>
             {
@@ -119,7 +141,7 @@ namespace Authorization.Controllers
                 new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
                 new Claim(ClaimTypes.Role, "User")
             };
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(
                 _configuration.GetSection("AppSettings:Token").Value!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
             
@@ -129,7 +151,21 @@ namespace Authorization.Controllers
                 signingCredentials:creds
                 );
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-            return jwt;
+            SetJWT(jwt);
+            return new { token = jwt, username = user.Username };
+        }
+        private void SetJWT(string encrypterToken)
+        {
+
+            HttpContext.Response.Cookies.Append("X-Access-Token", encrypterToken,
+                  new CookieOptions
+                  {
+                      Expires = DateTime.Now.AddDays(5),
+                      HttpOnly = true,
+                      Secure = true,
+                      IsEssential = true,
+                      SameSite = SameSiteMode.None
+                  });
         }
         private void SetTokenInCookie(string token,string username)
         {
