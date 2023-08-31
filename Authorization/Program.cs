@@ -112,6 +112,8 @@ app.UseCors(builder => builder
      .AllowAnyMethod()
      .AllowAnyHeader());
 
+app.UseCors("CorsPolicy");
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
