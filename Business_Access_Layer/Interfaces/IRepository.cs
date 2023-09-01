@@ -1,6 +1,6 @@
 ﻿using Data_Access_layer.Model;
 
-namespace Authorization.Interfaces
+namespace Business_Access_Layer.Interfaces
 {
     public interface IRepository<T>
     {

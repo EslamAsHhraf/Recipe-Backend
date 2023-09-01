@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace RecipeAPI.Migrations
+namespace Authorization.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230831172252_Initial")]
-    partial class Initial
+    [Migration("20230828220458_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,7 @@ namespace RecipeAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Data_Access_layer.Model.User", b =>
+            modelBuilder.Entity("Authorization.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace RecipeAPI.Migrations
+namespace Authorization.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230901105653_Initial2")]
-    partial class Initial2
+    [Migration("20230901114224_InitialUpdate")]
+    partial class InitialUpdate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
