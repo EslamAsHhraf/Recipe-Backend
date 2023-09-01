@@ -8,16 +8,25 @@ using Authorization.Repository;
 using Data_Access_layer.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
+using static IdentityModel.ClaimComparer;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    var jsonInputFormatter = options.InputFormatters
+        .OfType<Microsoft.AspNetCore.Mvc.Formatters.SystemTextJsonInputFormatter>()
+        .Single();
+    jsonInputFormatter.SupportedMediaTypes.Add("application/csp-report");
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
@@ -27,7 +36,7 @@ builder.Services.AddSwaggerGen(options =>
         Type = SecuritySchemeType.ApiKey
     });
     options.OperationFilter<SecurityRequirementsOperationFilter>();
-}) ;
+});
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -40,6 +49,10 @@ builder.Services.AddAuthentication(x =>
 }).AddCookie(x =>
 {
     x.Cookie.Name = "token";
+    x.Cookie.SameSite = SameSiteMode.None;
+    x.Cookie.SecurePolicy = CookieSecurePolicy.None; // Requires HTTPS
+    
+
 
 }).AddJwtBearer(x =>
 {
@@ -56,13 +69,18 @@ builder.Services.AddAuthentication(x =>
     {
         OnMessageReceived = context =>
         {
-            context.Token = context.Request.Cookies["X-Access-Token"];
+            context.Token = context.Request.Cookies["token"];
             return Task.CompletedTask;
         }
     };
 
 });
-
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+    options.CheckConsentNeeded = context => true;
+    options.MinimumSameSitePolicy = SameSiteMode.None;
+});
 //builder.Services.AddAuthentication(options =>
 //{
 //    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -77,7 +95,8 @@ builder.Services.AddAuthentication(x =>
 //    });
 
 //builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//.AddJwtBearer(options => {
+//.AddJwtBearer(options =>
+//{
 //    options.Events = new JwtBearerEvents
 //    {
 //        OnMessageReceived = context =>
@@ -89,6 +108,9 @@ builder.Services.AddAuthentication(x =>
 //});
 
 //////////
+///
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddHttpClient();
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy(name: "CorsPolicy", builder =>
@@ -110,12 +132,13 @@ if (app.Environment.IsDevelopment())
 app.UseCors(builder => builder
      .AllowAnyOrigin()
      .AllowAnyMethod()
-     .AllowAnyHeader());
+     .AllowAnyHeader().SetIsOriginAllowed(origin => true));
 
 app.UseCors("CorsPolicy");
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
