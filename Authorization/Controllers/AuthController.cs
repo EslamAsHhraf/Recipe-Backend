@@ -65,7 +65,7 @@ namespace Authorization.Controllers
             }
 
             // check if error happened will saving
-            if (!_userRepository.Register(request.Username, request.Password))
+            if (!_userRepository.Register(request.Username, request.Password, request.image))
             {
                 ModelState.AddModelError("", "Something went wrong while saving");
                 return StatusCode(500, ModelState);

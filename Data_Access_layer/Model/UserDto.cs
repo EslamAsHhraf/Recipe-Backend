@@ -5,6 +5,8 @@ namespace Authorization.Model
 {
     public class UserDto
     {
+        public string image { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "The user name is required")]
 
         public string Username { get; set; } = string.Empty;

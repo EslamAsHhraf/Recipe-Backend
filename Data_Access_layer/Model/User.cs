@@ -14,7 +14,7 @@ namespace Data_Access_layer.Model
         [Required]
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
-        public byte[] ImageFile { get; set; }
+        public string ImageFile { get; set; }
 
         // should we use mail or not
     }

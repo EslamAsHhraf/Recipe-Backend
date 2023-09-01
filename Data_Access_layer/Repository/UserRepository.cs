@@ -47,7 +47,7 @@ namespace Authorization.Repository
             }
         }
 
-        public bool Register(string username, string password)
+        public bool Register(string username, string password, string image)
         {
             byte[] passwordHash, passwordKey;
             // get passwordKey
@@ -62,6 +62,7 @@ namespace Authorization.Repository
             user.Username = username;
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordKey;
+            user.ImageFile = image;
 
             _dc.Users.Add(user);
             return Save();

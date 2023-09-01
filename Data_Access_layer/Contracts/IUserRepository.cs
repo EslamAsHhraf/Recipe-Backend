@@ -7,7 +7,7 @@ namespace Authorization.Interfaces
         // To check login (username and password)
         User Authenticate(string userName, string password);
         // To check Register (username and password)
-        bool Register(string userName, string password);
+        bool Register(string userName, string password, string image);
         // check if user exists
         bool UserAlreadyExists(string userName);
         // save change sin data base
@@ -16,6 +16,5 @@ namespace Authorization.Interfaces
         string GetMyName();
         // check strength of password
         bool CheckPasswordStrength(string password);
-
     }
 }
