@@ -1,8 +1,9 @@
-﻿using Data_Access_layer.Model;
+﻿
+using Data_Access_layer.Model;
 
-namespace Business_Access_Layer.Interfaces
+namespace Data_Access_layer.Interfaces
 {
-    public interface IRepository<T>
+    public interface IRepository<T> where T : BaseEntity
     {
         public Task<T> Create(T _object);
         public void Delete(T _object);

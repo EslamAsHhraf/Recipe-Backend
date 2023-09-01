@@ -2,21 +2,14 @@
 
 #nullable disable
 
-namespace Authorization.Migrations
+namespace RecipeAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialUpdate : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<byte[]>(
-                name: "ImageFile",
-                table: "Users",
-                type: "varbinary(max)",
-                nullable: false,
-                defaultValue: new byte[0]);
-
             migrationBuilder.CreateTable(
                 name: "Categorys",
                 columns: table => new
@@ -100,7 +93,7 @@ namespace Authorization.Migrations
                     Category = table.Column<int>(type: "int", nullable: false),
                     CreatedBy = table.Column<int>(type: "int", nullable: false),
                     TotalRating = table.Column<double>(type: "float", nullable: false),
-                    ImageFile = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
+                    ImageFile = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -120,6 +113,22 @@ namespace Authorization.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Reviews", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PasswordHash = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    PasswordSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    ImageFile = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
         }
 
@@ -147,9 +156,8 @@ namespace Authorization.Migrations
             migrationBuilder.DropTable(
                 name: "Reviews");
 
-            migrationBuilder.DropColumn(
-                name: "ImageFile",
-                table: "Users");
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

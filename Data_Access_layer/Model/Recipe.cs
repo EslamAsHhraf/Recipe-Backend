@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Data_Access_layer.Model
 {
-    public class Recipe
+    public class Recipe : BaseEntity
     {
         public int Id { get; set; }
         public string Title { get; set; }
@@ -16,7 +16,7 @@ namespace Data_Access_layer.Model
         public int Category { get; set; }
         public int CreatedBy { get; set; }
         public double TotalRating { get; set; }
-        public byte[] ImageFile { get; set; }
+        public string ImageFile { get; set; }
 
     }
 }

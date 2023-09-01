@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Authorization.Migrations
+namespace RecipeAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230901143603_InitialUpdate2")]
-    partial class InitialUpdate2
+    [Migration("20230901190457_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -121,9 +121,9 @@ namespace Authorization.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte[]>("ImageFile")
+                    b.Property<string>("ImageFile")
                         .IsRequired()
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Steps")
                         .IsRequired()
