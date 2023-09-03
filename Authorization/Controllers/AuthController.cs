@@ -62,14 +62,6 @@ namespace Authorization.Controllers
         {
 
             var name = _BAL.GetMe();
-         
-  //          Response.Headers.Add("Access-Control-Allow-Origin", Request.Headers["Origin"]);
-  //          Response.Headers.Add("Access-Control-Allow-Credentials", "true");
-  //          Response.Headers.Add(
-  //  "Access-Control-Allow-Headers",
-  //  "Origin, X-Requested-With, Content-Type, Accept"
-  //);
-  //          Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
             return Ok(new { nameee = name });
            
         }
