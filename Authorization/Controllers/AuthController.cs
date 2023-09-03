@@ -14,6 +14,7 @@ using IdentityServer4.Models;
 using Microsoft.AspNetCore.Http;
 using Azure.Core;
 using System.Net;
+using System.Collections.Generic;
 
 namespace Authorization.Controllers
 {
@@ -42,45 +43,35 @@ namespace Authorization.Controllers
             //generating access token ommited for brevity
             //Response.Headers.Add("Set-Cookie", "cookie_name=cookie_value; expires=Wed, 21 Oct 2023 07:28:00 GMT; path=/");
 
-            Response.Cookies.Append("token", "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoic3RyaW5nIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZWlkZW50aWZpZXIiOiIzIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVXNlciIsImV4cCI6MTY5MzYzMzU3MX0.fxM9R1ASQol9H0ymVorrodLt3_SfcjLPCW6t1M520sOtsE_cK7zqsU2uema3MoLDPCuXbE32mQQCyszy-PU6oQ",
+            Response.Cookies.Append("token", "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoic3RyaW5nIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZWlkZW50aWZpZXIiOiIzIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVXNlciIsImV4cCI6MTY5MzgzNDQzMX0.QeDYzZo7-pPc42s4iQBHEdR0Byep9-7uf8fNkc6_JqM-TvUKEq0cV5hydX4l1eO4wRtJBB4wdYq8uPRY361YcA",
                   new CookieOptions
                   {
-                      Path="/",
                       Expires = DateTime.Now.AddDays(5),
                       HttpOnly = false,
                       Secure = true,
                       IsEssential = true,
-                      Domain = "localhost",
                       SameSite = SameSiteMode.None
                   });
             
             return Ok(); ;
         }
-        [AllowAnonymous]
+      
         [HttpGet, Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
-
         public ActionResult<string> GetMe()
         {
+
             var name = _BAL.GetMe();
+         
+  //          Response.Headers.Add("Access-Control-Allow-Origin", Request.Headers["Origin"]);
+  //          Response.Headers.Add("Access-Control-Allow-Credentials", "true");
+  //          Response.Headers.Add(
+  //  "Access-Control-Allow-Headers",
+  //  "Origin, X-Requested-With, Content-Type, Accept"
+  //);
+  //          Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
             return Ok(new { nameee = name });
-            //var tokenHandler = new JwtSecurityTokenHandler();
-            //var SecretKey = _configuration.GetSection("AppSettings:Token").Value;
-            //var key = Encoding.ASCII.GetBytes(SecretKey);
-            //var token = HttpContext.Request.Headers["Authorization"];
-
-            //tokenHandler.ValidateToken(token, new TokenValidationParameters
-            //{
-            //    ValidateIssuerSigningKey = true,
-            //    IssuerSigningKey = new SymmetricSecurityKey(key),
-            //    ValidateIssuer = false,
-            //    ValidateAudience = false,
-            //    ClockSkew = TimeSpan.Zero
-            //}, out SecurityToken validatedToken);
-
-            //var jwtToken = (JwtSecurityToken)validatedToken;
-            //var name = jwtToken.Claims.First(x => x.Type == "Name").Value;
-            //return Ok(new { name });
+           
         }
 
 

@@ -110,29 +110,36 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 //////////
 ///
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddHttpClient();
+//builder.Services.AddHttpClient();
 builder.Services.AddCors(opt =>
 {
-    opt.AddPolicy(name: "CorsPolicy", builder =>
+    opt.AddPolicy(name: "CorsPolicy", options =>
     {
-        builder.WithOrigins("http://localhost:4200", "https://localhost:4200")
+        options.WithOrigins("http://localhost:4200", "https://localhost:4200")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
+
     });
 });
-var app = builder.Build();
 
+
+
+var app = builder.Build();
+app.Use((ctx, next) =>
+{
+    ctx.Response.Headers["Access-Control-Allow-Origin"] = "http://localhost:4200";
+    return next();
+});
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors(builder => builder
-     .AllowAnyOrigin()
-     .AllowAnyMethod()
-     .AllowAnyHeader().SetIsOriginAllowed(origin => true));
+//app.UseCors(builder => builder
+//     .AllowAnyMethod()
+//     .AllowAnyHeader().SetIsOriginAllowed(origin => true));
 
 app.UseCors("CorsPolicy");
 
