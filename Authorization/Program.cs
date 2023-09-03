@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Authorization.Interfaces;
 using Authorization.Repository;
 using Data_Access_layer.Data;
+using Data_Access_layer.Model;
+using Data_Access_layer.Repositories;
+using Data_Access_layer.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +19,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRepository<Recipe>, Repository<Recipe>>();
 
 builder.Services.AddSwaggerGen(options =>
 {
