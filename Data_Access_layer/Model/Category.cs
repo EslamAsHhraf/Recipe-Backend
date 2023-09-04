@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Data_Access_layer.Model
 {
-    public class Category
+    public class Category : BaseEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }
