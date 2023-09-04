@@ -11,7 +11,7 @@ using RecipeAPI.Common;
 using System.Net;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Nest;
-
+using Business_Access_Layer.Abstract;
 namespace Authorization.Controllers
 {
     [Route("api/[controller]")]
@@ -22,13 +22,15 @@ namespace Authorization.Controllers
         public readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
         private Response response = new Response();
+        private IAuthService _userService;
 
 
-        public AuthController(IConfiguration configuration, IUserRepository userService)
+        public AuthController(IConfiguration configuration, IUserRepository userRepository, IAuthService userService)
 
         {
-            _userRepository = userService;
+            _userRepository = userRepository;
             _configuration = configuration;
+            _userService = userService;
         }
 
         [HttpGet, Authorize]
@@ -104,9 +106,10 @@ namespace Authorization.Controllers
                 return StatusCode(400, response);
             }
             // get user
-            var user = _userRepository.Authenticate(request.Username, request.Password);
+            //var user = _userRepository.Authenticate(request.Username, request.Password);
+            var user = _userService.Login(request);
 
-            if (user == null)
+            if (user == null )
             {
                 response.Status = "fail";
                 response.Data = new { Title = "Invalid user name or password" };

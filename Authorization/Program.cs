@@ -7,6 +7,8 @@ using Authorization.Interfaces;
 using Authorization.Repository;
 using Data_Access_layer.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Business_Access_Layer.Abstract;
+using Business_Access_Layer.Concrete;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,6 +73,7 @@ builder.Services.AddAuthentication(x =>
 
 });
 
+builder.Services.AddScoped<IAuthService, AuthManager>();
 
 var app = builder.Build();
 
