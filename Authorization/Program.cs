@@ -57,8 +57,8 @@ builder.Services.AddAuthentication(x =>
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"])),
-        ValidateIssuer = false,
-        ValidateAudience = false
+        ValidateIssuer = true,
+        ValidateAudience = true
     };
     x.Events = new JwtBearerEvents
     {

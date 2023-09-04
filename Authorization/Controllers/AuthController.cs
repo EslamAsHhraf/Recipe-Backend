@@ -146,7 +146,7 @@ namespace Authorization.Controllers
                   new CookieOptions
                   {
                       Expires = DateTime.Now.AddDays(5),
-                      HttpOnly = false,
+                      HttpOnly = true,
                       Secure = true,
                       IsEssential = true,
                       SameSite = SameSiteMode.None
