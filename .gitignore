@@ -1,3 +1,9 @@
 Authorization/.vs/*
 Authorization/bin/*
 Authorization/obj/*
+Business_Access_Layer/obj/*
+Business_Access_Layer/bin/*
+Business_Access_Layer/.vs/*
+Data_Access_layer/obj/*
+Data_Access_layer/bin/*
+Data_Access_layer/.vs/*
