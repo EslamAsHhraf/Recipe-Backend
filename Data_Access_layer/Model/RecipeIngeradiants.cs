@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Data_Access_layer.Model
 {
-    public class RecipeIngredients : BaseEntity
+    public class RecipeIngredients 
     {
         public int Id { get; set; }
         public int RecipeId { get; set; }

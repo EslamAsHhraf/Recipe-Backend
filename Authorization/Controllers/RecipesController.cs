@@ -21,9 +21,9 @@ namespace RecipeAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public Recipe GetRecipeById(int id)
+        public async Task<Recipe> GetRecipeById(int id)
         {
-            return _recipeRepository.GetById(id);
+            return await _recipeRepository.GetById(id);
         }
 
         [HttpPost]
@@ -37,7 +37,7 @@ namespace RecipeAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRecipe(int id, [FromBody] Recipe recipe)
         {
-            var existingRecipe = _recipeRepository.GetById(id);
+            var existingRecipe =await _recipeRepository.GetById(id);
 
             if (existingRecipe == null)
             {
@@ -60,7 +60,7 @@ namespace RecipeAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRecipe(int id)
         {
-            var recipe = _recipeRepository.GetById(id);
+            var recipe =await _recipeRepository.GetById(id);
 
             if (recipe == null)
             {

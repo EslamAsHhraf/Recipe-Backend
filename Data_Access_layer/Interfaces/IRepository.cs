@@ -9,6 +9,8 @@ namespace Data_Access_layer.Interfaces
         public void Delete(T _object);
         public void Update(T _object);
         public IEnumerable<T> GetAll();
-        public T GetById(int Id);
+        public Task<T> GetById(int Id);
+        public Task<IEnumerable<T>> SearchByName(string searchTerm);
+        public List<Recipe> GetRecipesByIds(List<int> ingredients);
     }
 }
