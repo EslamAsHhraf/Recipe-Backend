@@ -6,6 +6,8 @@ using RecipeAPI.Common;
 using Business_Access_Layer.Abstract;
 using Azure.Core;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 
 namespace Authorization.Controllers
 {
@@ -149,5 +151,37 @@ namespace Authorization.Controllers
             response.Data = new { Title = title };
             return StatusCode(code, response);
         }
+
+        [HttpPut("UpdateImage")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> UpdateImage( IFormFile ImageFile)
+        {
+            if (ImageFile == null)
+            {
+                response.Status = "fail";
+                response.Data = new { Title = "ImageFile is null" };
+                return StatusCode(404, response); ;
+            }
+            Task<int> code =_userService.SaveImage(ImageFile);
+            int result = await code;
+            if (result == 401)
+            {
+                response.Status = "fail";
+                response.Data = new { Title = "Cookies not found" };
+                return StatusCode(404, response); ;
+            }
+            if (result == 400)
+            {
+                response.Status = "fail";
+                response.Data = new { Title = "Error in saving" };
+                return StatusCode(400, response); ;
+            }
+            response.Status = "success";
+            response.Data = new { Title = "Saving new image" };
+            return StatusCode(201, response); ;
+        }
+
     }
 }

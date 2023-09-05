@@ -2,6 +2,7 @@
 using Azure.Core;
 using Data_Access_layer.Model;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,9 @@ namespace Business_Access_Layer.Abstract
         public string CreateToken(User user);
         public void SetJWT(string encrypterToken);
         public void changePassword(string oldPassword, string newPassword, out string status, out string title, out int code);
+        public Task<int> SaveImage(IFormFile imageFile);
+        public void DeleteImage(string imageName);
+
 
     }
 }

@@ -10,6 +10,9 @@ using System.Security.Claims;
 using System.Text;
 using Azure.Core;
 using Nest;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Business_Access_Layer.Concrete
 {
@@ -18,13 +21,14 @@ namespace Business_Access_Layer.Concrete
         private IUserRepository _userRepository;
         public readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public AuthManager(IUserRepository userRepository, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+        public AuthManager(IUserRepository userRepository, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment hostEnvironment)
         {
             _userRepository = userRepository;
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
-
+            _hostEnvironment = hostEnvironment;
 
         }
         public User Login(UserDto request, out string token)
@@ -171,6 +175,41 @@ namespace Business_Access_Layer.Concrete
             title = "Password change successfully";
             code = 200;
             return;
+        }
+
+        public async Task<int> SaveImage(IFormFile imageFile)
+        {
+            var username = GetMyName();
+            if( username == null)
+            {
+                return 401;
+            }
+            var user=_userRepository.GetUser(username);
+            if(user.ImageFile != string.Empty) {
+                DeleteImage(user.ImageFile);
+
+            }
+            string imageName = new String(Path.GetFileNameWithoutExtension(imageFile.FileName).Take(10).ToArray()).Replace(' ', '-');
+            imageName = imageName + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(imageFile.FileName);
+            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
+            using (var fileStream = new FileStream(imagePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(fileStream);
+            }
+            user.ImageFile = imageName;
+            if(!_userRepository.updateUser(user))
+            {
+                return 400;
+
+            }
+            return 201; 
+        }
+
+        public void DeleteImage(string imageName)
+        {
+            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
+            if (System.IO.File.Exists(imagePath))
+                System.IO.File.Delete(imagePath);
         }
 
     }

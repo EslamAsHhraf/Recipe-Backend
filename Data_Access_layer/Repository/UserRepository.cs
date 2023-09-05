@@ -2,7 +2,6 @@
 using System.Security.Cryptography;
 using Data_Access_layer.Data;
 using Data_Access_layer.Model;
-using Microsoft.AspNetCore.Identity;
 
 namespace Authorization.Repository
 {
@@ -14,6 +13,12 @@ namespace Authorization.Repository
         {
             _dc = dc;
         }
+        public User GetUser(string username)
+        {
+            var user = _dc.Users.FirstOrDefault(x => x.Username == username);
+            return user;
+        }
+
         public User Authenticate(string username, string passwordText)
         {
             var user = _dc.Users.FirstOrDefault(x => x.Username == username);
@@ -76,6 +81,12 @@ namespace Authorization.Repository
             encryptPassword(password, out byte[] passwordHash, out byte[] passwordKey);
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordKey;
+            _dc.Update(user);
+            return Save();
+
+        }
+        public bool updateUser( User user)
+        {
             _dc.Update(user);
             return Save();
 
