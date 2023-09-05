@@ -74,6 +74,12 @@ namespace Business_Access_Layer.Concrete
             if (_httpContextAccessor.HttpContext != null)
             {
                 result = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Name);
+                if (_userRepository.UserAlreadyExists(result))
+                {
+                    return result;
+
+                }
+                result = null;
 
             }
             return result;

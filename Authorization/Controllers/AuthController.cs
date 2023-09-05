@@ -5,6 +5,7 @@ using Data_Access_layer.Model;
 using RecipeAPI.Common;
 using Business_Access_Layer.Abstract;
 using Azure.Core;
+using System.ComponentModel.DataAnnotations;
 
 namespace Authorization.Controllers
 {
@@ -134,8 +135,13 @@ namespace Authorization.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public ActionResult<Response> ChangePassword([FromQuery] string oldPassword, [FromQuery] string newPassword )
+        public ActionResult<Response> ChangePassword([FromQuery][Required] string oldPassword, [FromQuery][Required] string newPassword )
         {
+            if (!ModelState.IsValid)
+        {
+            // Handle validation errors
+            return BadRequest(ModelState);
+        }
             int code = 0;
             string status = "", title = "";
             _userService.changePassword(oldPassword, newPassword, out status, out title, out code);
