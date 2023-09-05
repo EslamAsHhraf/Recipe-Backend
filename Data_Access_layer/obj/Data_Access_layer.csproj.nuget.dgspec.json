@@ -85,6 +85,10 @@
               "target": "Package",
               "version": "[6.32.2, )"
             },
+            "Microsoft.WindowsAzure.Management.MediaServices": {
+              "target": "Package",
+              "version": "[4.1.0, )"
+            },
             "NEST": {
               "target": "Package",
               "version": "[7.17.5, )"

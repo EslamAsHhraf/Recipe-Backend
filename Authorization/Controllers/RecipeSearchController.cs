@@ -17,15 +17,13 @@ namespace RecipeAPI.Controllers
         [HttpGet]
         public async Task<IEnumerable<Recipe>> SearchRecipeByName(string searchTerm)
         {
-            var recipes =await  _recipeRepository.SearchByName(searchTerm);
-
-            return recipes;
+            return await _recipeRepository.SearchByName(searchTerm);
         }
 
         [HttpPost]
-        public List<Recipe> FilterByIngredients(List<int> ingredientIds)
+        public async Task<IEnumerable<Recipe>> FilterByIngredients(List<int> ingredientIds)
         {
-            return  _recipeRepository.GetRecipesByIds(ingredientIds);
+            return await _recipeRepository.FilterByIngredients(ingredientIds);
         }
 
     }

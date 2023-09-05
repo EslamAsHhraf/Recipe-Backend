@@ -3,6 +3,7 @@ using Data_Access_layer.Data;
 using Microsoft.EntityFrameworkCore;
 using Data_Access_layer.Model;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 
 namespace Data_Access_layer.Repositories
 {
@@ -47,59 +48,29 @@ namespace Data_Access_layer.Repositories
         }
 
 
-
         public async Task<IEnumerable<T>> SearchByName(string searchTerm)
         {
-            // Get all entities of type Recipe from the database.
-            var recipes = await _context.Set<T>().ToListAsync();
 
             // Filter the entities by name.
-            var filteredRecipes = recipes.Where(recipe =>
-            {
-                // Check if the title is not null.
-                if (recipe.Title != null)
-                {
-                    // Get the lowercase title.
-                    var lowercaseTitle = recipe.Title.ToLower();
+            var filteredEntities = entity.Where(entity => entity.Title.ToLower().Contains(searchTerm.ToLower()));
 
-                    // Check if the lowercase title contains the search term.
-                    return lowercaseTitle.Contains(searchTerm.ToLower());
-                }
-                else
-                {
-                    // The title is null, so return false.
-                    return false;
-                }
-            });
-
-            // Check if there are any recipes that match the search term.
-            if (filteredRecipes.Any())
-            {
-                // Return the recipe.
-                return filteredRecipes;
-            }
-            else
-            {
-                // Return null if there are no recipes that match the search term.
-                return null;
-            }
+            return (IEnumerable<T>)filteredEntities;
         }
 
-        public  List<Recipe> GetRecipesByIds(List<int> ingredients)
+
+        public async Task<IEnumerable<T>> FilterByIngredients(List<int> ingredients)
         {
-            var allrecipes = new List<Recipe>();
-            foreach (var ingredient in ingredients)
-            {
-                var recipeIngredients =  _context.RecipeIngredients.Where(ri => ri.IngredientId == ingredient).ToList();
-                foreach (var recipeIngredient in recipeIngredients)
-                {
-                    var recipe =  _context.Recipes.Find(recipeIngredient.RecipeId);
-                    allrecipes.Add(recipe);
-                }
-            }
-            return allrecipes;
-        }
+            var recipeIngredients = await _context.RecipeIngredients.Where(ri => ingredients.Contains(ri.IngredientId)).ToListAsync();
 
-       
+            // Get all recipes that have the matching recipe ingredients.
+            var recipes =  recipeIngredients.Select(ri => ri.RecipeId).Distinct().ToList();
+
+            // Get all recipes that match the ingredients.
+            var filteredRecipes = await _context.Recipes.Where(recipe => recipes.Contains(recipe.Id)).ToListAsync();
+
+            return (IEnumerable<T>)filteredRecipes;
+        }
+      
+
     }
 }
