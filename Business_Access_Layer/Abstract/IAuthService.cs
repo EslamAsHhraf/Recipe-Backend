@@ -12,9 +12,15 @@ namespace Business_Access_Layer.Abstract
 {
     public interface IAuthService 
     {
-        //T Register(User user);
-        public User Login(UserDto user);
-        //bool UserExists(string username);
-        //void CreateAccessToken(User user);
+
+        public User Login(UserDto user, out string token);
+        public void Register(UserDto user, out string status, out string title);
+        public string GetMyName();
+        bool CheckPasswordStrength(string password);
+        public bool logout();
+        public string CreateToken(User user);
+        public void SetJWT(string encrypterToken);
+        public void changePassword(string oldPassword, string newPassword, out string status, out string title, out int code);
+
     }
 }

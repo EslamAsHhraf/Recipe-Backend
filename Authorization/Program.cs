@@ -40,7 +40,7 @@ builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(conne
 builder.Services.AddCors(options => options.AddPolicy(name: "RecipeOrigins",
             policy =>
             {
-                policy.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader().AllowCredentials(); ;
+                policy.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
             }
         ));
 builder.Services.AddAuthentication(x =>
@@ -63,8 +63,8 @@ builder.Services.AddAuthentication(x =>
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"])),
-        ValidateIssuer = true,
-        ValidateAudience = true
+        ValidateIssuer = false,
+        ValidateAudience = false
     };
     x.Events = new JwtBearerEvents
     {

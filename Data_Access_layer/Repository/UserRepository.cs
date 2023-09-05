@@ -1,22 +1,18 @@
 ﻿using Authorization.Interfaces;
-using System.Security.Claims;
 using System.Security.Cryptography;
-using Microsoft.AspNetCore.Http;
 using Data_Access_layer.Data;
 using Data_Access_layer.Model;
+using Microsoft.AspNetCore.Identity;
 
 namespace Authorization.Repository
 {
     public class UserRepository: IUserRepository
     {
         private readonly DataContext _dc;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserRepository(DataContext dc, IHttpContextAccessor httpContextAccessor)
+        public UserRepository(DataContext dc)
         {
             _dc = dc;
-            _httpContextAccessor = httpContextAccessor;
-
         }
         public User Authenticate(string username, string passwordText)
         {
@@ -46,10 +42,8 @@ namespace Authorization.Repository
                 return true;
             }
         }
-
-        public bool Register(string username, string password, string image)
+        public void encryptPassword( string password, out byte[] passwordHash, out byte[] passwordKey)
         {
-            byte[] passwordHash, passwordKey;
             // get passwordKey
             using (var hmac = new HMACSHA512())
             {
@@ -57,13 +51,18 @@ namespace Authorization.Repository
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
 
             }
+
           
+        }
+
+        public bool Register(string username, string password)
+        {
+            encryptPassword( password, out byte[] passwordHash, out byte[] passwordKey);
             User user = new User();
             user.Username = username;
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordKey;
-            user.ImageFile = image;
-
+            user.ImageFile = "";
             _dc.Users.Add(user);
             return Save();
         }
@@ -72,28 +71,21 @@ namespace Authorization.Repository
         {
             return  _dc.Users.Any(x => x.Username == userName);
         }
-        public string GetMyName()
+        public bool changePassword(string password,User user)
         {
-            var result = string.Empty;
-            if (_httpContextAccessor.HttpContext != null)
-            {
-                result = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Name);
-            }
-            return result;
-        }
+            encryptPassword(password, out byte[] passwordHash, out byte[] passwordKey);
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordKey;
+            _dc.Update(user);
+            return Save();
 
+        }
         public bool Save()
         {
             var saved = _dc.SaveChanges();
             return saved > 0 ? true : false;
         }
-        public bool CheckPasswordStrength(string password)
-        {
-            if (password.Any(char.IsDigit) && password.Any(char.IsLower) && password.Any(char.IsUpper) && password.Length >= 8 &&
-                password.IndexOfAny("!@#$%^&*?_~-£().,".ToCharArray()) != -1)
-                return true;
-            return false;
-        }
+      
     }
 }
 

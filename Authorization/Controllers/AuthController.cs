@@ -1,17 +1,11 @@
 ﻿using Authorization.Model;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
-using Authorization.Interfaces;
 using Data_Access_layer.Model;
 using RecipeAPI.Common;
-using System.Net;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Nest;
 using Business_Access_Layer.Abstract;
+using Azure.Core;
+
 namespace Authorization.Controllers
 {
     [Route("api/[controller]")]
@@ -20,28 +14,57 @@ namespace Authorization.Controllers
     {
         public static User user= new User();
         public readonly IConfiguration _configuration;
-        private readonly IUserRepository _userRepository;
         private Response response = new Response();
         private IAuthService _userService;
 
 
-        public AuthController(IConfiguration configuration, IUserRepository userRepository, IAuthService userService)
+        public AuthController(IConfiguration configuration, IAuthService userService)
 
         {
-            _userRepository = userRepository;
             _configuration = configuration;
             _userService = userService;
         }
 
-        [HttpGet, Authorize]
+        [HttpGet,Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
         public ActionResult<Response> GetMe()
         {
-            var userName = _userRepository.GetMyName();
-            response.Data = userName;
-            response.Status = "success";
-            return StatusCode(200, response);
+            var userName = _userService.GetMyName();
+            if (userName == null)
+            {
+                response.Data = new { Title = "Token not found" };
+                response.Status = "fail";
+                return StatusCode(401, response);
+            }
+            else
+            {
+                response.Data = new { userName };
+                response.Status = "success";
+                return StatusCode(200, response);
+            }
+        }
+
+        [HttpPost("logout")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+
+        public ActionResult<Response> Logout()
+        {
+            if (_userService.logout())
+            {
+                response.Data = new { Title = "Token Deleted successfully" };
+                response.Status = "success";
+                return StatusCode(200, response);
+            }
+            else
+            {
+
+                response.Data = new { Title = "Token not found" };
+                response.Status = "fail";
+                return StatusCode(401, response);
+            }
+
         }
 
 
@@ -59,37 +82,22 @@ namespace Authorization.Controllers
                 response.Data = new { Title = "User Name and Password are required" };
                 return StatusCode(400, response);
             }
-            // check uniqueness of user name
-            if (_userRepository.UserAlreadyExists(request.Username))
+            string status = "", title = "";
+            _userService.Register(request, out status, out  title);
+            response.Status = status;
+            response.Data = new { Title = title };
+            if (status == "success")
             {
-                response.Status = "fail";
-                response.Data = new { Title = "User already exists, please try different user name"};
+                return StatusCode(201, response);
+            }
+            else
+            {
                 return StatusCode(400, response);
+
             }
 
-            if (!_userRepository.CheckPasswordStrength(request.Password))
-            {
-                response.Status = "fail";
-                response.Data = new { Title = "Password must include uppercase and lowercase and digit and special char and min length 8" };
-                return StatusCode(400, response);
-            }
-
-            // check if error happened will saving
-            if (!_userRepository.Register(request.Username, request.Password, request.image))
-            {
-                response.Status = "fail";
-                response.Data = new { Title = "Something went wrong while saving" };
-                return StatusCode(400, response);
-            }
-            // create user successfully
-            response.Status = "success";
-            return StatusCode(201, response);
+            
         }
-
-
-
-
-
 
 
         [HttpGet("login")]
@@ -107,7 +115,8 @@ namespace Authorization.Controllers
             }
             // get user
             //var user = _userRepository.Authenticate(request.Username, request.Password);
-            var user = _userService.Login(request);
+            string token = "";
+            var user = _userService.Login(request,out token);
 
             if (user == null )
             {
@@ -116,44 +125,23 @@ namespace Authorization.Controllers
                 return StatusCode(404, response);;
             }
             // create token
-            string token = CreateToken(user);
             response.Data = new { token };
             response.Status = "success";
             return StatusCode(200, response);
         }
-        private string CreateToken(User user)
-        {
-            List<Claim> claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
-                new Claim(ClaimTypes.Role, "User")
-            };
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                _configuration.GetSection("AppSettings:Token").Value!));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-            
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires:DateTime.Now.AddDays(1),
-                signingCredentials:creds
-                );
-            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-            SetJWT(jwt);
-            return jwt;
-        }
-        private void SetJWT(string encrypterToken)
-        {
 
-            Response.Cookies.Append("token", encrypterToken,
-                  new CookieOptions
-                  {
-                      Expires = DateTime.Now.AddDays(5),
-                      HttpOnly = true,
-                      Secure = true,
-                      IsEssential = true,
-                      SameSite = SameSiteMode.None
-                  });
+        [HttpPut("ChangePassword")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public ActionResult<Response> ChangePassword([FromQuery] string oldPassword, [FromQuery] string newPassword )
+        {
+            int code = 0;
+            string status = "", title = "";
+            _userService.changePassword(oldPassword, newPassword, out status, out title, out code);
+            response.Status = status;
+            response.Data = new { Title = title };
+            return StatusCode(code, response);
         }
     }
 }

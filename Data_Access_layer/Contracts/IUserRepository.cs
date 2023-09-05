@@ -5,16 +5,14 @@ namespace Authorization.Interfaces
     public interface IUserRepository
     {
         // To check login (username and password)
-        User Authenticate(string userName, string password);
+        User Authenticate(string username, string password);
         // To check Register (username and password)
-        bool Register(string userName, string password, string image);
+        bool Register(string username, string password);
         // check if user exists
-        bool UserAlreadyExists(string userName);
+        bool UserAlreadyExists(string username);
         // save change sin data base
         bool Save();
-        // get user name
-        string GetMyName();
-        // check strength of password
-        bool CheckPasswordStrength(string password);
+        bool changePassword(string password, User user);
+        void encryptPassword( string password, out byte[] passwordHash, out byte[] passwordKey); 
     }
 }
