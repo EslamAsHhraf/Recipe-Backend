@@ -2,6 +2,8 @@
 using Data_Access_layer.Data;
 using Microsoft.EntityFrameworkCore;
 using Data_Access_layer.Model;
+using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 
 namespace Data_Access_layer.Repositories
 {
@@ -34,9 +36,9 @@ namespace Data_Access_layer.Repositories
             return entity.AsEnumerable();
         }
 
-        public T GetById(int Id)
+        public async Task<T> GetById(int Id)
         {
-            return entity.FirstOrDefault(x => x.Id == Id);
+            return await entity.FirstOrDefaultAsync(x => x.Id == Id);
         }
 
         public void Update(T _object)
@@ -46,7 +48,29 @@ namespace Data_Access_layer.Repositories
         }
 
 
+        public async Task<IEnumerable<T>> SearchByName(string searchTerm)
+        {
 
-       
+            // Filter the entities by name.
+            var filteredEntities = entity.Where(entity => entity.Title.ToLower().Contains(searchTerm.ToLower()));
+
+            return (IEnumerable<T>)filteredEntities;
+        }
+
+
+        public async Task<IEnumerable<T>> FilterByIngredients(List<int> ingredients)
+        {
+            var recipeIngredients = await _context.RecipeIngredients.Where(ri => ingredients.Contains(ri.IngredientId)).ToListAsync();
+
+            // Get all recipes that have the matching recipe ingredients.
+            var recipes =  recipeIngredients.Select(ri => ri.RecipeId).Distinct().ToList();
+
+            // Get all recipes that match the ingredients.
+            var filteredRecipes = await _context.Recipes.Where(recipe => recipes.Contains(recipe.Id)).ToListAsync();
+
+            return (IEnumerable<T>)filteredRecipes;
+        }
+      
+
     }
 }
