@@ -20,6 +20,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRepository<Recipe>, Repository<Recipe>>();
+builder.Services.AddScoped<IRepository<Ingredient>, Repository<Ingredient>>();
 
 builder.Services.AddSwaggerGen(options =>
 {
