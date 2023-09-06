@@ -34,8 +34,8 @@ namespace Authorization.Controllers
 
         public ActionResult<Response> GetMe()
         {
-            var userName = _userService.GetMyName();
-            if (userName == null)
+            var UserData = _userService.GetMe();
+            if (UserData == null)
             {
                 response.Data = new { Title = "Token not found" };
                 response.Status = "fail";
@@ -43,13 +43,13 @@ namespace Authorization.Controllers
             }
             else
             {
-                response.Data = new { userName };
+                response.Data = new { UserData };
                 response.Status = "success";
                 return StatusCode(200, response);
             }
         }
 
-        [HttpPost("logout")]
+        [HttpGet("logout")]
         [ProducesResponseType(StatusCodes.Status200OK)]
 
         public ActionResult<Response> Logout()
@@ -137,7 +137,7 @@ namespace Authorization.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public ActionResult<Response> ChangePassword([FromQuery][Required] string oldPassword, [FromQuery][Required] string newPassword )
+        public ActionResult<Response> ChangePassword([Required] string oldPassword, [Required] string newPassword )
         {
             if (!ModelState.IsValid)
         {

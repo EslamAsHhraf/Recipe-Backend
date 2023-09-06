@@ -13,6 +13,7 @@ using Nest;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.SqlServer.Server;
 
 namespace Business_Access_Layer.Concrete
 {
@@ -72,21 +73,25 @@ namespace Business_Access_Layer.Concrete
 
         }
 
-        public string GetMyName()
+        public UserData GetMe()
         {
             var result = string.Empty;
             if (_httpContextAccessor.HttpContext != null)
             {
                 result = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Name);
-                if (_userRepository.UserAlreadyExists(result))
+                if (!_userRepository.UserAlreadyExists(result))
                 {
-                    return result;
+                    return null;
 
                 }
-                result = null;
 
             }
-            return result;
+            User user = _userRepository.GetUser(result);
+            UserData data = new UserData();
+            data.Name = user.Username;
+            data.Id = user.Id;
+            data.ImageFile = user.ImageFile;
+            return data;
         }
         public bool CheckPasswordStrength(string password)
         {
@@ -99,7 +104,11 @@ namespace Business_Access_Layer.Concrete
         {
             if (_httpContextAccessor.HttpContext.Request.Cookies["token"] != null)
             {
-                _httpContextAccessor.HttpContext.Response.Cookies.Delete("token");
+                _httpContextAccessor.HttpContext.Response.Cookies.Delete("token", new CookieOptions
+                {
+                    Secure = true,
+                    SameSite = SameSiteMode.None
+                });
                 return true;
             }
             return false;
@@ -141,14 +150,16 @@ namespace Business_Access_Layer.Concrete
         }
         public void changePassword(string oldPassword, string newPassword, out string status, out string title,out int code)
         {
-            var username = GetMyName();
-            if(username == null)
+            var userData = GetMe();
+            if (userData == null)
             {
                 status = "fail";
                 title = "Token not found";
                 code = 401;
                 return;
             }
+            var username = userData.Name;
+
             var user = _userRepository.Authenticate(username, oldPassword);
             if (user == null)
             {
@@ -179,12 +190,14 @@ namespace Business_Access_Layer.Concrete
 
         public async Task<int> SaveImage(IFormFile imageFile)
         {
-            var username = GetMyName();
-            if( username == null)
+            var userData = GetMe();
+            if (userData == null)
             {
                 return 401;
             }
-            var user=_userRepository.GetUser(username);
+            var username = userData.Name;
+
+            var user =_userRepository.GetUser(username);
             if(user.ImageFile != string.Empty) {
                 DeleteImage(user.ImageFile);
 

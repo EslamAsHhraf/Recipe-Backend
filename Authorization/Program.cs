@@ -12,6 +12,7 @@ using Business_Access_Layer.Concrete;
 using Data_Access_layer.Model;
 using Data_Access_layer.Repositories;
 using Data_Access_layer.Interfaces;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +24,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRepository<Recipe>, Repository<Recipe>>();
-
+builder.Services.AddScoped<IRepository<Category>, Repository<Category>>();
+builder.Services.AddScoped<IRepository<Ingredient>, Repository<Ingredient>>();
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
@@ -78,6 +80,7 @@ builder.Services.AddAuthentication(x =>
 });
 
 builder.Services.AddScoped<IAuthService, AuthManager>();
+builder.Services.AddScoped<ICategory, CategoryServices>();
 
 var app = builder.Build();
 
@@ -86,6 +89,7 @@ app.Use((ctx, next) =>
     ctx.Response.Headers["Access-Control-Allow-Origin"] = "http://localhost:4200";
     return next();
 });
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

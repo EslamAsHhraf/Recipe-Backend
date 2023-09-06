@@ -16,7 +16,7 @@ namespace Business_Access_Layer.Abstract
 
         public User Login(UserDto user, out string token);
         public void Register(UserDto user, out string status, out string title);
-        public string GetMyName();
+        public UserData GetMe();
         bool CheckPasswordStrength(string password);
         public bool logout();
         public string CreateToken(User user);
