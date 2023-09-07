@@ -1,6 +1,7 @@
 ﻿using Data_Access_layer.Interfaces;
 using Data_Access_layer.Model;
 using Microsoft.AspNetCore.Mvc;
+using RecipeAPI.Common;
 
 namespace RecipeAPI.Controllers
 {
@@ -8,6 +9,7 @@ namespace RecipeAPI.Controllers
     public class RecipesController : Controller
     {
         private readonly IRepository<Recipe> _recipeRepository;
+        private Response response = new Response();
 
         public RecipesController(IRepository<Recipe> recipeRepository)
         {
@@ -29,9 +31,11 @@ namespace RecipeAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> PostRecipe([FromBody] Recipe recipe)
         {
-            await _recipeRepository.Create(recipe);
+            var list = _recipeRepository.Create(recipe);
+            response.Data = new { Data = list };
+            response.Status = "success";
+            return StatusCode(201, response);
 
-            return StatusCode(201);
         }
 
         [HttpPut("{id}")]

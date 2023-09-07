@@ -67,7 +67,7 @@ namespace Authorization.Repository
             user.Username = username;
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordKey;
-            user.ImageFile = "";
+            user.ImageFile = "initila.png";
             _dc.Users.Add(user);
             return Save();
         }

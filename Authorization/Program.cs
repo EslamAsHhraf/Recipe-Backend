@@ -13,6 +13,7 @@ using Data_Access_layer.Model;
 using Data_Access_layer.Repositories;
 using Data_Access_layer.Interfaces;
 using Microsoft.Extensions.FileProviders;
+using Data_Access_layer.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,6 +82,8 @@ builder.Services.AddAuthentication(x =>
 
 builder.Services.AddScoped<IAuthService, AuthManager>();
 builder.Services.AddScoped<ICategory, CategoryServices>();
+builder.Services.AddScoped<IRecipeIngeradiants, RecipeIngredientsRepository>();
+
 
 var app = builder.Build();
 
