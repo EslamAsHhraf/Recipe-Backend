@@ -224,6 +224,25 @@ namespace Business_Access_Layer.Concrete
             if (System.IO.File.Exists(imagePath))
                 System.IO.File.Delete(imagePath);
         }
+        public Byte[] GetImage()
+        {
+            var userData = GetMe();
+            if (userData == null)
+            {
+                return null;
+            }
+            var username = userData.Name;
+
+            var user = _userRepository.GetUser(username);
+            if (user == null)
+            {
+                return null;
+            }
+            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", user.ImageFile);
+
+            Byte[] b = System.IO.File.ReadAllBytes(imagePath);   // You can use your own method over here.         
+            return b;
+        }
 
     }
 }

@@ -4,10 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Data_Access_layer.Model;
 using RecipeAPI.Common;
 using Business_Access_Layer.Abstract;
-using Azure.Core;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
-using System.ComponentModel;
 
 namespace Authorization.Controllers
 {
@@ -43,8 +40,16 @@ namespace Authorization.Controllers
             }
             else
             {
-                response.Data = new { UserData };
+                Byte[] imageUser = _userService.GetImage();
+                if (imageUser == null)
+                {
+                    response.Status = "fail";
+                    response.Data = new { Title = "Error in find image" };
+                    return StatusCode(401, response);
+                }
                 response.Status = "success";
+                response.Data = new { 
+                    user=UserData, image=File(imageUser, "image/jpeg") };
                 return StatusCode(200, response);
             }
         }

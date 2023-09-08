@@ -24,7 +24,7 @@ namespace Business_Access_Layer.Abstract
         public void changePassword(string oldPassword, string newPassword, out string status, out string title, out int code);
         public Task<int> SaveImage(IFormFile imageFile);
         public void DeleteImage(string imageName);
-
+        public Byte[] GetImage();
 
     }
 }
