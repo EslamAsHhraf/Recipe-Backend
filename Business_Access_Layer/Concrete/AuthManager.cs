@@ -1,5 +1,4 @@
-﻿using Authorization.Interfaces;
-using Business_Access_Layer.Abstract;
+﻿using Business_Access_Layer.Abstract;
 using Data_Access_layer.Model;
 using Authorization.Model;
 using Microsoft.AspNetCore.Http;
@@ -14,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.SqlServer.Server;
+using Data_Access_layer.Interfaces;
 
 namespace Business_Access_Layer.Concrete
 {

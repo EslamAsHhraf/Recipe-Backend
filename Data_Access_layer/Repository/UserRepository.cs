@@ -1,7 +1,8 @@
-﻿using Authorization.Interfaces;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using Data_Access_layer.Data;
 using Data_Access_layer.Model;
+using Data_Access_layer.Interfaces;
+using Nest;
 
 namespace Authorization.Repository
 {
@@ -16,6 +17,11 @@ namespace Authorization.Repository
         public User GetUser(string username)
         {
             var user = _dc.Users.FirstOrDefault(x => x.Username == username);
+            return user;
+        }
+        public User GetUserById(int Id)
+        {
+            var user = _dc.Users.FirstOrDefault(x => x.Id == Id);
             return user;
         }
 

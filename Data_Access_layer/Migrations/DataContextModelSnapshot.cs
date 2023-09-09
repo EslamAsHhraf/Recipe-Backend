@@ -65,27 +65,6 @@ namespace Data_Access_layer.Migrations
                     b.ToTable("Favourites");
                 });
 
-            modelBuilder.Entity("Data_Access_layer.Model.Ingredient", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Ingredients");
-                });
-
             modelBuilder.Entity("Data_Access_layer.Model.Rating", b =>
                 {
                     b.Property<int>("Id")
@@ -158,15 +137,16 @@ namespace Data_Access_layer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("IngredientId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Quantity")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("RecipeId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

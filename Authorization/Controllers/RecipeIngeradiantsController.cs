@@ -7,9 +7,9 @@ namespace RecipeAPI.Controllers
     [Route("api/recipeIngredient")]
     public class RecipeIngeradiantsController : Controller
     {
-        private readonly IRecipeIngeradiants _recipeIngredientsRepository;
+        private readonly IRecipeIngeradiants<RecipeIngredients> _recipeIngredientsRepository;
 
-        public RecipeIngeradiantsController(IRecipeIngeradiants recipeIngredientsRepository)
+        public RecipeIngeradiantsController(IRecipeIngeradiants<RecipeIngredients> recipeIngredientsRepository)
         {
             _recipeIngredientsRepository = recipeIngredientsRepository;
         }

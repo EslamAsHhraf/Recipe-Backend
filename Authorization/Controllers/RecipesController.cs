@@ -9,11 +9,18 @@ namespace RecipeAPI.Controllers
     public class RecipesController : Controller
     {
         private readonly IRepository<Recipe> _recipeRepository;
+        private readonly IRepository<Category> _categoryRepository;
+        private readonly IRecipeIngeradiants<RecipeIngredients> _recipeIngreRepository;
+        private readonly IUserRepository _userRepository;
+
         private Response response = new Response();
 
-        public RecipesController(IRepository<Recipe> recipeRepository)
+        public RecipesController(IRepository<Recipe> recipeRepository, IRecipeIngeradiants<RecipeIngredients> recipeIngreRepository, IUserRepository UserRepository, IRepository<Category> categoryRepository)
         {
             _recipeRepository = recipeRepository;
+            _recipeIngreRepository = recipeIngreRepository;
+            _userRepository = UserRepository;
+            _categoryRepository = categoryRepository;
         }
 
         [HttpGet]
@@ -23,9 +30,13 @@ namespace RecipeAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<Recipe> GetRecipeById(int id)
+        public async Task<Tuple<Recipe, IEnumerable<RecipeIngredients>,User,Category>> GetRecipeById(int id)
         {
-            return await _recipeRepository.GetById(id);
+           var recipe =  await _recipeRepository.GetById(id);
+           var ingredients = await _recipeIngreRepository.GetRecipeIngredients(recipe);
+           var Createdby =  _userRepository.GetUserById(recipe.CreatedBy);
+           var Category = await _categoryRepository.GetById(recipe.Category);
+           return Tuple.Create(recipe, ingredients, Createdby, Category);
         }
 
         [HttpPost]

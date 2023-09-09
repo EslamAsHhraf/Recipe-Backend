@@ -7,9 +7,12 @@ using System.Threading.Tasks;
 
 namespace Data_Access_layer.Interfaces
 {
-    public interface IRecipeIngeradiants
+    public interface IRecipeIngeradiants<T> where T : BaseEntity
     {
         Task<RecipeIngredients> Create(RecipeIngredients recipeIngredients);
         bool Save();
+        public Task<IEnumerable<Recipe>> FilterByIngredients(string searchTerm);
+        public Task<IEnumerable<RecipeIngredients>> GetRecipeIngredients(Recipe Recipe);
+
     }
 }

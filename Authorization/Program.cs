@@ -3,7 +3,6 @@ using Swashbuckle.AspNetCore.Filters;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
-using Authorization.Interfaces;
 using Authorization.Repository;
 using Data_Access_layer.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -26,7 +25,9 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRepository<Recipe>, Repository<Recipe>>();
 builder.Services.AddScoped<IRepository<Category>, Repository<Category>>();
-builder.Services.AddScoped<IRepository<Ingredient>, Repository<Ingredient>>();
+builder.Services.AddScoped<IRepository<RecipeIngredients>, Repository<RecipeIngredients>>();
+
+//builder.Services.AddScoped<IRepository<Ingredient>, Repository<Ingredient>>();
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
@@ -82,7 +83,8 @@ builder.Services.AddAuthentication(x =>
 
 builder.Services.AddScoped<IAuthService, AuthManager>();
 builder.Services.AddScoped<ICategory, CategoryServices>();
-builder.Services.AddScoped<IRecipeIngeradiants, RecipeIngredientsRepository>();
+builder.Services.AddScoped<IRecipeIngeradiants<Recipe>, RecipeIngredientsRepository<Recipe>>();
+builder.Services.AddScoped<IRecipeIngeradiants<RecipeIngredients>, RecipeIngredientsRepository<RecipeIngredients>>();
 
 
 var app = builder.Build();

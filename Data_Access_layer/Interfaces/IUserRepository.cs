@@ -1,6 +1,6 @@
 ﻿using Data_Access_layer.Model;
 
-namespace Authorization.Interfaces
+namespace Data_Access_layer.Interfaces
 {
     public interface IUserRepository
     {
@@ -13,9 +13,9 @@ namespace Authorization.Interfaces
         // save change sin data base
         bool Save();
         bool changePassword(string password, User user);
-        void encryptPassword( string password, out byte[] passwordHash, out byte[] passwordKey);
+        void encryptPassword(string password, out byte[] passwordHash, out byte[] passwordKey);
         public User GetUser(string username);
+        public User GetUserById(int Id);
         public bool updateUser(User user);
-
     }
 }
