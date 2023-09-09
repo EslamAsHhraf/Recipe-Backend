@@ -13,7 +13,6 @@ namespace Business_Access_Layer.Abstract
 {
     public interface IAuthService 
     {
-
         public User Login(UserDto user, out string token);
         public void Register(UserDto user, out string status, out string title);
         public UserData GetMe();

@@ -85,6 +85,8 @@ builder.Services.AddScoped<IAuthService, AuthManager>();
 builder.Services.AddScoped<ICategory, CategoryServices>();
 builder.Services.AddScoped<IRecipeIngeradiants<Recipe>, RecipeIngredientsRepository<Recipe>>();
 builder.Services.AddScoped<IRecipeIngeradiants<RecipeIngredients>, RecipeIngredientsRepository<RecipeIngredients>>();
+builder.Services.AddScoped<IRecipes, RecipesRepository>();
+builder.Services.AddScoped<IRecipesServices, RecipesServices>();
 
 
 var app = builder.Build();
