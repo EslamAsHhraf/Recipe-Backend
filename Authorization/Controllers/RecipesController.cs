@@ -38,13 +38,14 @@ namespace RecipeAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<Tuple<Recipe, IEnumerable<RecipeIngredients>, Tuple<string, int>, Category>> GetRecipeById(int id)
+        public async Task<Tuple<Recipe, IEnumerable<RecipeIngredients>, Tuple<string, int>, Category, Byte[]>> GetRecipeById(int id)
         {
             var recipe = await _recipeRepository.GetById(id);
             var ingredients = await _recipeIngreRepository.GetRecipeIngredients(recipe);
             var Createdby = _userRepository.GetUserById(recipe.CreatedBy);
             var Category = await _categoryRepository.GetById(recipe.Category);
-            return Tuple.Create(recipe, ingredients, Createdby, Category);
+            Byte[] imageUser = _recipesServices.GetImage(recipe.ImageFile);
+            return Tuple.Create(recipe, ingredients, Createdby, Category, imageUser);
         }
 
 
@@ -103,7 +104,7 @@ namespace RecipeAPI.Controllers
                 response.Status = "fail";
                 return StatusCode(401, response);
             }
-            if (imageFile == null)
+            if (imageFile != null)
             {
                 Task<Recipe> result = _recipesServices.SaveImage(imageFile, recipe);
                 Recipe recipeResult = await result;
@@ -114,7 +115,8 @@ namespace RecipeAPI.Controllers
             else
             {
                 recipe.ImageFile = "initial-resipe.jpg";
-                response.Data = new { Data = recipe };
+                var list = _recipeRepository.Create(recipe);
+                response.Data = new { Data = list };
             }
 
 
