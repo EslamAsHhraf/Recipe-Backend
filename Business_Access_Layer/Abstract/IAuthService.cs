@@ -1,4 +1,5 @@
-﻿using Authorization.Model;
+
+using Authorization.Model;
 using Azure.Core;
 using Data_Access_layer.Model;
 using Microsoft.AspNetCore.Http;
@@ -27,3 +28,4 @@ namespace Business_Access_Layer.Abstract
 
     }
 }
+

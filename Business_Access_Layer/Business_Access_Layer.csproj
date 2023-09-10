@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Data_Access_layer\Data_Access_layer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Images\" />
+  </ItemGroup>
+
 </Project>

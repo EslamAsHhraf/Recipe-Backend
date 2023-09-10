@@ -1,4 +1,5 @@
-﻿using Business_Access_Layer.Abstract;
+
+using Business_Access_Layer.Abstract;
 using Data_Access_layer.Interfaces;
 using Data_Access_layer.Model;
 
@@ -21,3 +22,4 @@ namespace Business_Access_Layer.Concrete
         }
     }
 }
+

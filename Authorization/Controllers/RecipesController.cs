@@ -1,4 +1,5 @@
-﻿using Business_Access_Layer.Abstract;
+
+using Business_Access_Layer.Abstract;
 using Data_Access_layer.Interfaces;
 using Data_Access_layer.Model;
 using Microsoft.AspNetCore.Authorization;
@@ -44,15 +45,7 @@ namespace RecipeAPI.Controllers
            return Tuple.Create(recipe, ingredients, Createdby, Category);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> PostRecipe([FromBody] Recipe recipe)
-        {
-            var list = _recipeRepository.Create(recipe);
-            response.Data = new { Data = list };
-            response.Status = "success";
-            return StatusCode(201, response);
-
-        }
+       
 
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRecipe(int id, [FromBody] Recipe recipe)
@@ -110,6 +103,68 @@ namespace RecipeAPI.Controllers
             return StatusCode(200, response);
             
         }
-        
+        [HttpPost, Authorize]
+        public async Task<IActionResult> PostRecipe(IFormFile imageFile, [FromQuery] Recipe recipe)
+        {
+            var UserData = _userService.GetMe();
+            if (UserData == null)
+            {
+                response.Data = new { Title = "Token not found" };
+                response.Status = "fail";
+                return StatusCode(401, response);
+            }
+            if (recipe.CreatedBy != UserData.Id)
+            {
+                response.Data = new { Title = "Unauthorize user" };
+                response.Status = "fail";
+                return StatusCode(401, response);
+            }
+            if (imageFile == null)
+            {
+                Task<Recipe> result = _recipesServices.SaveImage(imageFile, recipe);
+                Recipe recipeResult = await result;
+                var list = _recipeRepository.Create(recipeResult);
+
+                response.Data = new { Data = list };
+            }
+            else
+            {
+                recipe.ImageFile = "initial-resipe.jpg";
+                response.Data = new { Data = recipe };
+            }
+
+
+            response.Status = "success";
+            return StatusCode(201, response);
+
+        }
+
+
+        [HttpGet("getMyRecipes"), Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public ActionResult<Response> GetMyRecipes()
+        {
+            var data = _recipesServices.GetMyRecipes();
+
+            if (data == null)
+            {
+                response.Status = "fail";
+                response.Data = new { Title = "Unauthorized" };
+                return StatusCode(401, response);
+            }
+            response.Status = "success";
+            response.Data = data;
+            return StatusCode(200, response);
+
+        }
+
+
+
+
     }
 }
+
+
+      
+

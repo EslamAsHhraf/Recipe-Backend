@@ -1,4 +1,4 @@
-﻿using Business_Access_Layer.Abstract;
+using Business_Access_Layer.Abstract;
 using Data_Access_layer.Model;
 using Authorization.Model;
 using Microsoft.AspNetCore.Http;
@@ -198,7 +198,8 @@ namespace Business_Access_Layer.Concrete
             var username = userData.Name;
 
             var user =_userRepository.GetUser(username);
-            if(user.ImageFile != string.Empty) {
+            if(user.ImageFile != string.Empty || user.ImageFile!= "initial.png")
+            {
                 DeleteImage(user.ImageFile);
 
             }
@@ -246,3 +247,4 @@ namespace Business_Access_Layer.Concrete
 
     }
 }
+
