@@ -12,7 +12,6 @@ namespace RecipeAPI.Controllers
         private readonly IRepository<RecipeIngredients> _ingredientsRepository;
 
         public RecipeSearchController(IRecipeIngeradiants<Recipe> recipeRepository, IRepository<RecipeIngredients> ingredientsRepository)
-        public RecipeSearchController(IRecipeIngeradiants<Recipe> recipeRepository)
         {
             _recipeRepository = recipeRepository;
             _ingredientsRepository = ingredientsRepository;

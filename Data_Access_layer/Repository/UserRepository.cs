@@ -19,11 +19,7 @@ namespace Authorization.Repository
             var user = _dc.Users.FirstOrDefault(x => x.Username == username);
             return user;
         }
-        public User GetUserById(int Id)
-        {
-            var user = _dc.Users.FirstOrDefault(x => x.Id == Id);
-            return user;
-        }
+       
 
         public User Authenticate(string username, string passwordText)
         {
@@ -102,7 +98,11 @@ namespace Authorization.Repository
             var saved = _dc.SaveChanges();
             return saved > 0 ? true : false;
         }
-      
+        public Tuple<string, int> GetUserById(int Id)
+        {
+            var user = _dc.Users.FirstOrDefault(x => x.Id == Id);
+            return Tuple.Create(user.Username, user.Id);
+        }
     }
 }
 
