@@ -35,7 +35,7 @@ namespace RecipeAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<Tuple<Recipe, IEnumerable<RecipeIngredients>,User,Category>> GetRecipeById(int id)
+        public async Task<Tuple<Recipe, IEnumerable<RecipeIngredients>, Tuple<string,int>, Category>> GetRecipeById(int id)
         {
            var recipe =  await _recipeRepository.GetById(id);
            var ingredients = await _recipeIngreRepository.GetRecipeIngredients(recipe);

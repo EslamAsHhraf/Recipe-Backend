@@ -3,6 +3,7 @@ using Data_Access_layer.Data;
 using Data_Access_layer.Model;
 using Data_Access_layer.Interfaces;
 using Nest;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Authorization.Repository
 {
@@ -19,10 +20,10 @@ namespace Authorization.Repository
             var user = _dc.Users.FirstOrDefault(x => x.Username == username);
             return user;
         }
-        public User GetUserById(int Id)
+        public Tuple<string,int> GetUserById(int Id)
         {
             var user = _dc.Users.FirstOrDefault(x => x.Id == Id);
-            return user;
+            return Tuple.Create(user.Username,user.Id);
         }
 
         public User Authenticate(string username, string passwordText)
