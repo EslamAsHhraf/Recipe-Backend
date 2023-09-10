@@ -5,26 +5,43 @@ using System.Collections.Generic;
 
 namespace RecipeAPI.Controllers
 {
-    [Route("api/recipe/search")]
+    
     public class RecipeSearchController : Controller
     {
-        private readonly IRepository<Recipe> _recipeRepository;
+        private readonly IRecipeIngeradiants<Recipe> _recipeRepository;
+        private readonly IRepository<RecipeIngredients> _ingredientsRepository;
 
-        public RecipeSearchController(IRepository<Recipe> recipeRepository)
+        public RecipeSearchController(IRecipeIngeradiants<Recipe> recipeRepository, IRepository<RecipeIngredients> ingredientsRepository)
         {
             _recipeRepository = recipeRepository;
+            _ingredientsRepository = ingredientsRepository;
         }
+        [Route("api/recipe/search")]
         [HttpGet]
-        public async Task<IEnumerable<Recipe>> SearchRecipeByName(string searchTerm)
+        public async Task<IEnumerable<Recipe>> SearchRecipesByName(string[] searchTerm)
         {
-            return await _recipeRepository.SearchByName(searchTerm);
+            var recipes = new List<Recipe>();
+            foreach (var Term in searchTerm)
+            {
+                recipes.AddRange(await _recipeRepository.FilterByIngredients(Term));
+            }
+            return recipes.Distinct().ToList();
         }
 
-        [HttpPost]
-        public async Task<IEnumerable<Recipe>> FilterByIngredients(List<int> ingredientIds)
+        [Route("api/recipeingredients")]
+        [HttpGet]
+        public IEnumerable<RecipeIngredients> GetMostRepeatedIngredients()
         {
-            return await _recipeRepository.FilterByIngredients(ingredientIds);
+            var ingredients = _ingredientsRepository.GetAll();
+            var mostRepeatedIngredients = ingredients
+              .GroupBy(i => i.Title)
+              .OrderByDescending(g => g.Count()).Select(g => g.First())
+              .Take(10);
+
+
+            return mostRepeatedIngredients;
         }
+
 
     }
 }

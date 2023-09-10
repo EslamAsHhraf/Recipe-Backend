@@ -8,8 +8,16 @@ namespace RecipeAPI.Controllers
     public class RecipesController : Controller
     {
         private readonly IRepository<Recipe> _recipeRepository;
+        private readonly IRepository<Category> _categoryRepository;
+        private readonly IRecipeIngeradiants<RecipeIngredients> _recipeIngreRepository;
+        private readonly IUserRepository _userRepository;
 
-        public RecipesController(IRepository<Recipe> recipeRepository)
+        private Response response = new Response();
+
+        public RecipesController(IRepository<Recipe> recipeRepository
+            , IRecipeIngeradiants<RecipeIngredients> recipeIngreRepository
+            , IUserRepository UserRepository
+            , IRepository<Category> categoryRepository)
         {
             _recipeRepository = recipeRepository;
         }
@@ -21,7 +29,7 @@ namespace RecipeAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<Recipe> GetRecipeById(int id)
+        public async Task<Tuple<Recipe, IEnumerable<RecipeIngredients>,string,Category>> GetRecipeById(int id)
         {
             return await _recipeRepository.GetById(id);
         }
