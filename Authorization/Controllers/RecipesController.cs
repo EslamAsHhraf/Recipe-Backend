@@ -1,4 +1,5 @@
-﻿using Business_Access_Layer.Abstract;
+﻿using Authorization.Model;
+using Business_Access_Layer.Abstract;
 using Data_Access_layer.Interfaces;
 using Data_Access_layer.Model;
 using Microsoft.AspNetCore.Authorization;
@@ -15,17 +16,20 @@ namespace RecipeAPI.Controllers
         private readonly IRecipeIngeradiants<RecipeIngredients> _recipeIngreRepository;
         private readonly IUserRepository _userRepository;
         private readonly IRecipesServices _recipesServices;
+        private IAuthService _userService;
 
         private Response response = new Response();
 
         public RecipesController(IRepository<Recipe> recipeRepository, IRecipeIngeradiants<RecipeIngredients> recipeIngreRepository, 
-            IUserRepository UserRepository, IRepository<Category> categoryRepository, IRecipesServices recipesServices)
+            IUserRepository UserRepository, IRepository<Category> categoryRepository, 
+            IRecipesServices recipesServices, IAuthService userService)
         {
             _recipeRepository = recipeRepository;
             _recipeIngreRepository = recipeIngreRepository;
             _userRepository = UserRepository;
             _categoryRepository = categoryRepository;
             _recipesServices = recipesServices;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -44,11 +48,36 @@ namespace RecipeAPI.Controllers
            return Tuple.Create(recipe, ingredients, Createdby, Category);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> PostRecipe([FromBody] Recipe recipe)
+        [HttpPost,Authorize]
+        public async Task<IActionResult> PostRecipe( IFormFile imageFile, [FromQuery] Recipe recipe)
         {
-            var list = _recipeRepository.Create(recipe);
-            response.Data = new { Data = list };
+            var UserData = _userService.GetMe();
+            if (UserData == null)
+            {
+                response.Data = new { Title = "Token not found" };
+                response.Status = "fail";
+                return StatusCode(401, response);
+            }
+            if (recipe.CreatedBy!= UserData.Id)
+            {
+                response.Data = new { Title = "Unauthorize user" };
+                response.Status = "fail";
+                return StatusCode(401, response);
+            }
+            if (imageFile == null)
+            {
+                response.Status = "fail";
+                response.Data = new { Title = "ImageFile is null" };
+                return StatusCode(404, response); ;
+            }
+            
+            recipe.ImageFile = "";
+        
+            Task<Recipe> result = _recipesServices.SaveImage(imageFile, recipe);
+            Recipe recipeResult = await result;
+            var list = _recipeRepository.Create(recipeResult);
+
+            response.Data = new { Data = result };
             response.Status = "success";
             return StatusCode(201, response);
 
