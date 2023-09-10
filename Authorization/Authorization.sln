@@ -5,9 +5,9 @@ VisualStudioVersion = 17.7.34003.232
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeAPI", "RecipeAPI.csproj", "{4D953703-84F6-4F8B-8ECD-49A29B0CFA62}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business_Access_Layer", "..\Business_Access_Layer\Business_Access_Layer.csproj", "{33494584-F99D-4C07-AA6A-79405C239327}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Business_Access_Layer", "..\Business_Access_Layer\Business_Access_Layer.csproj", "{33494584-F99D-4C07-AA6A-79405C239327}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data_Access_layer", "..\Data_Access_layer\Data_Access_layer.csproj", "{B2765E53-B9EA-4E59-B1AE-F88A091C36FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data_Access_layer", "..\Data_Access_layer\Data_Access_layer.csproj", "{B2765E53-B9EA-4E59-B1AE-F88A091C36FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

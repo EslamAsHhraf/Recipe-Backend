@@ -1,4 +1,4 @@
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using Data_Access_layer.Data;
 using Data_Access_layer.Model;
 using Data_Access_layer.Interfaces;
@@ -19,11 +19,10 @@ namespace Authorization.Repository
             var user = _dc.Users.FirstOrDefault(x => x.Username == username);
             return user;
         }
-        public string GetUserById(int Id)
+        public User GetUserById(int Id)
         {
             var user = _dc.Users.FirstOrDefault(x => x.Id == Id);
-            return user.Username;
-            return user.Username;
+            return user;
         }
 
         public User Authenticate(string username, string passwordText)

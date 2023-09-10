@@ -1,6 +1,9 @@
-﻿using Data_Access_layer.Interfaces;
+﻿using Business_Access_Layer.Abstract;
+using Data_Access_layer.Interfaces;
 using Data_Access_layer.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RecipeAPI.Common;
 
 namespace RecipeAPI.Controllers
 {
@@ -11,15 +14,18 @@ namespace RecipeAPI.Controllers
         private readonly IRepository<Category> _categoryRepository;
         private readonly IRecipeIngeradiants<RecipeIngredients> _recipeIngreRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IRecipesServices _recipesServices;
 
         private Response response = new Response();
 
-        public RecipesController(IRepository<Recipe> recipeRepository
-            , IRecipeIngeradiants<RecipeIngredients> recipeIngreRepository
-            , IUserRepository UserRepository
-            , IRepository<Category> categoryRepository)
+        public RecipesController(IRepository<Recipe> recipeRepository, IRecipeIngeradiants<RecipeIngredients> recipeIngreRepository, 
+            IUserRepository UserRepository, IRepository<Category> categoryRepository, IRecipesServices recipesServices)
         {
             _recipeRepository = recipeRepository;
+            _recipeIngreRepository = recipeIngreRepository;
+            _userRepository = UserRepository;
+            _categoryRepository = categoryRepository;
+            _recipesServices = recipesServices;
         }
 
         [HttpGet]
@@ -29,17 +35,23 @@ namespace RecipeAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<Tuple<Recipe, IEnumerable<RecipeIngredients>,string,Category>> GetRecipeById(int id)
+        public async Task<Tuple<Recipe, IEnumerable<RecipeIngredients>,User,Category>> GetRecipeById(int id)
         {
-            return await _recipeRepository.GetById(id);
+           var recipe =  await _recipeRepository.GetById(id);
+           var ingredients = await _recipeIngreRepository.GetRecipeIngredients(recipe);
+           var Createdby =  _userRepository.GetUserById(recipe.CreatedBy);
+           var Category = await _categoryRepository.GetById(recipe.Category);
+           return Tuple.Create(recipe, ingredients, Createdby, Category);
         }
 
         [HttpPost]
         public async Task<IActionResult> PostRecipe([FromBody] Recipe recipe)
         {
-            await _recipeRepository.Create(recipe);
+            var list = _recipeRepository.Create(recipe);
+            response.Data = new { Data = list };
+            response.Status = "success";
+            return StatusCode(201, response);
 
-            return StatusCode(201);
         }
 
         [HttpPut("{id}")]
@@ -80,6 +92,24 @@ namespace RecipeAPI.Controllers
             return StatusCode(201);
         }
 
-
+        [HttpGet("getMyRecipes"), Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public ActionResult<Response> GetMyRecipes()
+        {
+            var data=_recipesServices.GetMyRecipes();
+           
+            if (data == null)
+            {
+                response.Status = "fail";
+                response.Data = new { Title = "Unauthorized" };
+                return StatusCode(401, response);
+            }
+            response.Status = "success";
+            response.Data = data;
+            return StatusCode(200, response);
+            
+        }
+        
     }
 }

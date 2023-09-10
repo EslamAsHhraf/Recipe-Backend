@@ -18,16 +18,11 @@ namespace RecipeAPI.Controllers
         }
         [Route("api/recipe/search")]
         [HttpGet]
-        public async Task<IEnumerable<Recipe>> SearchRecipesByName(string[] searchTerm)
+        public async Task<IEnumerable<Recipe>> SearchRecipeByName(string searchTerm)
         {
-            var recipes = new List<Recipe>();
-            foreach (var Term in searchTerm)
-            {
-                recipes.AddRange(await _recipeRepository.FilterByIngredients(Term));
-            }
-            return recipes.Distinct().ToList();
+             var recipe = await _recipeRepository.FilterByIngredients(searchTerm);
+            return recipe;
         }
-
         [Route("api/recipeingredients")]
         [HttpGet]
         public IEnumerable<RecipeIngredients> GetMostRepeatedIngredients()
@@ -41,7 +36,6 @@ namespace RecipeAPI.Controllers
 
             return mostRepeatedIngredients;
         }
-
 
     }
 }

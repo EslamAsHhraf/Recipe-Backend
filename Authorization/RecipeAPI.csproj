@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Business_Access_Layer\Business_Access_Layer.csproj" />
-    <ProjectReference Include="..\Data_Access_layer\Data_Access_layer.csproj" />
   </ItemGroup>
 
 </Project>

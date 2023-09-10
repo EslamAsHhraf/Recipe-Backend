@@ -15,7 +15,7 @@ namespace Data_Access_layer.Interfaces
         bool changePassword(string password, User user);
         void encryptPassword(string password, out byte[] passwordHash, out byte[] passwordKey);
         public User GetUser(string username);
-        public string GetUserById(int Id);
+        public User GetUserById(int Id);
         public bool updateUser(User user);
     }
 }
