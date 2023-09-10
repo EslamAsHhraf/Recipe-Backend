@@ -36,7 +36,7 @@ namespace Business_Access_Layer.Concrete
         }
         public async Task<Recipe> SaveImage(IFormFile imageFile, Recipe recipe)
         {
-            if (recipe.ImageFile != string.Empty)
+            if (recipe.ImageFile != string.Empty || recipe.ImageFile != "initial-resipe.jpg")
             {
                 _userService.DeleteImage(recipe.ImageFile);
 

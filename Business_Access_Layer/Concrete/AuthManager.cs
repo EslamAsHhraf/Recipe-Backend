@@ -198,7 +198,8 @@ namespace Business_Access_Layer.Concrete
             var username = userData.Name;
 
             var user =_userRepository.GetUser(username);
-            if(user.ImageFile != string.Empty) {
+            if(user.ImageFile != string.Empty || user.ImageFile!= "initila.png")
+            {
                 DeleteImage(user.ImageFile);
 
             }

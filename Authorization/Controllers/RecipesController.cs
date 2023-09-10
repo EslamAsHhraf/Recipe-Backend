@@ -5,6 +5,7 @@ using Data_Access_layer.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RecipeAPI.Common;
+using System.Collections.Generic;
 
 namespace RecipeAPI.Controllers
 {
@@ -66,18 +67,19 @@ namespace RecipeAPI.Controllers
             }
             if (imageFile == null)
             {
-                response.Status = "fail";
-                response.Data = new { Title = "ImageFile is null" };
-                return StatusCode(404, response); ;
-            }
-            
-            recipe.ImageFile = "";
-        
-            Task<Recipe> result = _recipesServices.SaveImage(imageFile, recipe);
-            Recipe recipeResult = await result;
-            var list = _recipeRepository.Create(recipeResult);
+                Task<Recipe> result = _recipesServices.SaveImage(imageFile, recipe);
+                Recipe recipeResult = await result;
+                var list = _recipeRepository.Create(recipeResult);
 
-            response.Data = new { Data = result };
+                response.Data = new { Data = list };
+            }
+            else
+            {
+                recipe.ImageFile = "initial-resipe.jpg";
+                response.Data = new { Data = recipe };
+            }
+
+           
             response.Status = "success";
             return StatusCode(201, response);
 
