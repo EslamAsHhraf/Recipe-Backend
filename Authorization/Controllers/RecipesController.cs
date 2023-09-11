@@ -49,42 +49,6 @@ namespace RecipeAPI.Controllers
         }
      
       
-        [HttpPost, Authorize]
-        public async Task<IActionResult> PostRecipe(IFormFile imageFile, [FromQuery] Recipe recipe)
-        {
-            var UserData = _userService.GetMe();
-            if (UserData == null)
-            {
-                response.Data = new { Title = "Token not found" };
-                response.Status = "fail";
-                return StatusCode(401, response);
-            }
-            if (recipe.CreatedBy != UserData.Id)
-            {
-                response.Data = new { Title = "Unauthorize user" };
-                response.Status = "fail";
-                return StatusCode(401, response);
-            }
-            if (imageFile != null)
-            {
-                Task<Recipe> result = _recipesServices.SaveImage(imageFile, recipe);
-                Recipe recipeResult = await result;
-                var list = _recipeRepository.Create(recipeResult);
-
-                response.Data = new { Data = list };
-            }
-            else
-            {
-                recipe.ImageFile = "initial-resipe.jpg";
-                var list = _recipeRepository.Create(recipe);
-                response.Data = new { Data = list };
-            }
-
-
-            response.Status = "success";
-            return StatusCode(201, response);
-
-        }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRecipe(int id, [FromBody] Recipe recipe)
