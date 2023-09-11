@@ -36,7 +36,7 @@ namespace Business_Access_Layer.Concrete
         }
         public async Task<Recipe> SaveImage(IFormFile imageFile, Recipe recipe)
         {
-            if (recipe.ImageFile != string.Empty || recipe.ImageFile != "initial-resipe.jpg")
+            if (!(recipe.ImageFile == null || recipe.ImageFile == "initial-resipe.jpg"))
             {
                 _userService.DeleteImage(recipe.ImageFile);
 
@@ -51,6 +51,13 @@ namespace Business_Access_Layer.Concrete
             recipe.ImageFile = imageName;
            
             return recipe;
+        }
+        public Byte[] GetImage(string imageName)
+        {
+            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
+
+            Byte[] b = System.IO.File.ReadAllBytes(imagePath);   // You can use your own method over here.         
+            return b;
         }
     }
 }
