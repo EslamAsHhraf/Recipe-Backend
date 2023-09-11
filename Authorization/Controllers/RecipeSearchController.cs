@@ -18,10 +18,14 @@ namespace RecipeAPI.Controllers
         }
         [Route("api/recipe/search")]
         [HttpGet]
-        public async Task<IEnumerable<Recipe>> SearchRecipeByName(string searchTerm)
+        public async Task<IEnumerable<Recipe>> SearchRecipeByName(string[] searchTerm)
         {
-            var recipe = await _recipeRepository.FilterByIngredients(searchTerm);
-            return recipe;
+            var recipes = new List<Recipe>();
+            foreach (var Term in searchTerm)
+            {
+                recipes.AddRange(await _recipeRepository.FilterByIngredients(Term));
+            }
+            return recipes.Distinct().ToList();
         }
         [Route("api/recipeingredients")]
         [HttpGet]
