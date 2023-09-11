@@ -1,4 +1,4 @@
-
+﻿
 using Business_Access_Layer.Abstract;
 using Business_Access_Layer.Concrete;
 using Data_Access_layer.Interfaces;
@@ -38,7 +38,7 @@ namespace RecipeAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<Tuple<Recipe, IEnumerable<RecipeIngredients>, Tuple<string, int>, Category>> GetRecipeById(int id)
+        public async Task<Tuple<Recipe, IEnumerable<RecipeIngredients>,Tuple<string,int>,Category>> GetRecipeById(int id)
         {
             var recipe = await _recipeRepository.GetById(id);
             var ingredients = await _recipeIngreRepository.GetRecipeIngredients(recipe);
@@ -46,46 +46,7 @@ namespace RecipeAPI.Controllers
             var Category = await _categoryRepository.GetById(recipe.Category);
             return Tuple.Create(recipe, ingredients, Createdby, Category);
         }
-
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutRecipe(int id, [FromBody] Recipe recipe)
-        {
-            var existingRecipe =await _recipeRepository.GetById(id);
-
-            if (existingRecipe == null)
-            {
-                return NotFound();
-            }
-
-            existingRecipe.Title = recipe.Title;
-            existingRecipe.Description = recipe.Description;
-            existingRecipe.Steps = recipe.Steps;
-            existingRecipe.Category = recipe.Category;
-            existingRecipe.CreatedBy = recipe.CreatedBy;
-            existingRecipe.TotalRating = recipe.TotalRating;
-            existingRecipe.ImageFile = recipe.ImageFile;
-
-            _recipeRepository.Update(existingRecipe);
-
-            return StatusCode(201);
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRecipe(int id)
-        {
-            var recipe =await _recipeRepository.GetById(id);
-
-            if (recipe == null)
-            {
-                return NotFound();
-            }
-
-            _recipeRepository.Delete(recipe);
-
-            return StatusCode(201);
-        }
-
+     
       
         [HttpPost, Authorize]
         public async Task<IActionResult> PostRecipe(IFormFile imageFile, [FromQuery] Recipe recipe)
@@ -123,6 +84,47 @@ namespace RecipeAPI.Controllers
 
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutRecipe(int id, [FromBody] Recipe recipe)
+        {
+            var existingRecipe =await _recipeRepository.GetById(id);
+
+            if (existingRecipe == null)
+            {
+                return NotFound();
+            }
+
+            existingRecipe.Title = recipe.Title;
+            existingRecipe.Description = recipe.Description;
+            existingRecipe.Steps = recipe.Steps;
+            existingRecipe.Category = recipe.Category;
+            existingRecipe.CreatedBy = recipe.CreatedBy;
+            existingRecipe.TotalRating = recipe.TotalRating;
+            existingRecipe.ImageFile = recipe.ImageFile;
+
+            _recipeRepository.Update(existingRecipe);
+
+            return StatusCode(201);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteRecipe(int id)
+        {
+            var recipe =await _recipeRepository.GetById(id);
+            var ingredients = await _recipeIngreRepository.GetRecipeIngredients(recipe);
+            if (recipe == null)
+            {
+                return NotFound();
+            }
+            if(ingredients != null)
+            {
+                _recipeIngreRepository.Delete(ingredients);
+            }
+
+            _recipeRepository.Delete(recipe);
+
+            return StatusCode(201);
+        }
 
         [HttpGet("getMyRecipes"), Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]

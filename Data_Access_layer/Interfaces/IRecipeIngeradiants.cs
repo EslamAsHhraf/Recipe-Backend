@@ -12,6 +12,8 @@ namespace Data_Access_layer.Interfaces
     {
         Task<RecipeIngredients> Create(RecipeIngredients recipeIngredients);
         bool Save();
+        public void Delete(IEnumerable<RecipeIngredients> recipeIngredients);
+
         public Task<IEnumerable<Recipe>> FilterByIngredients(string searchTerm);
         public Task<IEnumerable<RecipeIngredients>> GetRecipeIngredients(Recipe Recipe);
 

@@ -5,13 +5,13 @@ using System.Collections.Generic;
 
 namespace RecipeAPI.Controllers
 {
-    
     public class RecipeSearchController : Controller
     {
         private readonly IRecipeIngeradiants<Recipe> _recipeRepository;
         private readonly IRepository<RecipeIngredients> _ingredientsRepository;
 
-        public RecipeSearchController(IRecipeIngeradiants<Recipe> recipeRepository, IRepository<RecipeIngredients> ingredientsRepository)
+        public RecipeSearchController(IRecipeIngeradiants<Recipe> recipeRepository,
+            IRepository<RecipeIngredients> ingredientsRepository)
         {
             _recipeRepository = recipeRepository;
             _ingredientsRepository = ingredientsRepository;
@@ -20,7 +20,7 @@ namespace RecipeAPI.Controllers
         [HttpGet]
         public async Task<IEnumerable<Recipe>> SearchRecipeByName(string searchTerm)
         {
-             var recipe = await _recipeRepository.FilterByIngredients(searchTerm);
+            var recipe = await _recipeRepository.FilterByIngredients(searchTerm);
             return recipe;
         }
         [Route("api/recipeingredients")]

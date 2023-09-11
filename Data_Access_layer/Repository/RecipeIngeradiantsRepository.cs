@@ -35,6 +35,14 @@ namespace Data_Access_layer.Repository
             var saved = _context.SaveChanges();
             return saved > 0 ? true : false;
         }
+        public void Delete(IEnumerable<RecipeIngredients> recipeIngredients)
+        {
+            foreach (RecipeIngredients recipeIngredient in recipeIngredients)
+            {
+                _context.Remove(recipeIngredient);
+            }
+            _context.SaveChanges();
+        }
 
 
         public async Task<IEnumerable<Recipe>> FilterByIngredients(string Text)
