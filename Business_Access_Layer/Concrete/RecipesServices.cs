@@ -114,7 +114,7 @@ namespace Business_Access_Layer.Concrete
         }
         public async Task<Response> Create(Recipe recipe)
         {
-            var Recipe = _recipeRepository.Create(recipe);
+            var Recipe =await _recipeRepository.Create(recipe);
             if (Recipe == null)
             {
                 response.Status = "204";

@@ -129,14 +129,14 @@ namespace RecipeAPI.Controllers
             {
                 Task<Recipe> result = _recipesServices.SaveImage(imageFile, recipe);
                 Recipe recipeResult = await result;
-                var list = _recipesServices.Create(recipeResult);
+                var list = await _recipesServices.Create(recipeResult);
 
                 response.Data = new { Data = list };
             }
             else
             {
                 recipe.ImageFile = "initial-resipe.jpg";
-                var list = _recipesServices.Create(recipe);
+                var list = await _recipesServices.Create(recipe);
                 response.Data = new { Data = list };
             }
 

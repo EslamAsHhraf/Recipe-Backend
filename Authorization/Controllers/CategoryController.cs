@@ -11,7 +11,6 @@ namespace RecipeAPI.Controllers
     public class CategoryController : Controller
     {
         private readonly ICategory _categoryServices;
-        private Response response = new Response();
 
         public CategoryController(ICategory categoryServices)
         {
