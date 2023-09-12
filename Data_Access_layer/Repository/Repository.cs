@@ -11,10 +11,12 @@ namespace Data_Access_layer.Repositories
     {
         private readonly DataContext _context;
         private readonly DbSet<T> entity;
+         private readonly DbSet<Recipe> entityRecipe;
         public Repository(DataContext context)
         {
             _context = context;
             entity = _context.Set<T>();
+            entityRecipe = _context.Set<Recipe>();
         }
 
         public async Task<T> Create(T _object)
@@ -56,9 +58,9 @@ namespace Data_Access_layer.Repositories
 
             return (IEnumerable<T>)filteredEntities;
         }
-        public async Task<IEnumerable<T>> GetMyCreated(int id)
+        public async Task<IEnumerable<Recipe>> GetMyCreated(int id)
         {
-            var result = entity.Where(entity => entity.CreatedBy == id).ToList<T>();
+            var result = entityRecipe.Where(entity => entity.CreatedBy == id).ToList<Recipe>();
 
             return result;
         }

@@ -13,6 +13,9 @@ using Data_Access_layer.Repositories;
 using Data_Access_layer.Interfaces;
 using Microsoft.Extensions.FileProviders;
 using Data_Access_layer.Repository;
+using Business_Access_Layer.Authorization;
+using Microsoft.AspNetCore.Builder;
+using System.Reflection.PortableExecutable;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,8 +91,8 @@ builder.Services.AddScoped<IRecipeIngeradiants<RecipeIngredients>, RecipeIngredi
 builder.Services.AddScoped<IRecipesServices, RecipesServices>();
 builder.Services.AddScoped<IFileServices, FileServices>();
 
-var app = builder.Build();
 
+var app = builder.Build();
 app.Use((ctx, next) =>
 {
     ctx.Response.Headers["Access-Control-Allow-Origin"] = "http://localhost:4200";
@@ -102,11 +105,22 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
 app.UseCors("RecipeOrigins");
 app.UseAuthorization();
+app.UseRouting(); // Enable routing
+app.Map("/api/Auth/me", branchApp =>
+{
+    branchApp.UseMiddleware<ApiKeyMiddleware>();
+    branchApp.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllers();
+    });
+});
 
-app.MapControllers();
+app.UseEndpoints(endpoints => // Configure endpoints
+{
+    endpoints.MapControllers(); // Map controllers as endpoints
+});
 
 app.Run();

@@ -11,7 +11,7 @@ namespace Data_Access_layer.Interfaces
         public IEnumerable<T> GetAll();
         public Task<T> GetById(int Id);
         public Task<IEnumerable<T>> SearchByName(string searchTerm);
-        public Task<IEnumerable<T>> GetMyCreated(int id);
+        public Task<IEnumerable<Recipe>> GetMyCreated(int id);
 
     }
 }

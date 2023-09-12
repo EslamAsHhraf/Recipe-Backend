@@ -23,7 +23,7 @@ namespace Authorization.Repository
         {
             return await entity.FirstOrDefaultAsync(x => x.Username == username);
         }
-
+       
         public async Task<T> GetById(int Id)
         {
             return await entity.FirstOrDefaultAsync(x => x.Id == Id); ;
