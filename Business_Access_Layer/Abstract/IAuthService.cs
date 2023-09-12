@@ -15,6 +15,7 @@ namespace Business_Access_Layer.Abstract
 {
     public interface IAuthService 
     {
+        public Task<User> CheckUser(UserDto request);
         public Task<Response> Login(UserDto user);
         public Task<Response> Register(UserDto user);
         public Task<UserData> GetMe();
@@ -23,9 +24,10 @@ namespace Business_Access_Layer.Abstract
         public string CreateToken(User user);
         public void SetJWT(string encrypterToken);
         public Task<Response> changePassword(string oldPassword, string newPassword);
-        public Task<int> SaveImage(IFormFile imageFile);
-        public void DeleteImage(string imageName);
-        public Byte[] GetImage();
+        public Task<Response> SaveImage(IFormFile imageFile);
+        public Task<Byte[]> GetImage();
+        public void encryptPassword(string password, out byte[] passwordHash, out byte[] passwordKey);
+        public bool MatchPasswordHash(string passwordText, byte[] password, byte[] passwordKey);
 
     }
 }

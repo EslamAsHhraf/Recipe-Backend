@@ -15,13 +15,15 @@ namespace RecipeAPI.Controllers
         private readonly IRepository<Recipe> _recipeRepository;
         private readonly IRepository<Category> _categoryRepository;
         private readonly IRecipeIngeradiants<RecipeIngredients> _recipeIngreRepository;
-        private readonly IUserRepository _userRepository;
+        private readonly IUserRepository<User> _userRepository;
         private readonly IRecipesServices _recipesServices;
+        private readonly IFileServices _fileServices;
+
         private readonly IAuthService _userService;
         private Response response = new Response();
 
-        public RecipesController(IRepository<Recipe> recipeRepository, IRecipeIngeradiants<RecipeIngredients> recipeIngreRepository, 
-            IUserRepository UserRepository, IRepository<Category> categoryRepository, IRecipesServices recipesServices, IAuthService userService)
+        public RecipesController(IRepository<Recipe> recipeRepository, IRecipeIngeradiants<RecipeIngredients> recipeIngreRepository,
+            IUserRepository<User> UserRepository, IRepository<Category> categoryRepository, IRecipesServices recipesServices, IAuthService userService, IFileServices fileServices)
         {
             _recipeRepository = recipeRepository;
             _recipeIngreRepository = recipeIngreRepository;
@@ -29,6 +31,7 @@ namespace RecipeAPI.Controllers
             _categoryRepository = categoryRepository;
             _recipesServices = recipesServices;
             _userService = userService;
+            _fileServices = fileServices;
         }
 
         [HttpGet]
@@ -38,13 +41,13 @@ namespace RecipeAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<Tuple<Recipe, IEnumerable<RecipeIngredients>, Tuple<string, int>, Category, Byte[]>> GetRecipeById(int id)
+        public async Task<Tuple<Recipe, IEnumerable<RecipeIngredients>, User, Category, Byte[]>> GetRecipeById(int id)
         {
             var recipe = await _recipeRepository.GetById(id);
             var ingredients = await _recipeIngreRepository.GetRecipeIngredients(recipe);
-            var Createdby = _userRepository.GetUserById(recipe.CreatedBy);
+            var Createdby = await _userRepository.GetById(recipe.CreatedBy);
             var Category = await _categoryRepository.GetById(recipe.Category);
-            Byte[] imageUser = _recipesServices.GetImage(recipe.ImageFile);
+            Byte[] imageUser = _fileServices.GetImage(recipe.ImageFile);
             return Tuple.Create(recipe, ingredients, Createdby, Category, imageUser);
         }
      

@@ -12,26 +12,27 @@ using System.Security.Cryptography;
 using Data_Access_layer.Interfaces;
 using Business_Access_Layer.Common;
 using Azure.Core;
+using Microsoft.Extensions.Hosting;
 
 namespace Business_Access_Layer.Concrete
 {
     public class AuthManager: IAuthService
     {
         private readonly IUserRepository<User> _userRepository;
+        private readonly IFileServices _fileServices;
         public readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IWebHostEnvironment _hostEnvironment;
+        
         private Response response = new Response();
 
-        public AuthManager(IUserRepository<User> userRepository, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment hostEnvironment)
+        public AuthManager(IUserRepository<User> userRepository, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IFileServices fileServices)
         {
             _userRepository = userRepository;
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
-            _hostEnvironment = hostEnvironment;
-
+            _fileServices = fileServices;
         }
-        public async Task<User> ChekcUser(UserDto request)
+        public async Task<User> CheckUser(UserDto request)
         {
             User user = await _userRepository.GetUser(request.Username);
             if (user == null)
@@ -46,23 +47,23 @@ namespace Business_Access_Layer.Concrete
         }
         public async Task<Response> Login(UserDto request)
         {
-            User user = await ChekcUser(request);
+            User user = await CheckUser(request);
             if (user == null)
             {
-                response.Status = "401";
-                response.Data = new { Title = "Unauthorized" };
+                response.Status = "400";
+                response.Data = new { Title = "Invalid username or password" };
                 return response;
             }
             var token = CreateToken(user);
             response.Data = new { token };
-            response.Status = "success";
+            response.Status = "200";
             return response;
 
         }
         public async Task<Response> Register(UserDto request)
         {
             // check uniqueness of user name
-            if (_userRepository.GetUser(request.Username)!=null)
+            if (await _userRepository.GetUser(request.Username)!=null)
             {
                 response.Status = "400";
                 response.Data = new { Title = "User already exists, please try different user name" };
@@ -80,7 +81,7 @@ namespace Business_Access_Layer.Concrete
             user.Username = request.Username;
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordKey;
-            user.ImageFile = "initial.png";
+            user.ImageFile = "initial.jpg";
             // check if error happened will saving
             if (!await _userRepository.Create(user))
             {
@@ -171,18 +172,18 @@ namespace Business_Access_Layer.Concrete
         }
         public async Task<Response> changePassword(string oldPassword, string newPassword)
         {
-            var userData = GetMe();
+            var userData = await GetMe();
             if (userData == null)
             {
                 response.Status = "401";
                 response.Data = new { Title = "Unauthorized" };
                 return response;
             }
-            var username = userData.Result.Name;
+            var username = userData.Name;
             UserDto request = new UserDto();
             request.Username = username;
             request.Password = oldPassword;
-            User user = await ChekcUser(request);
+            User user = await CheckUser(request);
            
             if (user == null)
             {
@@ -196,11 +197,10 @@ namespace Business_Access_Layer.Concrete
                 return response;
             }
             encryptPassword(newPassword, out byte[] passwordHash, out byte[] passwordKey);
-            User data = new User();
-            data.Username = username;
-            data.PasswordHash = passwordHash;
-            data.PasswordSalt = passwordKey;
-            if (!_userRepository.updateUser(data))
+
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordKey;
+            if (!_userRepository.updateUser(user))
             {
                 response.Status = "400";
                 response.Data = new { Title = "Something went wrong while updating" };
@@ -211,46 +211,41 @@ namespace Business_Access_Layer.Concrete
             return response;
         }
 
-        public async Task<int> SaveImage(IFormFile imageFile)
+        public async Task<Response> SaveImage(IFormFile imageFile)
         {
             var userData = GetMe();
             if (userData == null)
             {
-                return 401;
+                response.Status = "401";
+                response.Data = new { Title = "Unauthorized" };
+                return response;
             }
-            var username = userData.Name;
+            var username = userData.Result.Name;
 
             var user =await _userRepository.GetUser(username);
             if(user.ImageFile != string.Empty || user.ImageFile!= "initial.png")
             {
-                DeleteImage(user.ImageFile);
+                _fileServices.DeleteImage(user.ImageFile);
 
             }
-            string imageName = new String(Path.GetFileNameWithoutExtension(imageFile.FileName).Take(10).ToArray()).Replace(' ', '-');
-            imageName = imageName + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(imageFile.FileName);
-            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
-            using (var fileStream = new FileStream(imagePath, FileMode.Create))
-            {
-                await imageFile.CopyToAsync(fileStream);
-            }
-            user.ImageFile = imageName;
+         
+            user.ImageFile = await _fileServices.SaveImage(imageFile);
             if(!_userRepository.updateUser(user))
             {
-                return 400;
+                response.Status = "400";
+                response.Data = new { Title = "Error while update image" };
+                return response;
 
             }
-            return 201; 
+            response.Status = "400";
+            response.Data = new { Title = "Error while update image" };
+            return response;
         }
 
-        public void DeleteImage(string imageName)
+   
+        public async Task<Byte[]> GetImage()
         {
-            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
-            if (System.IO.File.Exists(imagePath))
-                System.IO.File.Delete(imagePath);
-        }
-        public Byte[] GetImage()
-        {
-            var userData = GetMe();
+            var userData = await  GetMe();
             if (userData == null)
             {
                 return null;
@@ -262,12 +257,10 @@ namespace Business_Access_Layer.Concrete
             {
                 return null;
             }
-            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", user.ImageFile);
-
-            Byte[] b = System.IO.File.ReadAllBytes(imagePath);   // You can use your own method over here.         
+            Byte[] b = _fileServices.GetImage(user.Result.ImageFile);   // You can use your own method over here.         
             return b;
         }
-        private bool MatchPasswordHash(string passwordText, byte[] password, byte[] passwordKey)
+        public bool MatchPasswordHash(string passwordText, byte[] password, byte[] passwordKey)
         {
             using (var hmac = new HMACSHA512(passwordKey))
             {

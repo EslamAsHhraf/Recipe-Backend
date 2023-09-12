@@ -30,9 +30,9 @@ namespace Authorization.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
-        public ActionResult<Response> GetMe()
+        public async  Task<ActionResult<Response>> GetMe()
         {
-            var UserData = _userService.GetMe();
+            var UserData = await _userService.GetMe();
             if (UserData == null)
             {
                 response.Data = new { Title = "Token not found" };
@@ -41,7 +41,7 @@ namespace Authorization.Controllers
             }
             else
             {
-                Byte[] imageUser = _userService.GetImage();
+                Byte[] imageUser =  await _userService.GetImage();
                 if (imageUser == null)
                 {
                     response.Status = "fail";
@@ -146,23 +146,9 @@ namespace Authorization.Controllers
                 response.Data = new { Title = "ImageFile is null" };
                 return StatusCode(404, response); ;
             }
-            Task<int> code =_userService.SaveImage(ImageFile);
-            int result = await code;
-            if (result == 401)
-            {
-                response.Status = "fail";
-                response.Data = new { Title = "Cookies not found" };
-                return StatusCode(404, response); ;
-            }
-            if (result == 400)
-            {
-                response.Status = "fail";
-                response.Data = new { Title = "Error in saving" };
-                return StatusCode(400, response); ;
-            }
-            response.Status = "success";
-            response.Data = new { Title = "Saving new image" };
-            return StatusCode(201, response); ;
+
+            var data = _userService.SaveImage(ImageFile);
+            return StatusCode(Int16.Parse(data.Result.Status), data.Result);
         }
 
     }

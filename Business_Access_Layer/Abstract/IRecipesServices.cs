@@ -14,6 +14,5 @@ namespace Business_Access_Layer.Abstract
     {
         public Task<Response> GetMyRecipes() ;
         public Task<Recipe> SaveImage(IFormFile imageFile, Recipe recipe);
-        public Byte[] GetImage(string imageName);
     }
 }
