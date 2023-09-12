@@ -117,7 +117,22 @@ app.Map("/api/Auth/me", branchApp =>
         endpoints.MapControllers();
     });
 });
-
+app.Map("/api/Auth/ChangePassword", branchApp =>
+{
+    branchApp.UseMiddleware<ApiKeyMiddleware>();
+    branchApp.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllers();
+    });
+});
+app.Map("/api/Auth/UpdateImage", branchApp =>
+{
+    branchApp.UseMiddleware<ApiKeyMiddleware>();
+    branchApp.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllers();
+    });
+});
 app.UseEndpoints(endpoints => // Configure endpoints
 {
     endpoints.MapControllers(); // Map controllers as endpoints

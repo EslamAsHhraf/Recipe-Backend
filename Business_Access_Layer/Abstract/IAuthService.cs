@@ -17,6 +17,8 @@ namespace Business_Access_Layer.Abstract
     {
         public Task<User> CheckUser(UserDto request);
         public Task<Response> Login(UserDto user);
+
+        public Task<Response> WhoLogin();
         public Task<Response> Register(UserDto user);
         public Task<UserData> GetMe();
         bool CheckPasswordStrength(string password);
@@ -25,7 +27,7 @@ namespace Business_Access_Layer.Abstract
         public void SetJWT(string encrypterToken);
         public Task<Response> changePassword(string oldPassword, string newPassword);
         public Task<Response> SaveImage(IFormFile imageFile);
-        public Task<Byte[]> GetImage();
+        public Task<Byte[]> GetImage(string username);
         public void encryptPassword(string password, out byte[] passwordHash, out byte[] passwordKey);
         public bool MatchPasswordHash(string passwordText, byte[] password, byte[] passwordKey);
 

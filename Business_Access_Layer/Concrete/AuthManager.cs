@@ -94,18 +94,39 @@ namespace Business_Access_Layer.Concrete
             return response;
 
         }
-
+        public async Task<Response> WhoLogin()
+        {
+            var UserData = await GetMe();
+            if (UserData == null)
+            {
+                response.Data = new { Title = "Token not found" };
+                response.Status = "401";
+                return response;
+            }
+            else
+            {
+                Byte[] imageUser = await GetImage(UserData.Name);
+                if (imageUser == null)
+                {
+                    response.Status = "401";
+                    response.Data = new { Title = "Error in find image" };
+                    return response;
+                }
+                response.Status = "200";
+                response.Data = new
+                {
+                    user = UserData,
+                    image = imageUser
+                };
+                return response;
+            }
+        }
         public async Task<UserData> GetMe()
         {
             var result = string.Empty;
             if (_httpContextAccessor.HttpContext != null)
             {
                 result = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Name);
-                if ( await _userRepository.GetUser(result) ==null)
-                {
-                    return null;
-
-                }
 
             }
             User user = await _userRepository.GetUser(result);
@@ -173,12 +194,6 @@ namespace Business_Access_Layer.Concrete
         public async Task<Response> changePassword(string oldPassword, string newPassword)
         {
             var userData = await GetMe();
-            if (userData == null)
-            {
-                response.Status = "401";
-                response.Data = new { Title = "Unauthorized" };
-                return response;
-            }
             var username = userData.Name;
             UserDto request = new UserDto();
             request.Username = username;
@@ -214,12 +229,7 @@ namespace Business_Access_Layer.Concrete
         public async Task<Response> SaveImage(IFormFile imageFile)
         {
             var userData = GetMe();
-            if (userData == null)
-            {
-                response.Status = "401";
-                response.Data = new { Title = "Unauthorized" };
-                return response;
-            }
+           
             var username = userData.Result.Name;
 
             var user =await _userRepository.GetUser(username);
@@ -237,21 +247,14 @@ namespace Business_Access_Layer.Concrete
                 return response;
 
             }
-            response.Status = "400";
-            response.Data = new { Title = "Error while update image" };
+            response.Status = "200";
+            response.Data = new { Title = "Success Update image" };
             return response;
         }
 
    
-        public async Task<Byte[]> GetImage()
+        public async Task<Byte[]> GetImage(string username)
         {
-            var userData = await  GetMe();
-            if (userData == null)
-            {
-                return null;
-            }
-            var username = userData.Name;
-
             var user = _userRepository.GetUser(username);
             if (user == null)
             {

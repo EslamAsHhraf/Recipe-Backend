@@ -7,6 +7,7 @@ using Business_Access_Layer.Abstract;
 using System.ComponentModel.DataAnnotations;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Business_Access_Layer.Authorization;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Authorization.Controllers
 {
@@ -28,33 +29,14 @@ namespace Authorization.Controllers
         }
 
         [HttpGet("me")]
-        //[ServiceFilter(typeof(ApiKeyAuthorizationFilter))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
         public async  Task<ActionResult<Response>> GetMe()
         {
-            var UserData = await _userService.GetMe();
-            if (UserData == null)
-            {
-                response.Data = new { Title = "Token not found" };
-                response.Status = "fail";
-                return StatusCode(401, response);
-            }
-            else
-            {
-                Byte[] imageUser =  await _userService.GetImage();
-                if (imageUser == null)
-                {
-                    response.Status = "fail";
-                    response.Data = new { Title = "Error in find image" };
-                    return StatusCode(401, response);
-                }
-                response.Status = "success";
-                response.Data = new { 
-                    user=UserData, image=File(imageUser, "image/jpeg") };
-                return StatusCode(200, response);
-            }
+            var data =  await _userService.WhoLogin();
+            return StatusCode(Int16.Parse(data.Status), data);
+
         }
 
         [HttpGet("logout")]
@@ -96,8 +78,6 @@ namespace Authorization.Controllers
 
             var data = _userService.Register(request);
             return StatusCode(Int16.Parse(data.Result.Status), data.Result);
-            
-
     
         }
 
@@ -144,7 +124,7 @@ namespace Authorization.Controllers
         {
             if (ImageFile == null)
             {
-                response.Status = "fail";
+                response.Status = "404";
                 response.Data = new { Title = "ImageFile is null" };
                 return StatusCode(404, response); ;
             }
