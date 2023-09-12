@@ -10,6 +10,8 @@ namespace Business_Access_Layer.Abstract
     public interface ICategory
     {
         public IEnumerable<Category> GetCategories();
+        public Task<Category> GetCategoryById(int Id);
+
 
     }
 }

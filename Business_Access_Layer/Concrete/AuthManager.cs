@@ -244,7 +244,11 @@ namespace Business_Access_Layer.Concrete
             Byte[] b = System.IO.File.ReadAllBytes(imagePath);   // You can use your own method over here.         
             return b;
         }
-
+        public Tuple<string, int> GetUserById(int Id)
+        {
+             var user = _userRepository.GetUserById(Id);
+             return user;
+        }
     }
 }
 

@@ -15,15 +15,18 @@ namespace Business_Access_Layer.Concrete
 {
     public class RecipesServices: IRecipesServices
     {
+        private readonly IRepository<Recipe> _recipeRepository;
         private readonly IRecipes _recipesRepository;
         private IAuthService _userService;
         private readonly IWebHostEnvironment _hostEnvironment;
 
-        public RecipesServices(IRecipes recipesRepository, IAuthService userService, IWebHostEnvironment hostEnvironment)
+        public RecipesServices(IRecipes recipesRepository, IAuthService userService
+            , IWebHostEnvironment hostEnvironment, IRepository<Recipe> recipeRepository)
         {
             _recipesRepository = recipesRepository;
             _userService= userService;
             _hostEnvironment = hostEnvironment;
+            _recipeRepository = recipeRepository;
         }
         public IEnumerable<Recipe> GetMyRecipes()
         {
@@ -59,5 +62,28 @@ namespace Business_Access_Layer.Concrete
             Byte[] b = System.IO.File.ReadAllBytes(imagePath);   // You can use your own method over here.         
             return b;
         }
+
+        public async Task<IEnumerable<Recipe>> GetAllRecipes()
+        {
+            return _recipeRepository.GetAll();
+        }
+        public async Task<Recipe> GetRecipeById(int Id)
+        {
+            return await _recipeRepository.GetById(Id);
+        }
+        public async Task<Recipe> Update(Recipe recipe)
+        {
+            return await _recipeRepository.Update(recipe);
+        }
+        public void Delete(Recipe recipe)
+        {
+            _recipeRepository.Delete(recipe);
+        }
+        public async Task<Recipe> Create(Recipe recipe)
+        {
+            return await _recipeRepository.Create(recipe);
+        }
+
+
     }
 }

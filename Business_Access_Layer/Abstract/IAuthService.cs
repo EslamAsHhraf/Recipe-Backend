@@ -25,6 +25,8 @@ namespace Business_Access_Layer.Abstract
         public Task<int> SaveImage(IFormFile imageFile);
         public void DeleteImage(string imageName);
         public Byte[] GetImage();
+        public Tuple<string, int> GetUserById(int Id);
+
 
     }
 }

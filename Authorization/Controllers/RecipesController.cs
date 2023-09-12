@@ -1,7 +1,4 @@
-﻿
-using Business_Access_Layer.Abstract;
-using Business_Access_Layer.Concrete;
-using Data_Access_layer.Interfaces;
+﻿using Business_Access_Layer.Abstract;
 using Data_Access_layer.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,38 +9,36 @@ namespace RecipeAPI.Controllers
     [Route("api/recipe")]
     public class RecipesController : Controller
     {
-        private readonly IRepository<Recipe> _recipeRepository;
-        private readonly IRepository<Category> _categoryRepository;
-        private readonly IRecipeIngeradiants<RecipeIngredients> _recipeIngreRepository;
-        private readonly IUserRepository _userRepository;
+        private readonly IRecipeIngredientsService _RecipeIngredientsServices;
+        private readonly ICategory _categoryServices;
         private readonly IRecipesServices _recipesServices;
         private readonly IAuthService _userService;
         private Response response = new Response();
 
-        public RecipesController(IRepository<Recipe> recipeRepository, IRecipeIngeradiants<RecipeIngredients> recipeIngreRepository, 
-            IUserRepository UserRepository, IRepository<Category> categoryRepository, IRecipesServices recipesServices, IAuthService userService)
+        public RecipesController(
+            ICategory categoryServices
+            , IRecipesServices recipesServices, IAuthService userService
+            , IRecipeIngredientsService RecipeIngredientsServices)
         {
-            _recipeRepository = recipeRepository;
-            _recipeIngreRepository = recipeIngreRepository;
-            _userRepository = UserRepository;
-            _categoryRepository = categoryRepository;
             _recipesServices = recipesServices;
             _userService = userService;
+            _categoryServices = categoryServices;
+            _RecipeIngredientsServices = RecipeIngredientsServices;
         }
 
         [HttpGet]
-        public IEnumerable<Recipe> GetAllRecipes()
+        public async Task<IEnumerable<Recipe>> GetAllRecipes()
         {
-            return _recipeRepository.GetAll();
+            return await _recipesServices.GetAllRecipes();
         }
 
         [HttpGet("{id}")]
         public async Task<Tuple<Recipe, IEnumerable<RecipeIngredients>, Tuple<string, int>, Category, Byte[]>> GetRecipeById(int id)
         {
-            var recipe = await _recipeRepository.GetById(id);
-            var ingredients = await _recipeIngreRepository.GetRecipeIngredients(recipe);
-            var Createdby = _userRepository.GetUserById(recipe.CreatedBy);
-            var Category = await _categoryRepository.GetById(recipe.Category);
+            var recipe = await _recipesServices.GetRecipeById(id);
+            var ingredients = await _RecipeIngredientsServices.GetRecipeIngredients(recipe);
+            var Createdby = _userService.GetUserById(recipe.CreatedBy);
+            var Category = await _categoryServices.GetCategoryById(recipe.Category);
             Byte[] imageUser = _recipesServices.GetImage(recipe.ImageFile);
             return Tuple.Create(recipe, ingredients, Createdby, Category, imageUser);
         }
@@ -53,7 +48,7 @@ namespace RecipeAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRecipe(int id, [FromBody] Recipe recipe)
         {
-            var existingRecipe =await _recipeRepository.GetById(id);
+            var existingRecipe =await _recipesServices.GetRecipeById(id);
 
             if (existingRecipe == null)
             {
@@ -68,7 +63,7 @@ namespace RecipeAPI.Controllers
             existingRecipe.TotalRating = recipe.TotalRating;
             existingRecipe.ImageFile = recipe.ImageFile;
 
-            _recipeRepository.Update(existingRecipe);
+            _recipesServices.Update(existingRecipe);
 
             return StatusCode(201);
         }
@@ -76,18 +71,18 @@ namespace RecipeAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRecipe(int id)
         {
-            var recipe =await _recipeRepository.GetById(id);
-            var ingredients = await _recipeIngreRepository.GetRecipeIngredients(recipe);
+            var recipe =await _recipesServices.GetRecipeById(id);
+            var ingredients = await _RecipeIngredientsServices.GetRecipeIngredients(recipe);
             if (recipe == null)
             {
                 return NotFound();
             }
             if(ingredients != null)
             {
-                _recipeIngreRepository.Delete(ingredients);
+                _RecipeIngredientsServices.DeleteRecipeIngredients(ingredients);
             }
 
-            _recipeRepository.Delete(recipe);
+            _recipesServices.Delete(recipe);
 
             return StatusCode(201);
         }
@@ -113,14 +108,14 @@ namespace RecipeAPI.Controllers
             {
                 Task<Recipe> result = _recipesServices.SaveImage(imageFile, recipe);
                 Recipe recipeResult = await result;
-                var list = _recipeRepository.Create(recipeResult);
+                var list = _recipesServices.Create(recipeResult);
 
                 response.Data = new { Data = list };
             }
             else
             {
                 recipe.ImageFile = "initial-resipe.jpg";
-                var list = _recipeRepository.Create(recipe);
+                var list = _recipesServices.Create(recipe);
                 response.Data = new { Data = list };
             }
 

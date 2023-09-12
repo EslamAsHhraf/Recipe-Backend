@@ -41,10 +41,11 @@ namespace Data_Access_layer.Repositories
             return await entity.FirstOrDefaultAsync(x => x.Id == Id);
         }
 
-        public void Update(T _object)
+        public async Task<T> Update(T _object)
         {
             _context.Update(_object);
             _context.SaveChanges();
+            return _object;
         }
 
 

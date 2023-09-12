@@ -1,4 +1,4 @@
-﻿using Data_Access_layer.Interfaces;
+﻿using Business_Access_Layer.Abstract;
 using Data_Access_layer.Model;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -7,14 +7,12 @@ namespace RecipeAPI.Controllers
 {
     public class RecipeSearchController : Controller
     {
-        private readonly IRecipeIngeradiants<Recipe> _recipeRepository;
-        private readonly IRepository<RecipeIngredients> _ingredientsRepository;
+        private readonly IRecipeIngredientsService _ingredientsService;
 
-        public RecipeSearchController(IRecipeIngeradiants<Recipe> recipeRepository,
-            IRepository<RecipeIngredients> ingredientsRepository)
+
+        public RecipeSearchController(IRecipeIngredientsService ingredientsService)
         {
-            _recipeRepository = recipeRepository;
-            _ingredientsRepository = ingredientsRepository;
+            _ingredientsService = ingredientsService;
         }
         [Route("api/recipe/search")]
         [HttpGet]
@@ -23,22 +21,16 @@ namespace RecipeAPI.Controllers
             var recipes = new List<Recipe>();
             foreach (var Term in searchTerm)
             {
-                recipes.AddRange(await _recipeRepository.FilterByIngredients(Term));
+                recipes.AddRange(await _ingredientsService.FilterByIngredients(Term));
             }
             return recipes.Distinct().ToList();
         }
         [Route("api/recipeingredients")]
         [HttpGet]
-        public IEnumerable<RecipeIngredients> GetMostRepeatedIngredients()
+        public async Task<IEnumerable<RecipeIngredients>> GetMostRepeatedIngredients()
         {
-            var ingredients = _ingredientsRepository.GetAll();
-            var mostRepeatedIngredients = ingredients
-              .GroupBy(i => i.Title)
-              .OrderByDescending(g => g.Count()).Select(g => g.First())
-              .Take(10);
-
-
-            return mostRepeatedIngredients;
+            var ingredients =await _ingredientsService.GetAllIngredients();
+            return ingredients;
         }
 
     }
