@@ -138,15 +138,7 @@ namespace RecipeAPI.Controllers
         {
             var data = _recipesServices.GetMyRecipes();
 
-            if (data == null)
-            {
-                response.Status = "fail";
-                response.Data = new { Title = "Unauthorized" };
-                return StatusCode(401, response);
-            }
-            response.Status = "success";
-            response.Data = data;
-            return StatusCode(200, response);
+            return StatusCode(Int16.Parse(data.Result.Status), data.Result);
 
         }
 

@@ -56,7 +56,12 @@ namespace Data_Access_layer.Repositories
 
             return (IEnumerable<T>)filteredEntities;
         }
+        public async Task<IEnumerable<T>> GetMyCreated(int id)
+        {
+            var result = entity.Where(entity => entity.CreatedBy == id).ToList<T>();
 
+            return result;
+        }
 
     }
 }

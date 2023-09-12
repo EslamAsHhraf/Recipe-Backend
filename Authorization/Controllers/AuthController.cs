@@ -5,6 +5,7 @@ using Data_Access_layer.Model;
 using RecipeAPI.Common;
 using Business_Access_Layer.Abstract;
 using System.ComponentModel.DataAnnotations;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Authorization.Controllers
 {
@@ -90,21 +91,12 @@ namespace Authorization.Controllers
                 response.Data = new { Title = "User Name and Password are required" };
                 return StatusCode(400, response);
             }
-            string status = "", title = "";
-            _userService.Register(request, out status, out  title);
-            response.Status = status;
-            response.Data = new { Title = title };
-            if (status == "success")
-            {
-                return StatusCode(201, response);
-            }
-            else
-            {
-                return StatusCode(400, response);
 
-            }
-
+            var data = _userService.Register(request);
+            return StatusCode(Int16.Parse(data.Result.Status), data.Result);
             
+
+    
         }
 
 
@@ -121,21 +113,9 @@ namespace Authorization.Controllers
                 response.Data = new { Title = "User Name and Password are required" };
                 return StatusCode(400, response);
             }
-            // get user
-            //var user = _userRepository.Authenticate(request.Username, request.Password);
-            string token = "";
-            var user = _userService.Login(request,out token);
-
-            if (user == null )
-            {
-                response.Status = "fail";
-                response.Data = new { Title = "Invalid user name or password" };
-                return StatusCode(404, response);;
-            }
-            // create token
-            response.Data = new { token };
-            response.Status = "success";
-            return StatusCode(200, response);
+            // check for user
+            var data = _userService.Login(request);
+            return StatusCode(Int16.Parse(data.Result.Status), data.Result);
         }
 
         [HttpPut("ChangePassword")]
@@ -145,16 +125,13 @@ namespace Authorization.Controllers
         public ActionResult<Response> ChangePassword([Required] string oldPassword, [Required] string newPassword )
         {
             if (!ModelState.IsValid)
-        {
+            {
             // Handle validation errors
             return BadRequest(ModelState);
-        }
-            int code = 0;
-            string status = "", title = "";
-            _userService.changePassword(oldPassword, newPassword, out status, out title, out code);
-            response.Status = status;
-            response.Data = new { Title = title };
-            return StatusCode(code, response);
+            }
+
+            var data = _userService.changePassword(oldPassword, newPassword);
+            return StatusCode(Int16.Parse(data.Result.Status), data.Result);
         }
 
         [HttpPut("UpdateImage")]

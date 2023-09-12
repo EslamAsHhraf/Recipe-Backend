@@ -7,24 +7,23 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Azure.Core;
-using Nest;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.SqlServer.Server;
+using System.Security.Cryptography;
 using Data_Access_layer.Interfaces;
+using Business_Access_Layer.Common;
+using Azure.Core;
 
 namespace Business_Access_Layer.Concrete
 {
     public class AuthManager: IAuthService
     {
-        private IUserRepository _userRepository;
+        private readonly IUserRepository<User> _userRepository;
         public readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWebHostEnvironment _hostEnvironment;
+        private Response response = new Response();
 
-        public AuthManager(IUserRepository userRepository, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment hostEnvironment)
+        public AuthManager(IUserRepository<User> userRepository, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment hostEnvironment)
         {
             _userRepository = userRepository;
             _configuration = configuration;
@@ -32,61 +31,83 @@ namespace Business_Access_Layer.Concrete
             _hostEnvironment = hostEnvironment;
 
         }
-        public User Login(UserDto request, out string token)
+        public async Task<User> ChekcUser(UserDto request)
         {
-            token = "";
-            var user = _userRepository.Authenticate(request.Username, request.Password);
+            User user = await _userRepository.GetUser(request.Username);
             if (user == null)
             {
                 return null;
             }
-            token=CreateToken(user);
+            if (!MatchPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+            {
+                return null;
+            }
             return user;
+        }
+        public async Task<Response> Login(UserDto request)
+        {
+            User user = await ChekcUser(request);
+            if (user == null)
+            {
+                response.Status = "401";
+                response.Data = new { Title = "Unauthorized" };
+                return response;
+            }
+            var token = CreateToken(user);
+            response.Data = new { token };
+            response.Status = "success";
+            return response;
 
         }
-        public void Register(UserDto request, out string status, out string title)
+        public async Task<Response> Register(UserDto request)
         {
             // check uniqueness of user name
-            if (_userRepository.UserAlreadyExists(request.Username))
+            if (_userRepository.GetUser(request.Username)!=null)
             {
-                status = "fail";
-                title = "User already exists, please try different user name";
-                return;
+                response.Status = "400";
+                response.Data = new { Title = "User already exists, please try different user name" };
+                return response;
             }
 
             if (!CheckPasswordStrength(request.Password))
             {
-                status = "fail";
-                title = "Password must include uppercase and lowercase and digit and special char and min length 8";
-                return;
+                response.Status = "400";
+                response.Data = new { Title = "Password must include uppercase and lowercase and digit and special char and min length 8" };
+                return response;
             }
-
+            encryptPassword(request.Password, out byte[] passwordHash, out byte[] passwordKey);
+            User user = new User();
+            user.Username = request.Username;
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordKey;
+            user.ImageFile = "initial.png";
             // check if error happened will saving
-            if (!_userRepository.Register(request.Username, request.Password))
+            if (!await _userRepository.Create(user))
             {
-                status = "fail";
-                title = "Something went wrong while saving";
-                return;
+                response.Status = "400";
+                response.Data = new { Title = "Something went wrong while saving" };
+                return response;
             }
-            status = "success";
-            title = "User created";
+            response.Status = "201";
+            response.Data = new { Title = "User created" };
+            return response;
 
         }
 
-        public UserData GetMe()
+        public async Task<UserData> GetMe()
         {
             var result = string.Empty;
             if (_httpContextAccessor.HttpContext != null)
             {
                 result = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Name);
-                if (!_userRepository.UserAlreadyExists(result))
+                if ( await _userRepository.GetUser(result) ==null)
                 {
                     return null;
 
                 }
 
             }
-            User user = _userRepository.GetUser(result);
+            User user = await _userRepository.GetUser(result);
             UserData data = new UserData();
             data.Name = user.Username;
             data.Id = user.Id;
@@ -148,44 +169,46 @@ namespace Business_Access_Layer.Concrete
                       SameSite = SameSiteMode.None
                   });
         }
-        public void changePassword(string oldPassword, string newPassword, out string status, out string title,out int code)
+        public async Task<Response> changePassword(string oldPassword, string newPassword)
         {
             var userData = GetMe();
             if (userData == null)
             {
-                status = "fail";
-                title = "Token not found";
-                code = 401;
-                return;
+                response.Status = "401";
+                response.Data = new { Title = "Unauthorized" };
+                return response;
             }
-            var username = userData.Name;
-
-            var user = _userRepository.Authenticate(username, oldPassword);
+            var username = userData.Result.Name;
+            UserDto request = new UserDto();
+            request.Username = username;
+            request.Password = oldPassword;
+            User user = await ChekcUser(request);
+           
             if (user == null)
             {
-                status = "fail";
-                title = "Wrong Password";
-                code = 400;
-                return;
+                response.Status = "400";
+                response.Data = new { Title = "Wrong Password" };
             }
             if (!CheckPasswordStrength(newPassword))
             {
-                status = "fail";
-                title = "Password must include uppercase and lowercase and digit and special char and min length 8";
-                code = 400;
-                return;
+                response.Status = "400";
+                response.Data = new { Title = "Password must include uppercase and lowercase and digit and special char and min length 8" };
+                return response;
             }
-            if (!_userRepository.changePassword( newPassword, user))
+            encryptPassword(newPassword, out byte[] passwordHash, out byte[] passwordKey);
+            User data = new User();
+            data.Username = username;
+            data.PasswordHash = passwordHash;
+            data.PasswordSalt = passwordKey;
+            if (!_userRepository.updateUser(data))
             {
-                status = "fail";
-                title = "Something went wrong while saving";
-                code = 400;
-                return;
+                response.Status = "400";
+                response.Data = new { Title = "Something went wrong while updating" };
+                return response;
             }
-            status = "success";
-            title = "Password change successfully";
-            code = 200;
-            return;
+            response.Status = "200";
+            response.Data = new { Title = "Password change successfully" };
+            return response;
         }
 
         public async Task<int> SaveImage(IFormFile imageFile)
@@ -197,7 +220,7 @@ namespace Business_Access_Layer.Concrete
             }
             var username = userData.Name;
 
-            var user =_userRepository.GetUser(username);
+            var user =await _userRepository.GetUser(username);
             if(user.ImageFile != string.Empty || user.ImageFile!= "initial.png")
             {
                 DeleteImage(user.ImageFile);
@@ -243,6 +266,33 @@ namespace Business_Access_Layer.Concrete
 
             Byte[] b = System.IO.File.ReadAllBytes(imagePath);   // You can use your own method over here.         
             return b;
+        }
+        private bool MatchPasswordHash(string passwordText, byte[] password, byte[] passwordKey)
+        {
+            using (var hmac = new HMACSHA512(passwordKey))
+            {
+                var passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(passwordText));
+                // check equality password
+                for (int i = 0; i < passwordHash.Length; i++)
+                {
+                    if (passwordHash[i] != password[i])
+                        return false;
+                }
+
+                return true;
+            }
+        }
+        public void encryptPassword(string password, out byte[] passwordHash, out byte[] passwordKey)
+        {
+            // get passwordKey
+            using (var hmac = new HMACSHA512())
+            {
+                passwordKey = hmac.Key;
+                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+
+            }
+
+
         }
 
     }

@@ -2,20 +2,22 @@
 
 namespace Data_Access_layer.Interfaces
 {
-    public interface IUserRepository
+    public interface IUserRepository<T> where T : User
     {
         // To check login (username and password)
-        User Authenticate(string username, string password);
+        //T Authenticate(string username, string password);
         // To check Register (username and password)
-        bool Register(string username, string password);
+        public Task<bool> Create(T _object);
+
+        //bool Register(string username, string password);
         // check if user exists
-        bool UserAlreadyExists(string username);
+        //bool UserAlreadyExists(string username);
         // save change sin data base
         bool Save();
-        bool changePassword(string password, User user);
-        void encryptPassword(string password, out byte[] passwordHash, out byte[] passwordKey);
-        public User GetUser(string username);
-        public Tuple<string, int> GetUserById(int Id);
-        public bool updateUser(User user);
+        //bool changePassword(string password, T user);
+        //void encryptPassword(string password, out byte[] passwordHash, out byte[] passwordKey);
+        public Task<T> GetUser(string username);
+        public Task<T> GetById(int Id);
+        public bool updateUser(T user);
     }
 }

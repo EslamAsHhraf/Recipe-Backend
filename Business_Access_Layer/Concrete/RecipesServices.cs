@@ -1,38 +1,39 @@
-using Authorization.Repository;
 using Business_Access_Layer.Abstract;
 using Data_Access_layer.Interfaces;
 using Data_Access_layer.Model;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Business_Access_Layer.Common;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Business_Access_Layer.Concrete
 {
     public class RecipesServices: IRecipesServices
     {
-        private readonly IRecipes _recipesRepository;
+        private readonly IRepository<Recipe> _recipesRepository;
         private IAuthService _userService;
         private readonly IWebHostEnvironment _hostEnvironment;
+        private Response response = new Response();
 
-        public RecipesServices(IRecipes recipesRepository, IAuthService userService, IWebHostEnvironment hostEnvironment)
+        public RecipesServices(IRepository<Recipe> recipesRepository, IAuthService userService, IWebHostEnvironment hostEnvironment)
         {
             _recipesRepository = recipesRepository;
             _userService= userService;
             _hostEnvironment = hostEnvironment;
         }
-        public IEnumerable<Recipe> GetMyRecipes()
+        public async Task<Response> GetMyRecipes()
         {
             UserData data=_userService.GetMe();
             if(data==null)
             {
-                return null;
+                response.Status = "401";
+                response.Data = new { Title = "Unauthorized" };
+                return response;
             }
-            return _recipesRepository.GetMyRecipes(data.Id);
+            var myRecipe = await _recipesRepository.GetMyCreated(data.Id);
+            response.Status = "200";
+            response.Data = myRecipe;
+            return response;
         }
         public async Task<Recipe> SaveImage(IFormFile imageFile, Recipe recipe)
         {
