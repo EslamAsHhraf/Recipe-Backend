@@ -1,4 +1,5 @@
-﻿using Data_Access_layer.Model;
+﻿using Business_Access_Layer.Common;
+using Data_Access_layer.Model;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -10,14 +11,14 @@ namespace Business_Access_Layer.Abstract
 {
     public interface IRecipesServices
     {
-        public IEnumerable<Recipe> GetMyRecipes() ;
+        public IEnumerable<Recipe> GetMyRecipes();
         public Task<Recipe> SaveImage(IFormFile imageFile, Recipe recipe);
         public Byte[] GetImage(string imageName);
-        public Task<IEnumerable<Recipe>> GetAllRecipes();
-        public Task<Recipe> GetRecipeById(int Id);
-        public Task<Recipe> Update(Recipe recipe);
-        public void Delete(Recipe recipe);
-        public Task<Recipe> Create(Recipe recipe);
+        public Task<Response> GetAllRecipes();
+        public Task<Response> GetRecipeById(int Id);
+        public Task<Response> Update(Recipe recipe);
+        public Task<Response> Delete(Recipe recipe);
+        public Task<Response> Create(Recipe recipe);
 
     }
 }

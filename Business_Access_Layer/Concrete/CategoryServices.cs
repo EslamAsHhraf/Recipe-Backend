@@ -3,7 +3,8 @@ using Business_Access_Layer.Abstract;
 using Data_Access_layer.Interfaces;
 using Data_Access_layer.Model;
 using Data_Access_layer.Repository;
-
+using Business_Access_Layer.Common;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Business_Access_Layer.Concrete
 {
@@ -11,19 +12,38 @@ namespace Business_Access_Layer.Concrete
     public class CategoryServices : ICategory
     {
         private readonly IRepository<Category> _categoryRepository;
+        private Response response = new Response();
 
         public CategoryServices(IRepository<Category> categoryRepository)
         {
             _categoryRepository = categoryRepository;
 
         }
-        public IEnumerable<Category> GetCategories()
+        public async Task<Response> GetCategories()
         {
-            return _categoryRepository.GetAll();
+            var Categories= _categoryRepository.GetAll();
+            if (Categories == null)
+            {
+                response.Status = "204";
+                response.Data = new { Title = "No Content" };
+                return response;
+            }
+            response.Status = "200";
+            response.Data = Categories;
+            return response;
         }
-        public async Task<Category> GetCategoryById(int Id)
+        public async Task<Response> GetCategoryById(int Id)
         {
-            return await _categoryRepository.GetById(Id);
+            var category = await _categoryRepository.GetById(Id);
+            if (category == null)
+            {
+                response.Status = "404";
+                response.Data = new { Title = "Not Found" };
+                return response;
+            }
+            response.Status = "200";
+            response.Data = category;
+            return response;
         }
     }
 }

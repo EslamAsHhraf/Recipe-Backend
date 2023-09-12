@@ -1,4 +1,4 @@
-﻿using Azure;
+﻿using Business_Access_Layer.Common;
 using Data_Access_layer.Model;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -11,11 +11,11 @@ namespace Business_Access_Layer.Abstract
 {
     public interface IRecipeIngredientsService
     {
-        public Task<IEnumerable<RecipeIngredients>> GetAllIngredients();
-        public Task<RecipeIngredients> CreateRecipeIngredient(RecipeIngredients recipeIngredients);
-        public void DeleteRecipeIngredients(IEnumerable<RecipeIngredients> recipeIngredients);
-        public Task<IEnumerable<Recipe>> FilterByIngredients(string Text);
-        public Task<IEnumerable<RecipeIngredients>> GetRecipeIngredients(Recipe Recipe);
+        public Task<Response> GetAllIngredients();
+        public Task<Response> CreateRecipeIngredient(RecipeIngredients recipeIngredients);
+        public Task<Response> DeleteRecipeIngredients(IEnumerable<RecipeIngredients> recipeIngredients);
+        public Task<Response> FilterByIngredients(string[] Text);
+        public Task<Response> GetRecipeIngredients(Recipe Recipe);
 
     }
 }

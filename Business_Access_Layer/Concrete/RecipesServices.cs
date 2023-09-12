@@ -10,33 +10,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Business_Access_Layer.Common;
 
 namespace Business_Access_Layer.Concrete
 {
-    public class RecipesServices: IRecipesServices
+    public class RecipesServices : IRecipesServices
     {
         private readonly IRepository<Recipe> _recipeRepository;
         private readonly IRecipes _recipesRepository;
         private IAuthService _userService;
         private readonly IWebHostEnvironment _hostEnvironment;
+        private Response response = new Response();
 
         public RecipesServices(IRecipes recipesRepository, IAuthService userService
             , IWebHostEnvironment hostEnvironment, IRepository<Recipe> recipeRepository)
         {
             _recipesRepository = recipesRepository;
-            _userService= userService;
+            _userService = userService;
             _hostEnvironment = hostEnvironment;
             _recipeRepository = recipeRepository;
         }
         public IEnumerable<Recipe> GetMyRecipes()
         {
-            UserData data=_userService.GetMe();
-            if(data==null)
+            UserData data = _userService.GetMe();
+            if (data == null)
             {
                 return null;
             }
             return _recipesRepository.GetMyRecipes(data.Id);
         }
+
         public async Task<Recipe> SaveImage(IFormFile imageFile, Recipe recipe)
         {
             if (!(recipe.ImageFile == null || recipe.ImageFile == "initial-resipe.jpg"))
@@ -44,7 +47,7 @@ namespace Business_Access_Layer.Concrete
                 _userService.DeleteImage(recipe.ImageFile);
 
             }
-                string imageName = new String(Path.GetFileNameWithoutExtension(imageFile.FileName).Take(10).ToArray()).Replace(' ', '-');
+            string imageName = new String(Path.GetFileNameWithoutExtension(imageFile.FileName).Take(10).ToArray()).Replace(' ', '-');
             imageName = imageName + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(imageFile.FileName);
             var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
             using (var fileStream = new FileStream(imagePath, FileMode.Create))
@@ -52,7 +55,7 @@ namespace Business_Access_Layer.Concrete
                 await imageFile.CopyToAsync(fileStream);
             }
             recipe.ImageFile = imageName;
-           
+
             return recipe;
         }
         public Byte[] GetImage(string imageName)
@@ -63,25 +66,64 @@ namespace Business_Access_Layer.Concrete
             return b;
         }
 
-        public async Task<IEnumerable<Recipe>> GetAllRecipes()
+        public async Task<Response> GetAllRecipes()
         {
-            return _recipeRepository.GetAll();
+            var Recipes = _recipeRepository.GetAll();
+            if (Recipes == null)
+            {
+                response.Status = "204";
+                response.Data = new { Title = "No Content" };
+                return response;
+            }
+            response.Status = "200";
+            response.Data = Recipes;
+            return response;
         }
-        public async Task<Recipe> GetRecipeById(int Id)
+        public async Task<Response> GetRecipeById(int Id)
         {
-            return await _recipeRepository.GetById(Id);
+            var Recipe = await _recipeRepository.GetById(Id);
+            if (Recipe == null)
+            {
+                response.Status = "204";
+                response.Data = new { Title = "No Content" };
+                return response;
+            }
+            response.Status = "200";
+            response.Data = Recipe;
+            return response;
         }
-        public async Task<Recipe> Update(Recipe recipe)
+        public async Task<Response> Update(Recipe recipe)
         {
-            return await _recipeRepository.Update(recipe);
+            var Recipe = await _recipeRepository.Update(recipe);
+            if (Recipe == null)
+            {
+                response.Status = "204";
+                response.Data = new { Title = "Failed" };
+                return response;
+            }
+            response.Status = "200";
+            response.Data = Recipe;
+            return response;
         }
-        public void Delete(Recipe recipe)
+        public async Task<Response> Delete(Recipe recipe)
         {
             _recipeRepository.Delete(recipe);
+            response.Status = "200";
+            response.Data = new { Title = "Deleted" };
+            return response;
         }
-        public async Task<Recipe> Create(Recipe recipe)
+        public async Task<Response> Create(Recipe recipe)
         {
-            return await _recipeRepository.Create(recipe);
+            var Recipe = _recipeRepository.Create(recipe);
+            if (Recipe == null)
+            {
+                response.Status = "204";
+                response.Data = new { Title = "Not Found" };
+                return response;
+            }
+            response.Status = "200";
+            response.Data = Recipe;
+            return response;
         }
 
 

@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Data_Access_layer.Model;
-using RecipeAPI.Common;
 using Business_Access_Layer.Abstract;
 using System.ComponentModel.DataAnnotations;
+using Business_Access_Layer.Common;
 
 namespace Authorization.Controllers
 {

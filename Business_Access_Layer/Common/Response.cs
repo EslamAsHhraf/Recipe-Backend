@@ -1,4 +1,4 @@
-﻿namespace RecipeAPI.Common
+﻿namespace Business_Access_Layer.Common
 {
     public class Response
     {

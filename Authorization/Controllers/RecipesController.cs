@@ -1,8 +1,11 @@
 ﻿using Business_Access_Layer.Abstract;
+using Business_Access_Layer.Common;
+using Data_Access_layer.Interfaces;
 using Data_Access_layer.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RecipeAPI.Common;
+using System.Collections.Generic;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RecipeAPI.Controllers
 {
@@ -27,33 +30,49 @@ namespace RecipeAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Recipe>> GetAllRecipes()
+        public ActionResult<Response> GetAllRecipes()
         {
-            return await _recipesServices.GetAllRecipes();
+            var data= _recipesServices.GetAllRecipes();
+            return StatusCode(Int16.Parse(data.Result.Status), data.Result);
         }
 
         [HttpGet("{id}")]
-        public async Task<Tuple<Recipe, IEnumerable<RecipeIngredients>, Tuple<string, int>, Category, Byte[]>> GetRecipeById(int id)
+        public ActionResult<Response> GetRecipeById(int id)
         {
-            var recipe = await _recipesServices.GetRecipeById(id);
-            var ingredients = await _RecipeIngredientsServices.GetRecipeIngredients(recipe);
+            var recipeResponse = _recipesServices.GetRecipeById(id).Result;
+            if (recipeResponse.Status == "204")
+            {
+                return recipeResponse;
+            }
+            Recipe recipe =(Recipe) _recipesServices.GetRecipeById(id).Result.Data;
+
+            IEnumerable<RecipeIngredients> ingredients = (IEnumerable<RecipeIngredients>) _RecipeIngredientsServices.GetRecipeIngredients(recipe).Result.Data;
             var Createdby = _userService.GetUserById(recipe.CreatedBy);
-            var Category = await _categoryServices.GetCategoryById(recipe.Category);
+            Category Category = (Category) _categoryServices.GetCategoryById(recipe.Category).Result.Data;
             Byte[] imageUser = _recipesServices.GetImage(recipe.ImageFile);
-            return Tuple.Create(recipe, ingredients, Createdby, Category, imageUser);
+            var data = Tuple.Create(recipe, ingredients, Createdby, Category, imageUser);
+            if (data == null)
+            {
+                response.Status = "204";
+                response.Data = new { Title = "Not Found" };
+                return response;
+            }
+            response.Status = "200";
+            response.Data = data;
+            return response;            
         }
      
       
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRecipe(int id, [FromBody] Recipe recipe)
+        public ActionResult<Response> PutRecipe(int id, [FromBody] Recipe recipe)
         {
-            var existingRecipe =await _recipesServices.GetRecipeById(id);
-
-            if (existingRecipe == null)
+            var recipeResponse = _recipesServices.GetRecipeById(id).Result;
+            if (recipeResponse.Status == "204")
             {
-                return NotFound();
+                return recipeResponse;
             }
+            Recipe existingRecipe = (Recipe)_recipesServices.GetRecipeById(id).Result.Data;
 
             existingRecipe.Title = recipe.Title;
             existingRecipe.Description = recipe.Description;
@@ -63,28 +82,30 @@ namespace RecipeAPI.Controllers
             existingRecipe.TotalRating = recipe.TotalRating;
             existingRecipe.ImageFile = recipe.ImageFile;
 
-            _recipesServices.Update(existingRecipe);
+            var updatedrecipeResponse = _recipesServices.Update(existingRecipe);
 
-            return StatusCode(201);
+            return StatusCode(Int16.Parse(updatedrecipeResponse.Result.Status), updatedrecipeResponse.Result);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRecipe(int id)
+        public ActionResult<Response> DeleteRecipe(int id)
         {
-            var recipe =await _recipesServices.GetRecipeById(id);
-            var ingredients = await _RecipeIngredientsServices.GetRecipeIngredients(recipe);
+            Recipe recipe = (Recipe)_recipesServices.GetRecipeById(id).Result.Data;
+
+            IEnumerable<RecipeIngredients> ingredients = (IEnumerable<RecipeIngredients>)_RecipeIngredientsServices.GetRecipeIngredients(recipe).Result.Data;
             if (recipe == null)
             {
                 return NotFound();
             }
             if(ingredients != null)
             {
-                _RecipeIngredientsServices.DeleteRecipeIngredients(ingredients);
+                var DeleteResponse = _RecipeIngredientsServices.DeleteRecipeIngredients((IEnumerable<RecipeIngredients>)ingredients);
             }
 
-            _recipesServices.Delete(recipe);
+            var DeleteRecipeResponse = _recipesServices.Delete(recipe);
 
-            return StatusCode(201);
+            return StatusCode(Int16.Parse(DeleteRecipeResponse.Result.Status), DeleteRecipeResponse.Result);
+            ;
         }
 
       

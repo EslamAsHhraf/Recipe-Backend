@@ -1,7 +1,9 @@
 ﻿using Business_Access_Layer.Abstract;
+using Business_Access_Layer.Common;
 using Data_Access_layer.Model;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RecipeAPI.Controllers
 {
@@ -16,21 +18,19 @@ namespace RecipeAPI.Controllers
         }
         [Route("api/recipe/search")]
         [HttpGet]
-        public async Task<IEnumerable<Recipe>> SearchRecipeByName(string[] searchTerm)
+        public ActionResult<Response> SearchRecipeByName(string[] searchTerm)
         {
-            var recipes = new List<Recipe>();
-            foreach (var Term in searchTerm)
-            {
-                recipes.AddRange(await _ingredientsService.FilterByIngredients(Term));
-            }
-            return recipes.Distinct().ToList();
+            var data= _ingredientsService.FilterByIngredients(searchTerm);
+          
+            return StatusCode(Int16.Parse(data.Result.Status), data.Result);
+
         }
         [Route("api/recipeingredients")]
         [HttpGet]
-        public async Task<IEnumerable<RecipeIngredients>> GetMostRepeatedIngredients()
+        public ActionResult<Response> GetMostRepeatedIngredients()
         {
-            var ingredients =await _ingredientsService.GetAllIngredients();
-            return ingredients;
+            var data = _ingredientsService.GetAllIngredients();
+            return StatusCode(Int16.Parse(data.Result.Status), data.Result);
         }
 
     }
