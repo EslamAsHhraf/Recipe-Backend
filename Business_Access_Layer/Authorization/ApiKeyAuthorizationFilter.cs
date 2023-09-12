@@ -37,7 +37,7 @@ namespace Business_Access_Layer.Authorization
                 if(result == null)
                 {
                     response.Status = "401";
-                    response.Data = new { Title = "Unauthorizedll" };
+                    response.Data = new { Title = "Unauthorized" };
 
                     var customResponse = JsonConvert.SerializeObject(response);
                     context.Response.Headers.Add("Content-Type", "application/json");

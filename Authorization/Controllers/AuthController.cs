@@ -44,19 +44,9 @@ namespace Authorization.Controllers
 
         public ActionResult<Response> Logout()
         {
-            if (_userService.logout())
-            {
-                response.Data = new { Title = "Token Deleted successfully" };
-                response.Status = "success";
-                return StatusCode(200, response);
-            }
-            else
-            {
-
-                response.Data = new { Title = "Token not found" };
-                response.Status = "fail";
-                return StatusCode(401, response);
-            }
+            var data = _userService.logout();
+            
+            return StatusCode(Int16.Parse(data.Result.Status), data.Result);
 
         }
 

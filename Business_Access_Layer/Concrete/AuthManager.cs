@@ -143,7 +143,7 @@ namespace Business_Access_Layer.Concrete
                 return true;
             return false;
         }
-        public bool logout()
+        public async Task<Response> logout()
         {
             if (_httpContextAccessor.HttpContext.Request.Cookies["token"] != null)
             {
@@ -152,9 +152,13 @@ namespace Business_Access_Layer.Concrete
                     Secure = true,
                     SameSite = SameSiteMode.None
                 });
-                return true;
+                response.Status = "200";
+                response.Data = new { Title = "Token Deleted successfully" };
+                return response;
             }
-            return false;
+            response.Status = "401";
+            response.Data = new { Title = "Token Not found" };
+            return response;
 
         }
         public string CreateToken(User user)
@@ -204,6 +208,7 @@ namespace Business_Access_Layer.Concrete
             {
                 response.Status = "400";
                 response.Data = new { Title = "Wrong Password" };
+                return response;
             }
             if (!CheckPasswordStrength(newPassword))
             {

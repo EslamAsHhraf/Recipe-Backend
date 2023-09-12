@@ -22,7 +22,7 @@ namespace Business_Access_Layer.Abstract
         public Task<Response> Register(UserDto user);
         public Task<UserData> GetMe();
         bool CheckPasswordStrength(string password);
-        public bool logout();
+        public Task<Response> logout();
         public string CreateToken(User user);
         public void SetJWT(string encrypterToken);
         public Task<Response> changePassword(string oldPassword, string newPassword);
