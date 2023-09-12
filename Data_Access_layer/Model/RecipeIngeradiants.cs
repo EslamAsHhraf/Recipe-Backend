@@ -13,7 +13,6 @@ namespace Data_Access_layer.Model
         public int RecipeId { get; set; }
         [ForeignKey("Recipe.RecipeId")]
         public string Title { get; set; }
-        public string Quantity { get; set; }
 
     }
 }
