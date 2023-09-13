@@ -12,7 +12,9 @@ namespace Business_Access_Layer.Abstract
     {
         public Task<Response> GetMyFavourites(int id);
         public Task<Response> CreateFavourite(Favourite favourite);
-        public Task<Response> DeleteFavourite(Favourite favouriteid);
+        public Task<Response> DeleteFavourite(int favouriteid);
+        public Task<Response> GetFavourite(int id);
+
 
     }
 }

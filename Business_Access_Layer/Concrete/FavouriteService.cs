@@ -43,15 +43,37 @@ namespace Business_Access_Layer.Concrete
             response.Data = createdfavourite;
             return response;
         }
-        public async Task<Response> DeleteFavourite(Favourite favouriteid)
+        public async Task<Response> DeleteFavourite(int favouriteid)
         {
-               _favouriteRepository.Delete(favouriteid);
+            var favourite = await _favouriteRepository.GetById(favouriteid);
+            if(favourite == null)
+            {
+                response.Status = "404";
+                response.Data = new { Title = "Not Created" };
+                return response;
+            }
+            _favouriteRepository.Delete(favourite);
         
                 response.Status = "200";
                 response.Data = new { Title = "Deleted" };
                 return response;
         }
-       
-   
+        public async Task<Response> GetFavourite(int id)
+        {
+            var favourite = await _favouriteRepository.GetById(id);
+            if (favourite == null)
+            {
+                response.Status = "404";
+                response.Data = new { Title = "Not found" };
+                return response;
+            }
+
+            response.Status = "200";
+            response.Data = favourite;
+            return response;
+        }
+
+
+
     }
 }
