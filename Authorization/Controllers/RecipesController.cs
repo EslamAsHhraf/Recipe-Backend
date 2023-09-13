@@ -148,7 +148,7 @@ namespace RecipeAPI.Controllers
         }
 
 
-        [HttpGet("getMyRecipes"), Authorize]
+        [HttpGet("getMyRecipes")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public ActionResult<Response> GetMyRecipes()

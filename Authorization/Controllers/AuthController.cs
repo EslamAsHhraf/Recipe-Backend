@@ -11,7 +11,7 @@ using Business_Access_Layer.Common;
 
 namespace Authorization.Controllers
 {
-    [Route("api/Auth")]
+    [Route("api/auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -90,7 +90,7 @@ namespace Authorization.Controllers
             return StatusCode(Int16.Parse(data.Result.Status), data.Result);
         }
 
-        [HttpPut("ChangePassword")]
+        [HttpPut("changePassword")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -106,7 +106,7 @@ namespace Authorization.Controllers
             return StatusCode(Int16.Parse(data.Result.Status), data.Result);
         }
 
-        [HttpPut("UpdateImage")]
+        [HttpPut("updateImage")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

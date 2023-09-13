@@ -115,7 +115,7 @@ app.UseHttpsRedirection();
 app.UseCors("RecipeOrigins");
 app.UseAuthorization();
 app.UseRouting(); // Enable routing
-app.Map("/api/Auth/me", branchApp =>
+app.Map("/api/auth/me", branchApp =>
 {
     branchApp.UseMiddleware<ApiKeyMiddleware>();
     branchApp.UseEndpoints(endpoints =>
@@ -123,7 +123,7 @@ app.Map("/api/Auth/me", branchApp =>
         endpoints.MapControllers();
     });
 });
-app.Map("/api/Auth/ChangePassword", branchApp =>
+app.Map("/api/auth/changePassword", branchApp =>
 {
     branchApp.UseMiddleware<ApiKeyMiddleware>();
     branchApp.UseEndpoints(endpoints =>
@@ -131,7 +131,15 @@ app.Map("/api/Auth/ChangePassword", branchApp =>
         endpoints.MapControllers();
     });
 });
-app.Map("/api/Auth/UpdateImage", branchApp =>
+app.Map("/api/auth/updateImage", branchApp =>
+{
+    branchApp.UseMiddleware<ApiKeyMiddleware>();
+    branchApp.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllers();
+    });
+});
+app.Map("/api/recipe/getMyRecipes", branchApp =>
 {
     branchApp.UseMiddleware<ApiKeyMiddleware>();
     branchApp.UseEndpoints(endpoints =>
