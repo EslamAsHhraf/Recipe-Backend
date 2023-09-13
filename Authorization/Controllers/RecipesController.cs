@@ -1,4 +1,5 @@
 ﻿using Business_Access_Layer.Abstract;
+using Business_Access_Layer.Authorization;
 using Business_Access_Layer.Common;
 using Data_Access_layer.Interfaces;
 using Data_Access_layer.Model;
@@ -10,6 +11,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace RecipeAPI.Controllers
 {
     [Route("api/recipe")]
+    [ApiController]
     public class RecipesController : Controller
     {
         private readonly IRecipeIngredientsService _RecipeIngredientsServices;
@@ -89,11 +91,15 @@ namespace RecipeAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<Response> DeleteRecipe(int id)
+        public async Task<ActionResult<Response>> DeleteRecipe(int id)
         {
-            Recipe recipe = (Recipe)_recipesServices.GetRecipeById(id).Result.Data;
+            var recipe = await _recipesServices.GetRecipeById(id);
+            if (recipe.Status == "204")
+            {
+                return StatusCode(Int16.Parse(recipe.Status), recipe);
 
-            IEnumerable<RecipeIngredients> ingredients = (IEnumerable<RecipeIngredients>)_RecipeIngredientsServices.GetRecipeIngredients(recipe).Result.Data;
+            }
+            IEnumerable<RecipeIngredients> ingredients = (IEnumerable<RecipeIngredients>)_RecipeIngredientsServices.GetRecipeIngredients((Recipe)recipe.Data).Result.Data;
             if (recipe == null)
             {
                 return NotFound();
@@ -103,14 +109,14 @@ namespace RecipeAPI.Controllers
                 var DeleteResponse = _RecipeIngredientsServices.DeleteRecipeIngredients((IEnumerable<RecipeIngredients>)ingredients);
             }
 
-            var DeleteRecipeResponse = _recipesServices.Delete(recipe);
+            var DeleteRecipeResponse = _recipesServices.Delete((Recipe)recipe.Data);
 
             return StatusCode(Int16.Parse(DeleteRecipeResponse.Result.Status), DeleteRecipeResponse.Result);
             ;
         }
 
       
-        [HttpPost, Authorize]
+        [HttpPost]
         public async Task<IActionResult> PostRecipe(IFormFile imageFile, [FromQuery] Recipe recipe)
         {
             var UserData = _userService.GetMe();

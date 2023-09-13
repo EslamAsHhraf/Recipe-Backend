@@ -43,7 +43,7 @@ namespace Business_Access_Layer.Concrete
                 response.Data = new { Title = "Unauthorized" };
                 return response;
             }
-            var myRecipe = await _recipeRepository.GetMyCreated(data.Id);
+            var myRecipe =  _recipesRepository.GetMyRecipes(data.Id);
             response.Status = "200";
             response.Data = myRecipe;
             return response;
@@ -120,5 +120,6 @@ namespace Business_Access_Layer.Concrete
             response.Data = Recipe;
             return response;
         }
+       
     }
 }

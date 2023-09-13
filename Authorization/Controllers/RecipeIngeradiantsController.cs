@@ -41,6 +41,24 @@ namespace RecipeAPI.Controllers
             return StatusCode(Int16.Parse(DeleteRecipeResponse.Result.Status), DeleteRecipeResponse.Result);
             ;
         }
+        [HttpPost("listIngredients")]
 
+        public async Task<IActionResult> UpdateListIngredients([FromBody]  List<RecipeIngredients> ingredients)
+        {
+            var data = await _ingredientsService.CreateList(ingredients);
+
+           
+            return StatusCode(Int16.Parse(data.Status), data);
+        }
+
+        [HttpDelete("recipeId")]
+
+        public async Task<IActionResult> DleteListIngredients(int recipeId)
+        {
+            var data = await _ingredientsService.DeleteList(recipeId);
+
+
+            return StatusCode(Int16.Parse(data.Status), data);
+        }
     }
 }

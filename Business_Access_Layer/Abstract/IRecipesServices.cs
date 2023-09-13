@@ -20,6 +20,5 @@ namespace Business_Access_Layer.Abstract
         public Task<Response> Update(Recipe recipe);
         public Task<Response> Delete(Recipe recipe);
         public Task<Response> Create(Recipe recipe);
-
     }
 }

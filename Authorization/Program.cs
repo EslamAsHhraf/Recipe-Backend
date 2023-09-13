@@ -111,41 +111,52 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseWhen(context => (context.Request.Method== "POST" || context.Request.Method == "DELETE" || context.Request.Method == "PUT" )
+    && context.Request.Path != "/api/auth/register", applicationBuilder =>
+{
+    applicationBuilder.UseMiddleware<ApiKeyMiddleware>();
+});
 app.UseHttpsRedirection();
 app.UseCors("RecipeOrigins");
 app.UseAuthorization();
 app.UseRouting(); // Enable routing
-app.Map("/api/auth/me", branchApp =>
+//app.Map("/api/auth/me", branchApp =>
+//{
+//    branchApp.UseMiddleware<ApiKeyMiddleware>();
+//    branchApp.UseEndpoints(endpoints =>
+//    {
+//        endpoints.MapControllers();
+//    });
+//});
+//app.Map("/api/auth/changePassword", branchApp =>
+//{
+//    branchApp.UseMiddleware<ApiKeyMiddleware>();
+//    branchApp.UseEndpoints(endpoints =>
+//    {
+//        endpoints.MapControllers();
+//    });
+//});
+//app.Map("/api/auth/updateImage", branchApp =>
+//{
+//    branchApp.UseMiddleware<ApiKeyMiddleware>();
+//    branchApp.UseEndpoints(endpoints =>
+//    {
+//        endpoints.MapControllers();
+//    });
+//});
+
+//app.Map("/api/recipe", branchApp =>
+//{
+//    branchApp.UseMiddleware<ApiKeyMiddleware>();
+//    branchApp.UseEndpoints(endpoints =>
+//    {
+//        endpoints.MapControllers();
+//    });
+//});
+app.UseEndpoints(endpoints =>
 {
-    branchApp.UseMiddleware<ApiKeyMiddleware>();
-    branchApp.UseEndpoints(endpoints =>
-    {
-        endpoints.MapControllers();
-    });
-});
-app.Map("/api/auth/changePassword", branchApp =>
-{
-    branchApp.UseMiddleware<ApiKeyMiddleware>();
-    branchApp.UseEndpoints(endpoints =>
-    {
-        endpoints.MapControllers();
-    });
-});
-app.Map("/api/auth/updateImage", branchApp =>
-{
-    branchApp.UseMiddleware<ApiKeyMiddleware>();
-    branchApp.UseEndpoints(endpoints =>
-    {
-        endpoints.MapControllers();
-    });
-});
-app.Map("/api/recipe/getMyRecipes", branchApp =>
-{
-    branchApp.UseMiddleware<ApiKeyMiddleware>();
-    branchApp.UseEndpoints(endpoints =>
-    {
-        endpoints.MapControllers();
-    });
+    endpoints.MapControllers();
+    // Other endpoint configurations here
 });
 app.UseEndpoints(endpoints => // Configure endpoints
 {

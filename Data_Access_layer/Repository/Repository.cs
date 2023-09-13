@@ -59,12 +59,23 @@ namespace Data_Access_layer.Repositories
 
             return (IEnumerable<T>)filteredEntities;
         }
-        public async Task<IEnumerable<Recipe>> GetMyCreated(int id)
+        public async  Task<bool> CreateList(List<T> _object)
         {
-            var result = entityRecipe.Where(entity => entity.CreatedBy == id).ToList<Recipe>();
-
-            return result;
+            foreach (var updatedEntity in _object)
+            {
+                _context.AddAsync(updatedEntity);
+            }
+             
+            return (_context.SaveChanges())>0;
         }
+        public async Task<bool> DeleteList(IEnumerable<T> _object)
+        {
+            foreach (var deletedEntity in _object)
+            {
+                _context.Remove(deletedEntity);
+            }
 
+            return (_context.SaveChanges()) > 0;
+        }
     }
 }

@@ -8,24 +8,27 @@ using Data_Access_layer.Interfaces;
 using Data_Access_layer.Model;
 using Business_Access_Layer.Abstract;
 using Business_Access_Layer.Common;
+using Nest;
 
 namespace Business_Access_Layer.Concrete
 {
    
         public class RecipeIngredientsService : IRecipeIngredientsService
-    {
-            private IRepository<Recipe> _recipeRepository;
-            private IRepository<RecipeIngredients> _recipeIngreRepository;
+        {
+            private Data_Access_layer.Interfaces.IRepository<Recipe> _recipeRepository;
+            private Data_Access_layer.Interfaces.IRepository<RecipeIngredients> _ingregradientRepository;
             private Response response = new Response();
+            private readonly IRecipesServices _recipeServices;
 
-            public RecipeIngredientsService(IRepository<Recipe> recipeRepository, IRepository<RecipeIngredients> recipeIngreRepository)
+        public RecipeIngredientsService(Data_Access_layer.Interfaces.IRepository<Recipe> recipeRepository, Data_Access_layer.Interfaces.IRepository<RecipeIngredients> ingregradientRepository, IRecipesServices recipeServices)
             {
-                _recipeRepository = recipeRepository; 
-                _recipeIngreRepository  = recipeIngreRepository; 
+                _recipeRepository = recipeRepository;
+                _ingregradientRepository = ingregradientRepository;
+             recipeServices = _recipeServices;
             }
             public async Task<Response> GetAllIngredients()
             {
-                  var ingredients = _recipeIngreRepository.GetAll();
+                  var ingredients = _ingregradientRepository.GetAll();
                   var mostRepeatedIngredients = ingredients
                   .GroupBy(i => i.Title)
                   .OrderByDescending(g => g.Count()).Select(g => g.First()).Take(10);
@@ -38,10 +41,10 @@ namespace Business_Access_Layer.Concrete
                     response.Status = "200";
                     response.Data = mostRepeatedIngredients;
                     return response;
-        }
+            }
             public async Task<Response> CreateRecipeIngredient(RecipeIngredients recipeIngredients)
             {
-                var recipe =_recipeIngreRepository.Create(recipeIngredients);
+                var recipe = _ingregradientRepository.Create(recipeIngredients);
                 if (recipe == null)
                 {
                     response.Status = "404";
@@ -51,17 +54,17 @@ namespace Business_Access_Layer.Concrete
                 response.Status = "200";
                 response.Data = recipe;
                 return response;
-        }
+            }
             public async Task<Response> DeleteRecipeIngredients(IEnumerable<RecipeIngredients> recipeIngredients)
             {
                 foreach (RecipeIngredients recipeIngredient in recipeIngredients)
                 {
-                    _recipeIngreRepository.Delete(recipeIngredient);
+                _ingregradientRepository.Delete(recipeIngredient);
                 }
                 response.Status = "200";
                 response.Data = new { Title = "Deleted" };
                 return response;
-        }
+            }
             public async Task<Response> FilterByIngredients(string[] Text)
             {
                 var allrecipes = new List<Recipe>();
@@ -69,7 +72,7 @@ namespace Business_Access_Layer.Concrete
                 {
                     var recipefromrecipe = await _recipeRepository.SearchByName(Term);
 
-                    var recipeIngredients = await _recipeIngreRepository.SearchByName(Term);
+                    var recipeIngredients = await _ingregradientRepository.SearchByName(Term);
 
                     // Get all recipes that have the matching recipe ingredients.
                     var recipesfromIngredients = recipeIngredients.Select(ri => ri.RecipeId).Distinct().ToList();
@@ -97,7 +100,7 @@ namespace Business_Access_Layer.Concrete
             public async Task<Response> GetRecipeIngredients(Recipe Recipe)
             {
                 // Get all recipe ingredients for the given recipe.
-                var recipesIngredients = _recipeIngreRepository.GetAll();
+                var recipesIngredients = _ingregradientRepository.GetAll();
                 var filteredRecipeIngredients = recipesIngredients.Where(recipe => recipe.RecipeId == Recipe.Id).ToList();
 
                 if (filteredRecipeIngredients == null)
@@ -112,7 +115,7 @@ namespace Business_Access_Layer.Concrete
              }
             public async Task<Response> GetById(int Id)
             {
-                var ingredient = await _recipeIngreRepository.GetById(Id);
+                var ingredient = await _ingregradientRepository.GetById(Id);
                 if (ingredient == null)
                 {
                     response.Status = "404";
@@ -125,13 +128,49 @@ namespace Business_Access_Layer.Concrete
             }
             public async Task<Response> Delete(RecipeIngredients ingredient)
             {
-                _recipeIngreRepository.Delete(ingredient);
+                _ingregradientRepository.Delete(ingredient);
                 response.Status = "200";
                 response.Data = new { Title = "Deleted" };
                 return response;
             }
+            public async Task<Response> CreateList(List<RecipeIngredients> _object)
+            {
+                bool check = await _ingregradientRepository.CreateList(_object);
+                if (!check)
+                {
+                    response.Status = "400";
+                    response.Data = new { Title = "Error while create" };
+                    return response;
+                }
+                response.Status = "200";
+                response.Data = new { Title = "Created Successfully " };
+                return response;
+            }
+            public async Task<Response> DeleteList(int recipeId)
+            {
+                var recipe = await _recipeServices.GetRecipeById(recipeId);
+                if (recipe.Status == "204")
+                {
+                    response.Status = "404";
+                    response.Data = new { Title = "can't find recipe" };
+                    return response;
+                }
+                IEnumerable<RecipeIngredients> ingredients = (IEnumerable<RecipeIngredients>)GetRecipeIngredients((Recipe)recipe.Data).Result.Data;
 
-    }
+                bool check = await _ingregradientRepository.DeleteList(ingredients);
+                if (!check)
+                {
+                    response.Status = "400";
+                    response.Data = new { Title = "Error while delete" };
+                    return response;
+                }
+                response.Status = "200";
+                response.Data = new { Title = "Delete Successfully " };
+                return response;
+        
+            }
+
+        }
 
 
 }

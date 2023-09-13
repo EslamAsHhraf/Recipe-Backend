@@ -18,6 +18,7 @@ namespace Business_Access_Layer.Abstract
         public Task<Response> GetRecipeIngredients(Recipe Recipe);
         public Task<Response> GetById(int Id);
         public Task<Response> Delete(RecipeIngredients ingredient);
-
+        public Task<Response> CreateList(List<RecipeIngredients> _object);
+        public Task<Response> DeleteList(int recipeId);
     }
 }
