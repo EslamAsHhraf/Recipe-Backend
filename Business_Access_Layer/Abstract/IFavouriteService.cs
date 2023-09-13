@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 
 namespace Business_Access_Layer.Abstract
 {
-    public interface IReviewService
+    public interface IFavouriteService
     {
-        public Task<Response> GetRecipeReviews(int id);
-        public Task<Response> CreateReview(Review rating);
+        public Task<Response> GetMyFavourites(int id);
+        public Task<Response> CreateFavourite(Favourite favourite);
+        public Task<Response> DeleteFavourite(Favourite favouriteid);
+
     }
 }

@@ -7,26 +7,26 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace RecipeAPI.Controllers
 {
-    [Route("api/Review")]
+    [Route("api/Favourite")]
     [ApiController]
-    public class ReviewController : ControllerBase
+    public class FavouriteController : ControllerBase
     {
-        private readonly IReviewService _reviewServices;
+        private readonly IFavouriteService _favouriteServices;
 
-        public ReviewController(IReviewService reviewServices)
+        public FavouriteController(IFavouriteService favouriteServices)
         {
-            _reviewServices = reviewServices;
+            _favouriteServices = favouriteServices;
         }
         [HttpGet]
         public ActionResult<Response> GetReviewOfRecipe(int id)
         {
-            var data = _reviewServices.GetRecipeReviews(id);
+            var data = _favouriteServices.GetMyFavourites(id);
             return StatusCode(Int16.Parse(data.Result.Status), data.Result);
         }
         [HttpPost]
-        public async Task<IActionResult> PostReview([FromBody] Review review)
+        public async Task<IActionResult> PostReview([FromBody] Favourite favourite)
         {
-            var data = _reviewServices.CreateReview(review);
+            var data = _favouriteServices.CreateFavourite(favourite);
             return StatusCode(Int16.Parse(data.Result.Status), data.Result);
         }
 
