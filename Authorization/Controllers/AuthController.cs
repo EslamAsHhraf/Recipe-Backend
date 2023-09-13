@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Data_Access_layer.Model;
-using RecipeAPI.Common;
 using Business_Access_Layer.Abstract;
 using System.ComponentModel.DataAnnotations;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Business_Access_Layer.Authorization;
 using static System.Net.Mime.MediaTypeNames;
+using Business_Access_Layer.Common;
 
 namespace Authorization.Controllers
 {

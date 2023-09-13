@@ -30,7 +30,7 @@ namespace Business_Access_Layer.Abstract
         public Task<Byte[]> GetImage(string username);
         public void encryptPassword(string password, out byte[] passwordHash, out byte[] passwordKey);
         public bool MatchPasswordHash(string passwordText, byte[] password, byte[] passwordKey);
-
+        public Tuple<string, int> GetUserById(int id);
     }
 }
 

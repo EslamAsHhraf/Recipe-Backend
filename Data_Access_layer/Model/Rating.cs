@@ -15,6 +15,6 @@ namespace Data_Access_layer.Model
         public int RecipeId { get; set; }
         [ForeignKey("Recipe.RecipeId")]
         public int Rate { get; set; }
-
+        
     }
 }

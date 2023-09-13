@@ -296,6 +296,11 @@ namespace Business_Access_Layer.Concrete
 
         }
 
+        public Tuple<string, int> GetUserById(int Id)
+        {
+             var user = _userRepository.GetById(Id);
+             return Tuple.Create(user.Result.Username,user.Result.Id);
+        }
     }
 }
 

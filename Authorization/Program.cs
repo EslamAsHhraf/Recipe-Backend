@@ -29,6 +29,9 @@ builder.Services.AddScoped<IUserRepository<User>, UserRepository<User>>();
 builder.Services.AddScoped<IRepository<Recipe>, Repository<Recipe>>();
 builder.Services.AddScoped<IRepository<Category>, Repository<Category>>();
 builder.Services.AddScoped<IRepository<RecipeIngredients>, Repository<RecipeIngredients>>();
+builder.Services.AddScoped<IRepository<Rating>, Repository<Rating>>();
+builder.Services.AddScoped<IRepository<Favourite>, Repository<Favourite>>();
+
 
 //builder.Services.AddScoped<IRepository<Ingredient>, Repository<Ingredient>>();
 builder.Services.AddSwaggerGen(options =>
@@ -86,11 +89,14 @@ builder.Services.AddAuthentication(x =>
 
 builder.Services.AddScoped<IAuthService, AuthManager>();
 builder.Services.AddScoped<ICategory, CategoryServices>();
-builder.Services.AddScoped<IRecipeIngeradiants<Recipe>, RecipeIngredientsRepository<Recipe>>();
-builder.Services.AddScoped<IRecipeIngeradiants<RecipeIngredients>, RecipeIngredientsRepository<RecipeIngredients>>();
 builder.Services.AddScoped<IRecipesServices, RecipesServices>();
 builder.Services.AddScoped<IFileServices, FileServices>();
 
+builder.Services.AddScoped<IRecipeIngredientsService, RecipeIngredientsService>();
+builder.Services.AddScoped<IRecipes, RecipesRepository>();
+builder.Services.AddScoped<IRecipesServices, RecipesServices>();
+builder.Services.AddScoped<IRatingService, RatingServices>();
+builder.Services.AddScoped<IFavouriteService, FavouriteService>();
 
 var app = builder.Build();
 app.Use((ctx, next) =>

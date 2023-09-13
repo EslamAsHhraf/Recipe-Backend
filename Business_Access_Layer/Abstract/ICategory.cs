@@ -1,4 +1,5 @@
 ﻿using Data_Access_layer.Model;
+using Business_Access_Layer.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,9 @@ namespace Business_Access_Layer.Abstract
 {
     public interface ICategory
     {
-        public IEnumerable<Category> GetCategories();
+        public Task<Response> GetCategories();
+        public Task<Response> GetCategoryById(int Id);
+
 
     }
 }

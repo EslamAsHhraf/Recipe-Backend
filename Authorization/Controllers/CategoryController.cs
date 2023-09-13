@@ -1,8 +1,8 @@
 ﻿using Business_Access_Layer.Abstract;
+using Business_Access_Layer.Common;
 using Data_Access_layer.Interfaces;
 using Data_Access_layer.Model;
 using Microsoft.AspNetCore.Mvc;
-using RecipeAPI.Common;
 
 namespace RecipeAPI.Controllers
 {
@@ -11,18 +11,15 @@ namespace RecipeAPI.Controllers
     public class CategoryController : Controller
     {
         private readonly ICategory _categoryServices;
-        private Response response = new Response();
 
         public CategoryController(ICategory categoryServices)
         {
             _categoryServices = categoryServices;
         }
         [HttpGet]
-        public ActionResult<Response> GetAllCategories()
+        public Task<Response> GetAllCategories()
         {
-            response.Data = _categoryServices.GetCategories() ;
-            response.Status = "success";
-            return StatusCode(200, response);
+            return  _categoryServices.GetCategories();
         }
     }
 }
