@@ -16,6 +16,8 @@ namespace Business_Access_Layer.Abstract
         public Task<Response> DeleteRecipeIngredients(IEnumerable<RecipeIngredients> recipeIngredients);
         public Task<Response> FilterByIngredients(string[] Text);
         public Task<Response> GetRecipeIngredients(Recipe Recipe);
+        public Task<Response> GetById(int Id);
+        public Task<Response> Delete(RecipeIngredients ingredient);
 
     }
 }

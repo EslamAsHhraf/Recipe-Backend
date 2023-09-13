@@ -109,9 +109,29 @@ namespace Business_Access_Layer.Concrete
                 response.Status = "200";
                 response.Data = filteredRecipeIngredients;
                 return response;
-        }
+             }
+            public async Task<Response> GetById(int Id)
+            {
+                var ingredient = await _recipeIngreRepository.GetById(Id);
+                if (ingredient == null)
+                {
+                    response.Status = "404";
+                    response.Data = new { Title = "Not Found" };
+                    return response;
+                }
+                response.Status = "200";
+                response.Data = ingredient;
+                return response;
+            }
+            public async Task<Response> Delete(RecipeIngredients ingredient)
+            {
+                _recipeIngreRepository.Delete(ingredient);
+                response.Status = "200";
+                response.Data = new { Title = "Deleted" };
+                return response;
+            }
 
-        }
+    }
 
 
 }
