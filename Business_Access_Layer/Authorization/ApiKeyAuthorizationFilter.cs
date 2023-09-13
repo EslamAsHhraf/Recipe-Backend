@@ -27,7 +27,7 @@ namespace Business_Access_Layer.Authorization
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, DataContext dbContext )
+        public async Task Invoke(HttpContext context, IUserRepository<User> dbContext )
         {
             //string apiKey = context.HttpContext.Request.Headers[ApiKeyHeaderName];
             var result = string.Empty;
@@ -45,8 +45,8 @@ namespace Business_Access_Layer.Authorization
                     await context.Response.WriteAsync(customResponse);
                     return;
                 }
-                var check = dbContext.Users.Any(u => u.Username == result);
-                if (!check)
+                var check = await dbContext.GetUser(result); //dbContext.Users.Any(u => u.Username == result);
+                if (check==null)
                 {
                     response.Status = "401";
                     response.Data = new { Title = "Unauthorized" };

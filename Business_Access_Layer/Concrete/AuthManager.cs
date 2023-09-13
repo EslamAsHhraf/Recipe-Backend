@@ -238,7 +238,7 @@ namespace Business_Access_Layer.Concrete
             var username = userData.Result.Name;
 
             var user =await _userRepository.GetUser(username);
-            if(user.ImageFile != string.Empty || user.ImageFile!= "initial.png")
+            if(user.ImageFile != string.Empty || user.ImageFile!= "initial.jpg")
             {
                 _fileServices.DeleteImage(user.ImageFile);
 
