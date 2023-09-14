@@ -68,7 +68,7 @@ namespace Business_Access_Layer.Concrete
             var Recipe = await _recipeRepository.GetById(Id);
             if (Recipe == null)
             {
-                response.Status = "404";
+                response.Status = "204";
                 response.Data = new { Title = "No Content" };
                 return response;
             }
@@ -126,7 +126,7 @@ namespace Business_Access_Layer.Concrete
                 return response;
             }
 
-            if (recipe.ImageFile != string.Empty || recipe.ImageFile != "initial.jpg")
+            if (recipe.ImageFile != string.Empty &&  recipe.ImageFile != "initial.jpg"&& recipe.ImageFile != "initial-recipe.jpg")
             {
                 _fileServices.DeleteImage(recipe.ImageFile);
 
