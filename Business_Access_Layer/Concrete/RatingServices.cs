@@ -13,10 +13,13 @@ namespace Business_Access_Layer.Concrete
     public class RatingServices : IRatingService
     {
         private readonly IRepository<Rating> _ratingRepository;
+        private readonly IRepository<Recipe> _recipeRepository;
+
         private Response response = new Response();
-        public RatingServices(IRepository<Rating> ratingRepository)
+        public RatingServices(IRepository<Rating> ratingRepository, IRepository<Recipe> recipeRepository)
         {
             _ratingRepository = ratingRepository;
+            _recipeRepository = recipeRepository;
 
         }
         public async Task<Response> GetRecipeRating(int id)
@@ -41,7 +44,34 @@ namespace Business_Access_Layer.Concrete
         }
         public async Task<Response> CreateRating(Rating rating)
         {
-            if(rating.Rate>5||rating.Rate<0)
+            var allrate = _ratingRepository.GetAll();
+            var query = from rate in allrate
+                        where rate.AuthorId == rating.AuthorId && rate.RecipeId == rating.RecipeId
+                        select new { V = rate.AuthorId == rating.AuthorId, m = rate.RecipeId == rating.RecipeId };
+
+            var isRateExists = query.Any();
+
+            if (isRateExists)
+            {
+                response.Status = "400";
+                response.Data = new { Title = "cannot add more than one rate for the same recipe" };
+                return response;
+            }
+            var recipeAuth = (Recipe)await _recipeRepository.GetById(rating.RecipeId);
+            if (recipeAuth == null)
+            {
+                response.Status = "400";
+                response.Data = new { Title = "Cannot find the recipe" };
+                return response;
+
+            }
+            else if (recipeAuth.CreatedBy == rating.AuthorId)
+            {
+                response.Status = "400";
+                response.Data = new { Title = "You cannot rate your Recipes" };
+                return response;
+            }
+            if (rating.Rate > 5 || rating.Rate < 0)
             {
                 response.Status = "400";
                 response.Data = new { Title = "Invalid data value of rating must be from 0 to 5" };

@@ -2,7 +2,7 @@
 using Business_Access_Layer.Abstract;
 using Data_Access_layer.Interfaces;
 using Data_Access_layer.Model;
-using Data_Access_layer.Repositories;
+using Data_Access_layer.Repository;
 using Business_Access_Layer.Common;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 

@@ -15,7 +15,7 @@ namespace Authorization.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        public static User user= new User();
+        public static User user = new User();
         public readonly IConfiguration _configuration;
         private Response response = new Response();
         private IAuthService _userService;
@@ -27,7 +27,33 @@ namespace Authorization.Controllers
             _configuration = configuration;
             _userService = userService;
         }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Response>> GetUserById(int id)
+        {
 
+            var User = _userService.GetUserById(id);
+            if (User == null)
+            {
+                response.Status = "fail";
+                response.Data = new { Title = "Cannot find user" };
+                return StatusCode(401, response);
+            }
+            Byte[] imageUser =await _userService.GetImage(User.Item1);
+            if (imageUser == null)
+            {
+                response.Status = "fail";
+                response.Data = new { Title = "Error in find image" };
+                return StatusCode(401, response);
+            }
+            response.Status = "success";
+            response.Data = new
+            {
+                user = User,
+                image = File(imageUser, "image/jpeg")
+            };
+            return StatusCode(200, response);
+
+        }
         [HttpGet("me")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -123,5 +149,5 @@ namespace Authorization.Controllers
             return StatusCode(Int16.Parse(data.Result.Status), data.Result);
         }
 
-    }
-}
+    }}
+

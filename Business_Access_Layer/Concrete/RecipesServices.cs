@@ -12,7 +12,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Business_Access_Layer.Common;
-using Authorization.Repository;
 
 namespace Business_Access_Layer.Concrete
 {
@@ -82,7 +81,7 @@ namespace Business_Access_Layer.Concrete
             var Recipe = await _recipeRepository.Update(recipe);
             if (Recipe == null)
             {
-                response.Status = "204";
+                response.Status = "404";
                 response.Data = new { Title = "Failed" };
                 return response;
             }
@@ -102,7 +101,7 @@ namespace Business_Access_Layer.Concrete
             var Recipe = await _recipeRepository.Create(recipe);
             if (Recipe == null)
             {
-                response.Status = "204";
+                response.Status = "404";
                 response.Data = new { Title = "Not Found" };
                 return response;
             }
@@ -139,6 +138,26 @@ namespace Business_Access_Layer.Concrete
             response.Status = "200";
             response.Data = new { Title = "Success Update image" };
             return response;
+        }
+
+       
+        public Byte[] GetImage(string imageName)
+        {
+
+            Byte[] b = _fileServices.GetImage(imageName);  // You can use your own method over here.         
+            return b;
+        }
+        public async Task<Recipe> SaveImageRecipe(IFormFile imageFile, Recipe recipe)
+        {
+            if (!(recipe.ImageFile == null || recipe.ImageFile == "initial-resipe.jpg"))
+            {
+                _fileServices.DeleteImage(recipe.ImageFile);
+
+            }
+
+            recipe.ImageFile = await _fileServices.SaveImage(imageFile);
+
+            return recipe;
         }
     }
 }

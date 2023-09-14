@@ -129,9 +129,11 @@ namespace RecipeAPI.Controllers
             }
             if (imageFile != null)
             {
-                response.Data = new { Title = "Image File doesn't exits" };
-                response.Status = "400";
-                return StatusCode(400, response);
+                Task<Recipe> result = _recipesServices.SaveImageRecipe(imageFile, recipe);
+                Recipe recipeResult = await result;
+                var list = await _recipesServices.Create(recipeResult);
+
+                response.Data = new { Data = list };
             }
             else
             {
@@ -141,7 +143,7 @@ namespace RecipeAPI.Controllers
             }
 
 
-            response.Status = "success";
+            response.Status = "201";
             return StatusCode(201, response);
 
         }

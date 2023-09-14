@@ -301,6 +301,17 @@ namespace Business_Access_Layer.Concrete
              var user = _userRepository.GetById(Id);
              return Tuple.Create(user.Result.Username,user.Result.Id);
         }
+        public async Task<Byte[]> GetUserImage(string username)
+        {
+            var user =await  _userRepository.GetUser(username);
+            if (user == null)
+            {
+                return null;
+            }
+
+            Byte[] b = _fileServices.GetImage(user.ImageFile);  // You can use your own method over here.         
+            return b;
+        }
     }
 }
 
