@@ -51,9 +51,9 @@ namespace RecipeAPI.Controllers
             return StatusCode(Int16.Parse(data.Status), data);
         }
 
-        [HttpDelete("recipeId")]
+        [HttpDelete("recipe/{recipeId}")]
 
-        public async Task<IActionResult> DleteListIngredients(int recipeId)
+        public async Task<IActionResult> DeleteListIngredients(int recipeId)
         {
             var data = await _ingredientsService.DeleteList(recipeId);
 

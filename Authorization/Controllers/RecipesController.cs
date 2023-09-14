@@ -43,9 +43,9 @@ namespace RecipeAPI.Controllers
         public ActionResult<Response> GetRecipeById(int id)
         {
             var recipeResponse = _recipesServices.GetRecipeById(id).Result;
-            if (recipeResponse.Status == "204")
+            if (recipeResponse.Status == "404")
             {
-                return recipeResponse;
+                return StatusCode(Int16.Parse(recipeResponse.Status), recipeResponse);
             }
             Recipe recipe =(Recipe) _recipesServices.GetRecipeById(id).Result.Data;
 
@@ -58,14 +58,14 @@ namespace RecipeAPI.Controllers
             {
                 response.Status = "204";
                 response.Data = new { Title = "Not Found" };
-                return response;
+                return StatusCode(Int16.Parse(response.Status), recipeResponse);
             }
             response.Status = "200";
             response.Data = data;
-            return response;            
+            return StatusCode(Int16.Parse(response.Status), response);
         }
-     
-      
+
+
 
         [HttpPut("{id}")]
         public ActionResult<Response> PutRecipe(int id, [FromBody] Recipe recipe)
@@ -119,13 +119,8 @@ namespace RecipeAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> PostRecipe(IFormFile imageFile, [FromQuery] Recipe recipe)
         {
-            var UserData = _userService.GetMe();
-            if (UserData == null)
-            {
-                response.Data = new { Title = "Token not found" };
-                response.Status = "fail";
-                return StatusCode(401, response);
-            }
+            var UserData = await _userService.GetMe();
+      
             if (recipe.CreatedBy != UserData.Id)
             {
                 response.Data = new { Title = "Unauthorize user" };
@@ -138,7 +133,7 @@ namespace RecipeAPI.Controllers
                 Recipe recipeResult = await result;
                 var list = await _recipesServices.Create(recipeResult);
 
-                response.Data = new { Data = list };
+                return StatusCode(Int16.Parse(list.Status), list);
             }
             else
             {

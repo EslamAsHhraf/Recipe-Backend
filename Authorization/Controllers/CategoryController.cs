@@ -1,5 +1,5 @@
-﻿using Business_Access_Layer.Abstract;
-using Business_Access_Layer.Common;
+﻿using Business_Access_Layer.Common;
+using Business_Access_Layer.Abstract;
 using Data_Access_layer.Interfaces;
 using Data_Access_layer.Model;
 using Microsoft.AspNetCore.Mvc;
@@ -17,9 +17,11 @@ namespace RecipeAPI.Controllers
             _categoryServices = categoryServices;
         }
         [HttpGet]
-        public Task<Response> GetAllCategories()
+        public async Task<ActionResult<Response>> GetAllCategories()
         {
-            return  _categoryServices.GetCategories();
+            var response= await  _categoryServices.GetCategories();
+            return StatusCode(Int16.Parse(response.Status), response);
+
         }
     }
 }

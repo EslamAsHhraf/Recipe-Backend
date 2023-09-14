@@ -24,7 +24,7 @@ namespace Business_Access_Layer.Concrete
             {
                 _recipeRepository = recipeRepository;
                 _ingregradientRepository = ingregradientRepository;
-             recipeServices = _recipeServices;
+                _recipeServices = recipeServices;
             }
             public async Task<Response> GetAllIngredients()
             {
@@ -149,7 +149,7 @@ namespace Business_Access_Layer.Concrete
             public async Task<Response> DeleteList(int recipeId)
             {
                 var recipe = await _recipeServices.GetRecipeById(recipeId);
-                if (recipe.Status == "204")
+                if (recipe.Status == "404")
                 {
                     response.Status = "404";
                     response.Data = new { Title = "can't find recipe" };
