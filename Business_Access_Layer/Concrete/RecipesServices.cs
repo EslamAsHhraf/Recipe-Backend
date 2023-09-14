@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Business_Access_Layer.Common;
+using Authorization.Repository;
 
 namespace Business_Access_Layer.Concrete
 {
@@ -49,18 +50,7 @@ namespace Business_Access_Layer.Concrete
             return response;
         }
 
-        public async Task<Recipe> SaveImage(IFormFile imageFile, Recipe recipe)
-        {
-            if (!(recipe.ImageFile == null || recipe.ImageFile == "initial-resipe.jpg"))
-            {
-                _fileServices.DeleteImage(recipe.ImageFile);
-
-            }
-
-            recipe.ImageFile = await _fileServices.SaveImage(imageFile);
-
-            return recipe;
-        }
+     
         public async Task<Response> GetAllRecipes()
         {
             var Recipes = _recipeRepository.GetAll();
@@ -120,6 +110,35 @@ namespace Business_Access_Layer.Concrete
             response.Data = Recipe;
             return response;
         }
-       
+        public async Task<Response> SaveImage(IFormFile imageFile, int Id)
+        {
+            var UserData = await _userService.GetMe();
+            var recipe = await _recipeRepository.GetById(Id);
+            if (recipe == null)
+            {
+                response.Data = new { Title = "recipe not found" };
+                response.Status = "404";
+                return response;
+            }
+            if (recipe.CreatedBy != UserData.Id)
+            {
+                response.Data = new { Title = "Unauthorize user" };
+                response.Status = "401";
+                return response;
+            }
+
+            if (recipe.ImageFile != string.Empty || recipe.ImageFile != "initial.jpg")
+            {
+                _fileServices.DeleteImage(recipe.ImageFile);
+
+            }
+
+            recipe.ImageFile = await _fileServices.SaveImage(imageFile);
+            await _recipeRepository.Update(recipe);
+            
+            response.Status = "200";
+            response.Data = new { Title = "Success Update image" };
+            return response;
+        }
     }
 }

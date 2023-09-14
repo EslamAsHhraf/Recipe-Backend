@@ -13,12 +13,13 @@ namespace Business_Access_Layer.Abstract
     public interface IRecipesServices
     {
         public Task<Response> GetMyRecipes() ;
-        public Task<Recipe> SaveImage(IFormFile imageFile, Recipe recipe);
 
         public Task<Response> GetAllRecipes();
         public Task<Response> GetRecipeById(int Id);
         public Task<Response> Update(Recipe recipe);
         public Task<Response> Delete(Recipe recipe);
         public Task<Response> Create(Recipe recipe);
+        public Task<Response> SaveImage(IFormFile imageFile, int Id);
+
     }
 }

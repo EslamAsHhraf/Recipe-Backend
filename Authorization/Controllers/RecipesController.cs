@@ -124,16 +124,14 @@ namespace RecipeAPI.Controllers
             if (recipe.CreatedBy != UserData.Id)
             {
                 response.Data = new { Title = "Unauthorize user" };
-                response.Status = "fail";
+                response.Status = "401";
                 return StatusCode(401, response);
             }
             if (imageFile != null)
             {
-                Task<Recipe> result = _recipesServices.SaveImage(imageFile, recipe);
-                Recipe recipeResult = await result;
-                var list = await _recipesServices.Create(recipeResult);
-
-                return StatusCode(Int16.Parse(list.Status), list);
+                response.Data = new { Title = "Image File doesn't exits" };
+                response.Status = "400";
+                return StatusCode(400, response);
             }
             else
             {
@@ -159,7 +157,23 @@ namespace RecipeAPI.Controllers
             return StatusCode(Int16.Parse(data.Result.Status), data.Result);
 
         }
+        [HttpPut("updateImage/{id}")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> UpdateImage(IFormFile ImageFile,int id)
+        {
+            
+            if (ImageFile == null)
+            {
+                response.Status = "404";
+                response.Data = new { Title = "ImageFile is null" };
+                return StatusCode(404, response); ;
+            }
 
+            var data = _recipesServices.SaveImage(ImageFile, id);
+            return StatusCode(Int16.Parse(data.Result.Status), data.Result);
+        }
 
 
 
