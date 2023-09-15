@@ -1,5 +1,6 @@
 ﻿using Business_Access_Layer.Abstract;
 using Business_Access_Layer.Common;
+using Data_Access_layer.Data;
 using Data_Access_layer.Interfaces;
 using Data_Access_layer.Model;
 using System;
@@ -78,8 +79,16 @@ namespace Business_Access_Layer.Concrete
                 return response;
             }
             var createdrating = await _ratingRepository.Create(rating);
+
+            var allraterecipe = from rate in allrate
+                                where rate.RecipeId == recipeAuth.Id
+                                select rate.Rate;
+            var totalrate = (double)(allraterecipe.Sum() / (allraterecipe.Count() * 5.0)) * 5;
+            recipeAuth.TotalRating = totalrate;
+            await _recipeRepository.Update(recipeAuth);
+
             response.Status = "200";
-            response.Data = createdrating;
+            response.Data = createdrating ;
             return response;
         }
     }
