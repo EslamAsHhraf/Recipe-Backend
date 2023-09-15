@@ -38,7 +38,7 @@ namespace RecipeAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetFavourite(int id)
         {
-            var data = _favouriteServices.GetFavourite(id);
+            var data = _favouriteServices.GetRecipesFavourite(id);
             return StatusCode(Int16.Parse(data.Result.Status), data.Result);
         }
     }

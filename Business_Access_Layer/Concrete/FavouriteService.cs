@@ -14,11 +14,12 @@ namespace Business_Access_Layer.Concrete
     {
         private readonly IRepository<Favourite> _favouriteRepository;
         private readonly IAuthService _userService;
-
+        private readonly IRepository<Recipe> _recipeRepository;
         private Response response = new Response();
-        public FavouriteService(IRepository<Favourite> favouriteRepository)
+        public FavouriteService(IRepository<Favourite> favouriteRepository, IRepository<Recipe> recipeRepository)
         {
             _favouriteRepository = favouriteRepository;
+            _recipeRepository = recipeRepository;
 
         }
         public async Task<Response> GetMyFavourites(int id)
@@ -58,10 +59,18 @@ namespace Business_Access_Layer.Concrete
                 response.Data = new { Title = "Deleted" };
                 return response;
         }
-        public async Task<Response> GetFavourite(int id)
+        public async Task<Response> GetRecipesFavourite(int userid)
         {
-            var favourite = await _favouriteRepository.GetById(id);
-            if (favourite == null)
+            var favourites = _favouriteRepository.GetAll();
+
+            var MyFavourite = favourites.Where(user => user.AuthorId == userid).ToList();
+            var allRecipes = _recipeRepository.GetAll();
+            var Recipes =
+              from recipe in allRecipes
+              join fav in MyFavourite on recipe.Id equals fav.RecipeId
+              select recipe;
+
+            if (Recipes == null)
             {
                 response.Status = "404";
                 response.Data = new { Title = "Not found" };
@@ -69,9 +78,10 @@ namespace Business_Access_Layer.Concrete
             }
 
             response.Status = "200";
-            response.Data = favourite;
+            response.Data = Recipes;
             return response;
         }
+
 
 
 
