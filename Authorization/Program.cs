@@ -31,6 +31,7 @@ builder.Services.AddScoped<IRepository<Category>, Repository<Category>>();
 builder.Services.AddScoped<IRepository<RecipeIngredients>, Repository<RecipeIngredients>>();
 builder.Services.AddScoped<IRepository<Rating>, Repository<Rating>>();
 builder.Services.AddScoped<IRepository<Favourite>, Repository<Favourite>>();
+builder.Services.AddScoped<IRepository<PlanMeals>, Repository<PlanMeals>>();
 
 
 //builder.Services.AddScoped<IRepository<Ingredient>, Repository<Ingredient>>();
@@ -97,6 +98,7 @@ builder.Services.AddScoped<IRecipes, RecipesRepository>();
 builder.Services.AddScoped<IRecipesServices, RecipesServices>();
 builder.Services.AddScoped<IRatingService, RatingServices>();
 builder.Services.AddScoped<IFavouriteService, FavouriteService>();
+builder.Services.AddScoped<IPlanMealsService, PlanMealsService>();
 
 var app = builder.Build();
 app.Use((ctx, next) =>

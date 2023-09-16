@@ -20,6 +20,7 @@ namespace Data_Access_layer.Data
         public DbSet<Rating> Ratinges { get; set; }
         public DbSet<Category> Categorys { get; set; }
         public DbSet<RecipeIngredients> RecipeIngredients { get; set; }
+        public DbSet<PlanMeals> PlanMeals { get; set; }
 
     }
 }
