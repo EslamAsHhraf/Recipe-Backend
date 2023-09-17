@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,8 +11,9 @@ namespace Data_Access_layer.Model
     {
         public int Id { get; set; }
         public string Title { get; set; }
-
-        public int Quantity { get; set; }
-        public bool Purchased { get; set; } = false;
+        public int CreatedBy { get; set; }
+        [ForeignKey("User.UserId")]
+        public int QuantityShopping { get; set; }
+        public int QuantityPurchased { get; set; } = 0;
     }
 }

@@ -13,5 +13,6 @@ namespace Data_Access_layer.Interfaces
         public Task<IEnumerable<T>> SearchByName(string searchTerm);
         public Task<bool> CreateList(List<T> _object);
         public Task<bool> DeleteList(IEnumerable<T> _object);
+        public Task<T> GetByName(string searchTerm);
     }
 }

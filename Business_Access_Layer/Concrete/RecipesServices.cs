@@ -4,14 +4,7 @@ using Data_Access_layer.Model;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Business_Access_Layer.Common;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Business_Access_Layer.Common;
+
 
 namespace Business_Access_Layer.Concrete
 {
@@ -19,7 +12,6 @@ namespace Business_Access_Layer.Concrete
     {
         private readonly IRepository<Recipe> _recipeRepository;
         private IAuthService _userService;
-        private readonly IWebHostEnvironment _hostEnvironment;
         private readonly IFileServices _fileServices;
         private readonly IRecipes _recipesRepository;
         private Response response = new Response();
