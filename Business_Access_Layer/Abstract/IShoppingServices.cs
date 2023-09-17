@@ -10,6 +10,7 @@ namespace Business_Access_Layer.Abstract
 {
     public interface IShoppingServices
     {
+        public Task<Response> GetById(int id);
         public  Task<Response> GetMyShopping();
         public  Task<Response> GetMyPurchased();
         public  Task<Response> AddPurchased(int id, int quantity);

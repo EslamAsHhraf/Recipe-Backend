@@ -2,6 +2,7 @@
 using Business_Access_Layer.Common;
 using Data_Access_layer.Interfaces;
 using Data_Access_layer.Model;
+using Data_Access_layer.Repository;
 
 
 namespace Business_Access_Layer.Concrete
@@ -18,7 +19,19 @@ namespace Business_Access_Layer.Concrete
             _shopping=shopping;
             _shoppingRepository=shoppingRepository;
         }
-
+        public async Task<Response> GetById(int id)
+        {
+            var shopping = await _shoppingRepository.GetById(id);
+            if (shopping == null)
+            {
+                response.Status = "404";
+                response.Data = new { Title = "No Content" };
+                return response;
+            }
+            response.Status = "200";
+            response.Data = shopping;
+            return response;
+        }
         public async Task<Response> GetMyShopping()
         {
             UserData data = await _userService.GetMe();
@@ -57,6 +70,13 @@ namespace Business_Access_Layer.Concrete
                 response.Data = new { Title = "Not Found" };
                 return response;
             }
+            UserData data = await _userService.GetMe();
+            if (data.Id != _object.CreatedBy)
+            {
+                response.Status = "401";
+                response.Data = new { Title = "Unauthorize user" };
+                return response;
+            }
             if (quantity > _object.QuantityShopping)
             {
                 _object.QuantityPurchased = _object.QuantityPurchased + _object.QuantityShopping;
@@ -86,8 +106,8 @@ namespace Business_Access_Layer.Concrete
                 Shopping _object = await _shoppingRepository.GetByName(entity.Title);
                 if (_object==null)
                 {
-                    _object.Title = _object.Title.ToLower();
-                     await Create(_object);
+                    entity.Title = entity.Title.ToLower();
+                     await Create(entity);
                 }
                 else
                 {
