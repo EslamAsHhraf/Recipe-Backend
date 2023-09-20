@@ -55,7 +55,7 @@ namespace Business_Access_Layer.Concrete
             var Recipes = _recipeRepository.GetAll();
             if (Recipes == null)
             {
-                response.Status = "204";
+                response.Status = "404";
                 response.Data = new { Title = "No Content" };
                 return response;
             }
@@ -68,7 +68,7 @@ namespace Business_Access_Layer.Concrete
             var Recipe = await _recipeRepository.GetById(Id);
             if (Recipe == null)
             {
-                response.Status = "204";
+                response.Status = "404";
                 response.Data = new { Title = "No Content" };
                 return response;
             }

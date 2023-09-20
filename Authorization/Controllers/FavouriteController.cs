@@ -17,8 +17,8 @@ namespace RecipeAPI.Controllers
         {
             _favouriteServices = favouriteServices;
         }
-        [HttpGet("Favouritesofuser")]
-        public ActionResult<Response> GetFavouritesofuser(int id)
+        [HttpPost("Favouritesofuser")]
+        public ActionResult<Response> GetFavouritesofuser([FromBody] int id)
         {
             var data = _favouriteServices.GetMyFavourites(id);
             return StatusCode(Int16.Parse(data.Result.Status), data.Result);
@@ -35,8 +35,8 @@ namespace RecipeAPI.Controllers
             var data = _favouriteServices.DeleteFavourite(id);
             return StatusCode(Int16.Parse(data.Result.Status), data.Result);
         }
-        [HttpGet]
-        public async Task<IActionResult> GetFavourite(int id)
+        [HttpPost("FavouritesRecipes")]
+        public async Task<IActionResult> GetFavourite([FromBody] int id)
         {
             var data = _favouriteServices.GetRecipesFavourite(id);
             return StatusCode(Int16.Parse(data.Result.Status), data.Result);

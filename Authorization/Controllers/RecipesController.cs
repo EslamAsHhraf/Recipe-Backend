@@ -56,7 +56,7 @@ namespace RecipeAPI.Controllers
             var data = Tuple.Create(recipe, ingredients, Createdby, Category, imageUser);
             if (data == null)
             {
-                response.Status = "204";
+                response.Status = "404";
                 response.Data = new { Title = "Not Found" };
                 return StatusCode(Int16.Parse(response.Status), recipeResponse);
             }
@@ -71,7 +71,7 @@ namespace RecipeAPI.Controllers
         public ActionResult<Response> PutRecipe(int id, [FromBody] Recipe recipe)
         {
             var recipeResponse = _recipesServices.GetRecipeById(id).Result;
-            if (recipeResponse.Status == "204")
+            if (recipeResponse.Status == "404")
             {
                 return recipeResponse;
             }
@@ -94,7 +94,7 @@ namespace RecipeAPI.Controllers
         public async Task<ActionResult<Response>> DeleteRecipe(int id)
         {
             var recipe = await _recipesServices.GetRecipeById(id);
-            if (recipe.Status == "204")
+            if (recipe.Status == "404")
             {
                 return StatusCode(Int16.Parse(recipe.Status), recipe);
 

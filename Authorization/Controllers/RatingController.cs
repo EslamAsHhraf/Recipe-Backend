@@ -15,7 +15,7 @@ namespace RecipeAPI.Controllers
         {
             _ratingServices = ratingServices;
         }
-        [HttpGet("{id}")]
+        [HttpGet]
         public ActionResult<Response> GetRatingOfRecipe(int recipeid)
         {
             var data = _ratingServices.GetRecipeRating(recipeid);
