@@ -77,5 +77,14 @@ namespace Data_Access_layer.Repositories
 
             return (_context.SaveChanges()) > 0;
         }
+
+        public async Task<T> GetByName(string searchTerm)
+        {
+
+            // Filter the entities by name.
+            return  await entity.FirstOrDefaultAsync(entity => entity.Title.ToLower()==(searchTerm.ToLower()));
+
+            
+        }
     }
 }

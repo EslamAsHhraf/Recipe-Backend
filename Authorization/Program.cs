@@ -32,7 +32,8 @@ builder.Services.AddScoped<IRepository<RecipeIngredients>, Repository<RecipeIngr
 builder.Services.AddScoped<IRepository<Rating>, Repository<Rating>>();
 builder.Services.AddScoped<IRepository<Favourite>, Repository<Favourite>>();
 builder.Services.AddScoped<IRepository<PlanMeals>, Repository<PlanMeals>>();
-
+builder.Services.AddScoped<IRepository<Shopping>, Repository<Shopping>>();
+builder.Services.AddScoped<IShopping, ShoppingRepository>();
 
 //builder.Services.AddScoped<IRepository<Ingredient>, Repository<Ingredient>>();
 builder.Services.AddSwaggerGen(options =>
@@ -99,6 +100,7 @@ builder.Services.AddScoped<IRecipesServices, RecipesServices>();
 builder.Services.AddScoped<IRatingService, RatingServices>();
 builder.Services.AddScoped<IFavouriteService, FavouriteService>();
 builder.Services.AddScoped<IPlanMealsService, PlanMealsService>();
+builder.Services.AddScoped<IShoppingServices, ShoppingServices>();
 
 var app = builder.Build();
 app.Use((ctx, next) =>
