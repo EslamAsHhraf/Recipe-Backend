@@ -4,6 +4,7 @@ using Data_Access_layer.Model;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Business_Access_Layer.Common;
+using Authorization.Model;
 
 
 namespace Business_Access_Layer.Concrete
@@ -104,6 +105,12 @@ namespace Business_Access_Layer.Concrete
         public async Task<Response> SaveImage(IFormFile imageFile, int Id)
         {
             var UserData = await _userService.GetMe();
+            if (UserData == null)
+            {
+                response.Status = "401";
+                response.Data = new { Title = "Untheorized User" };
+                return response;
+            }
             var recipe = await _recipeRepository.GetById(Id);
             if (recipe == null)
             {

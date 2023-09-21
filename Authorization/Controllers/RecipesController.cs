@@ -1,4 +1,5 @@
-﻿using Business_Access_Layer.Abstract;
+﻿using Authorization.Model;
+using Business_Access_Layer.Abstract;
 using Business_Access_Layer.Authorization;
 using Business_Access_Layer.Common;
 using Data_Access_layer.Interfaces;
@@ -120,7 +121,12 @@ namespace RecipeAPI.Controllers
         public async Task<IActionResult> PostRecipe(IFormFile imageFile, [FromQuery] Recipe recipe)
         {
             var UserData = await _userService.GetMe();
-      
+            if (UserData == null)
+            {
+                response.Status = "401";
+                response.Data = new { Title = "Untheorized User" };
+                return StatusCode(Int16.Parse(response.Status), response);
+            }
             if (recipe.CreatedBy != UserData.Id)
             {
                 response.Data = new { Title = "Unauthorize user" };

@@ -115,8 +115,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseWhen(context => ((context.Request.Method== "POST" || context.Request.Method == "DELETE" || context.Request.Method == "PUT" )
-    && context.Request.Path != "/api/auth/register" )|| context.Request.Path == "/api/auth/me", applicationBuilder =>
+app.UseWhen(context => ((context.Request.Method == "POST" || context.Request.Method == "DELETE" || context.Request.Method == "PUT" || context.Request.Method == "GET") &&
+context.Request.Path != "/api/auth/register" ) && (context.Request.Path != "/api/auth/login") && (context.Request.Path != "/api/recipe")&& 
+(context.Request.Path != "/api/recipeingredients") && (!context.Request.Path.StartsWithSegments("/api/recipe/search")) && (context.Request.Path != "/api/auth/me"), applicationBuilder =>
 {
     applicationBuilder.UseMiddleware<ApiKeyMiddleware>();
 });

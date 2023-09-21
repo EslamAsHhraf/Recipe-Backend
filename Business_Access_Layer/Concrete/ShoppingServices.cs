@@ -1,4 +1,5 @@
-﻿using Business_Access_Layer.Abstract;
+﻿using Authorization.Model;
+using Business_Access_Layer.Abstract;
 using Business_Access_Layer.Common;
 using Data_Access_layer.Interfaces;
 using Data_Access_layer.Model;
@@ -71,6 +72,12 @@ namespace Business_Access_Layer.Concrete
                 return response;
             }
             UserData data = await _userService.GetMe();
+            if (data == null)
+            {
+                response.Status = "401";
+                response.Data = new { Title = "Untheorized User" };
+                return response;
+            }
             if (data.Id != _object.CreatedBy)
             {
                 response.Status = "401";

@@ -130,6 +130,10 @@ namespace Business_Access_Layer.Concrete
 
             }
             User user = await _userRepository.GetUser(result);
+            if (user == null)
+            {
+                return null;
+            }
             UserData data = new UserData();
             data.Name = user.Username;
             data.Id = user.Id;
@@ -198,6 +202,12 @@ namespace Business_Access_Layer.Concrete
         public async Task<Response> changePassword(string oldPassword, string newPassword)
         {
             var userData = await GetMe();
+            if (userData == null)
+            {
+                response.Status = "401";
+                response.Data = new { Title = "Untheorized User" };
+                return response;
+            }
             var username = userData.Name;
             UserDto request = new UserDto();
             request.Username = username;
@@ -234,7 +244,12 @@ namespace Business_Access_Layer.Concrete
         public async Task<Response> SaveImage(IFormFile imageFile)
         {
             var userData = GetMe();
-           
+            if (userData == null)
+            {
+                response.Status = "401";
+                response.Data = new { Title = "Untheorized User" };
+                return response;
+            }
             var username = userData.Result.Name;
 
             var user =await _userRepository.GetUser(username);
