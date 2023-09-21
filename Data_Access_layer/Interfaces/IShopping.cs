@@ -11,5 +11,7 @@ namespace Data_Access_layer.Interfaces
     {
         public IEnumerable<Shopping> GetShopping(int id);
         public IEnumerable<Shopping> GetPurchased(int id);
+        public  Task<Shopping> check(string searchTerm, int id);
+
     }
 }

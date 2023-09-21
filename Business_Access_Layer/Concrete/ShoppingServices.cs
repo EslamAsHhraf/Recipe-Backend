@@ -110,8 +110,8 @@ namespace Business_Access_Layer.Concrete
                     response.Status = "401";
                     return response;
                 }
-                Shopping _object = await _shoppingRepository.GetByName(entity.Title);
-                if (_object==null)
+                Shopping _object = await _shopping.check(entity.Title,entity.CreatedBy);
+                if (_object==null )
                 {
                     entity.Title = entity.Title.ToLower();
                      await Create(entity);

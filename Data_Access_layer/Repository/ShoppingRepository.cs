@@ -34,7 +34,14 @@ namespace Data_Access_layer.Repository
 
             return filteredEntities;
         }
+        public async Task<Shopping> check(string searchTerm, int id)
+        {
 
-     
+            // Filter the entities by name.
+            return await entity.FirstOrDefaultAsync(entity => entity.Title.ToLower() == (searchTerm.ToLower()) && entity.CreatedBy ==id);
+
+
+        }
+
     }
 }
