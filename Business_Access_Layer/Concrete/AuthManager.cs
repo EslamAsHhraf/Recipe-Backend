@@ -1,5 +1,4 @@
 using Business_Access_Layer.Abstract;
-using Data_Access_layer.Model;
 using Authorization.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -9,10 +8,11 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Hosting;
 using System.Security.Cryptography;
-using Data_Access_layer.Interfaces;
+using DomainLayer.Interfaces;
+using DomainLayer.Model;
 using Business_Access_Layer.Common;
-using Azure.Core;
 using Microsoft.Extensions.Hosting;
+
 
 namespace Business_Access_Layer.Concrete
 {

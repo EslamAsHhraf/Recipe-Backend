@@ -1,7 +1,7 @@
 ﻿using Business_Access_Layer.Abstract;
 using Business_Access_Layer.Common;
 using Business_Access_Layer.Concrete;
-using Data_Access_layer.Model;
+using DomainLayer.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

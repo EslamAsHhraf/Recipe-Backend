@@ -3,16 +3,15 @@ using Swashbuckle.AspNetCore.Filters;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
-using Authorization.Repository;
-using Data_Access_layer.Data;
+using PresistenceLayer.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Business_Access_Layer.Abstract;
 using Business_Access_Layer.Concrete;
-using Data_Access_layer.Model;
-using Data_Access_layer.Repositories;
-using Data_Access_layer.Interfaces;
+using DomainLayer.Model;
+using PresistenceLayer.Repositories;
+using DomainLayer.Interfaces;
 using Microsoft.Extensions.FileProviders;
-using Data_Access_layer.Repository;
+using PresistenceLayer.Repository;
 using Business_Access_Layer.Authorization;
 using Microsoft.AspNetCore.Builder;
 using System.Reflection.PortableExecutable;
@@ -47,7 +46,7 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 }) ;
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(connectionString,b=>b.MigrationsAssembly("Data_Access_layer")));
+builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(connectionString,b=>b.MigrationsAssembly("PresistenceLayer")));
 
 builder.Services.AddCors(options => options.AddPolicy(name: "RecipeOrigins",
             policy =>

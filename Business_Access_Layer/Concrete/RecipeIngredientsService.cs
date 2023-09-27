@@ -3,24 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Data_Access_layer.Data;
-using Data_Access_layer.Interfaces;
-using Data_Access_layer.Model;
+using DomainLayer.Interfaces;
+using DomainLayer.Model;
 using Business_Access_Layer.Abstract;
 using Business_Access_Layer.Common;
-using Nest;
 
 namespace Business_Access_Layer.Concrete
 {
    
         public class RecipeIngredientsService : IRecipeIngredientsService
         {
-            private Data_Access_layer.Interfaces.IRepository<Recipe> _recipeRepository;
-            private Data_Access_layer.Interfaces.IRepository<RecipeIngredients> _ingregradientRepository;
+            private DomainLayer.Interfaces.IRepository<Recipe> _recipeRepository;
+            private DomainLayer.Interfaces.IRepository<RecipeIngredients> _ingregradientRepository;
             private Response response = new Response();
             private readonly IRecipesServices _recipeServices;
 
-        public RecipeIngredientsService(Data_Access_layer.Interfaces.IRepository<Recipe> recipeRepository, Data_Access_layer.Interfaces.IRepository<RecipeIngredients> ingregradientRepository, IRecipesServices recipeServices)
+        public RecipeIngredientsService(DomainLayer.Interfaces.IRepository<Recipe> recipeRepository, DomainLayer.Interfaces.IRepository<RecipeIngredients> ingregradientRepository, IRecipesServices recipeServices)
             {
                 _recipeRepository = recipeRepository;
                 _ingregradientRepository = ingregradientRepository;

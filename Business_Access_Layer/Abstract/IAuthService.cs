@@ -1,10 +1,8 @@
 
 using Authorization.Model;
-using Azure.Core;
 using Business_Access_Layer.Common;
-using Data_Access_layer.Model;
+using DomainLayer.Model;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;

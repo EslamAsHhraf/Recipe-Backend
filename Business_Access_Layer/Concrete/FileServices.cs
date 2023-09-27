@@ -1,12 +1,12 @@
-﻿using Business_Access_Layer.Abstract;
+﻿﻿using Business_Access_Layer.Abstract;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace Business_Access_Layer.Concrete
 {

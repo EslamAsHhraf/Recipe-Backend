@@ -1,6 +1,6 @@
 ﻿using Business_Access_Layer.Abstract;
 using Business_Access_Layer.Common;
-using Data_Access_layer.Model;
+using DomainLayer.Model;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using static System.Runtime.InteropServices.JavaScript.JSType;

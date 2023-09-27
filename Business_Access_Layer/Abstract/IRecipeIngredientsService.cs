@@ -1,6 +1,5 @@
 ﻿using Business_Access_Layer.Common;
-using Data_Access_layer.Model;
-using Microsoft.AspNetCore.Mvc;
+using DomainLayer.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;

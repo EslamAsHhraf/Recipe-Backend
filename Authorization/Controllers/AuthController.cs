@@ -1,7 +1,7 @@
 ﻿using Authorization.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Data_Access_layer.Model;
+using DomainLayer.Model;
 using Business_Access_Layer.Abstract;
 using System.ComponentModel.DataAnnotations;
 using static System.Runtime.InteropServices.JavaScript.JSType;

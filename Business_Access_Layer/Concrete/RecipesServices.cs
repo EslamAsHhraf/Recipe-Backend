@@ -1,6 +1,6 @@
 using Business_Access_Layer.Abstract;
-using Data_Access_layer.Interfaces;
-using Data_Access_layer.Model;
+using DomainLayer.Interfaces;
+using DomainLayer.Model;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Business_Access_Layer.Common;

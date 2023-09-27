@@ -1,4 +1,4 @@
-﻿using Data_Access_layer.Model;
+﻿using DomainLayer.Model;
 using Business_Access_Layer.Common;
 using System;
 using System.Collections.Generic;

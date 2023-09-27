@@ -1,8 +1,7 @@
 ﻿using Business_Access_Layer.Abstract;
 using Business_Access_Layer.Common;
-using Data_Access_layer.Interfaces;
-using Data_Access_layer.Model;
-using Data_Access_layer.Repository;
+using DomainLayer.Interfaces;
+using DomainLayer.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
