@@ -17,12 +17,14 @@ namespace Business_Access_Layer.Concrete
             private DomainLayer.Interfaces.IRepository<RecipeIngredients> _ingregradientRepository;
             private Response response = new Response();
             private readonly IRecipesServices _recipeServices;
-
-        public RecipeIngredientsService(DomainLayer.Interfaces.IRepository<Recipe> recipeRepository, DomainLayer.Interfaces.IRepository<RecipeIngredients> ingregradientRepository, IRecipesServices recipeServices)
+            private readonly IFileServices _fileServices;
+        public RecipeIngredientsService(DomainLayer.Interfaces.IRepository<Recipe> recipeRepository, DomainLayer.Interfaces.IRepository<RecipeIngredients> ingregradientRepository, 
+            IRecipesServices recipeServices, IFileServices fileServices)
             {
                 _recipeRepository = recipeRepository;
                 _ingregradientRepository = ingregradientRepository;
                 _recipeServices = recipeServices;
+                _fileServices= fileServices;
             }
             public async Task<Response> GetAllIngredients()
             {
@@ -90,8 +92,20 @@ namespace Business_Access_Layer.Concrete
                     response.Data = new { Title = "Not Content" };
                     return response;
                 }
-                response.Status = "200";
-                response.Data = allrecipes;
+                List<object> results = new List<object>();
+
+                foreach (Recipe recipe in allrecipes)
+                {
+                    Byte[] image = _fileServices.GetImage(recipe.ImageFile);
+                    var result = new
+                    {
+                        recipe = recipe,
+                        image = image
+                    };
+                    results.Add(result);
+                }
+            response.Status = "200";
+                response.Data = results;
                 return response;
             }
 

@@ -36,9 +36,22 @@ namespace Business_Access_Layer.Concrete
                 response.Data = new { Title = "Unauthorized" };
                 return response;
             }
+
             var myRecipe =  _recipesRepository.GetMyRecipes(data.Id);
+            List<object> results = new List<object>();
+
+            foreach (Recipe recipe in myRecipe)
+            {
+                Byte[] image = _fileServices.GetImage(recipe.ImageFile);
+                var result = new
+                {
+                    recipe = recipe,
+                    image = image
+                };
+                results.Add(result);
+            }
             response.Status = "200";
-            response.Data = myRecipe;
+            response.Data = results;
             return response;
         }
 
@@ -52,8 +65,20 @@ namespace Business_Access_Layer.Concrete
                 response.Data = new { Title = "No Content" };
                 return response;
             }
+            List<object> results = new List<object>();
+
+            foreach (Recipe  recipe  in Recipes)
+            {
+                Byte[] image = _fileServices.GetImage(recipe.ImageFile);
+                var result=new
+                {
+                    recipe = recipe,
+                    image = image
+                };
+                results.Add(result);
+            }
             response.Status = "200";
-            response.Data = Recipes;
+            response.Data = results;
             return response;
         }
         public async Task<Response> GetRecipeById(int Id)
