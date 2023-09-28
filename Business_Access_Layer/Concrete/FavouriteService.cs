@@ -15,18 +15,21 @@ namespace Business_Access_Layer.Concrete
         private readonly IRepository<Favourite> _favouriteRepository;
         private readonly IAuthService _userService;
         private readonly IRepository<Recipe> _recipeRepository;
+        private readonly IFileServices _fileServices;
+
         private Response response = new Response();
-        public FavouriteService(IRepository<Favourite> favouriteRepository, IRepository<Recipe> recipeRepository)
+        public FavouriteService(IRepository<Favourite> favouriteRepository, IRepository<Recipe> recipeRepository, IFileServices fileServices)
         {
             _favouriteRepository = favouriteRepository;
             _recipeRepository = recipeRepository;
-
+            _fileServices = fileServices;
         }
         public async Task<Response> GetMyFavourites(int id)
         {
             var favourites = _favouriteRepository.GetAll();
 
             var MyFavourite = favourites.Where(user => user.AuthorId == id).ToList();
+            
             response.Status = "200";
             response.Data = MyFavourite;
             return response;
@@ -76,9 +79,20 @@ namespace Business_Access_Layer.Concrete
                 response.Data = new { Title = "Not found" };
                 return response;
             }
+            List<object> results = new List<object>();
 
+            foreach (Recipe recipe in Recipes)
+            {
+                Byte[] image = _fileServices.GetImage(recipe.ImageFile);
+                var result = new
+                {
+                    recipe = recipe,
+                    image = image
+                };
+                results.Add(result);
+            }
             response.Status = "200";
-            response.Data = Recipes;
+            response.Data = results;
             return response;
         }
 
