@@ -16,4 +16,7 @@ UnitTests/bin/*
 PresistenceLayer/.vs/*
 PresistenceLayer/obj/*
 PresistenceLayer/bin/*
+UnitTests/bin/*
+UnitTests/obj/*
+UnitTests/.vs/*
 
