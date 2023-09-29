@@ -53,8 +53,7 @@ namespace RecipeAPI.Controllers
             IEnumerable<RecipeIngredients> ingredients = (IEnumerable<RecipeIngredients>) _RecipeIngredientsServices.GetRecipeIngredients(recipe).Result.Data;
             var Createdby = _userService.GetUserById(recipe.CreatedBy);
             Category Category = (Category) _categoryServices.GetCategoryById(recipe.Category).Result.Data;
-            Byte[] imageUser = _fileServices.GetImage(recipe.ImageFile);
-            var data = Tuple.Create(recipe, ingredients, Createdby, Category, imageUser);
+            var data = Tuple.Create(recipe, ingredients, Createdby, Category);
             if (data == null)
             {
                 response.Status = "404";

@@ -79,20 +79,9 @@ namespace Business_Access_Layer.Concrete
                 response.Data = new { Title = "Not found" };
                 return response;
             }
-            List<object> results = new List<object>();
-
-            foreach (Recipe recipe in Recipes)
-            {
-                Byte[] image = _fileServices.GetImage(recipe.ImageFile);
-                var result = new
-                {
-                    recipe = recipe,
-                    image = image
-                };
-                results.Add(result);
-            }
+           
             response.Status = "200";
-            response.Data = results;
+            response.Data = Recipes;
             return response;
         }
 

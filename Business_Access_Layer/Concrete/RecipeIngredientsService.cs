@@ -92,20 +92,9 @@ namespace Business_Access_Layer.Concrete
                     response.Data = new { Title = "Not Content" };
                     return response;
                 }
-                List<object> results = new List<object>();
 
-                foreach (Recipe recipe in allrecipes)
-                {
-                    Byte[] image = _fileServices.GetImage(recipe.ImageFile);
-                    var result = new
-                    {
-                        recipe = recipe,
-                        image = image
-                    };
-                    results.Add(result);
-                }
-            response.Status = "200";
-                response.Data = results;
+                response.Status = "200";
+                response.Data = allrecipes;
                 return response;
             }
 

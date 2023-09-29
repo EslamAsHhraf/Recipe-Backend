@@ -39,21 +39,10 @@ namespace Business_Access_Layer.Concrete
                 return response;
             }
 
-            var myRecipe =  _recipesRepository.GetMyRecipes(data.Id);
-            List<object> results = new List<object>();
-
-            foreach (Recipe recipe in myRecipe)
-            {
-                Byte[] image = _fileServices.GetImage(recipe.ImageFile);
-                var result = new
-                {
-                    recipe = recipe,
-                    image = image
-                };
-                results.Add(result);
-            }
+            var myRecipes =  _recipesRepository.GetMyRecipes(data.Id);
+          
             response.Status = "200";
-            response.Data = results;
+            response.Data = myRecipes;
             return response;
         }
 
@@ -67,20 +56,9 @@ namespace Business_Access_Layer.Concrete
                 response.Data = new { Title = "No Content" };
                 return response;
             }
-            List<object> results = new List<object>();
-
-            foreach (Recipe  recipe  in Recipes)
-            {
-                Byte[] image = _fileServices.GetImage(recipe.ImageFile);
-                var result=new
-                {
-                    recipe = recipe,
-                    image = image
-                };
-                results.Add(result);
-            }
+           
             response.Status = "200";
-            response.Data = results;
+            response.Data = Recipes;
             return response;
         }
         public async Task<Response> GetRecipeById(int Id)
@@ -170,12 +148,7 @@ namespace Business_Access_Layer.Concrete
         }
 
        
-        public Byte[] GetImage(string imageName)
-        {
-
-            Byte[] b = _fileServices.GetImage(imageName);  // You can use your own method over here.         
-            return b;
-        }
+  
         public async Task<string> SaveImageRecipe(IFormFile imageFile, Recipe recipe)
         {
 

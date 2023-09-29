@@ -12,7 +12,6 @@ namespace Business_Access_Layer.Abstract
     public interface IRecipesServices
     {
         public Task<Response> GetMyRecipes();
-        public Byte[] GetImage(string imageName);
         public Task<Response> GetAllRecipes();
         public Task<Response> GetRecipeById(int Id);
         public Task<Response> Update(Recipe recipe);
