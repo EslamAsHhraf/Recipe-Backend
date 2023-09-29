@@ -16,15 +16,13 @@ namespace Authorization.Controllers
     public class AuthController : ControllerBase
     {
         public static User user = new User();
-        public readonly IConfiguration _configuration;
         private Response response = new Response();
         private IAuthService _userService;
 
 
-        public AuthController(IConfiguration configuration, IAuthService userService)
+        public AuthController( IAuthService userService)
 
         {
-            _configuration = configuration;
             _userService = userService;
         }
         [HttpGet("{id}")]
@@ -34,23 +32,18 @@ namespace Authorization.Controllers
             var User = _userService.GetUserById(id);
             if (User == null)
             {
-                response.Status = "fail";
+                response.Status = "401";
                 response.Data = new { Title = "Cannot find user" };
                 return StatusCode(401, response);
             }
-            Byte[] imageUser =await _userService.GetImage(User.Item1);
-            if (imageUser == null)
-            {
-                response.Status = "fail";
-                response.Data = new { Title = "Error in find image" };
-                return StatusCode(401, response);
-            }
-            response.Status = "success";
-            response.Data = new
-            {
-                user = User,
-                image = File(imageUser, "image/jpeg")
+       
+            response.Status = "200";
+            response.Data = new {
+                name = User.Item1,
+                id = User.Item2,
+                image = User.Item3
             };
+           
             return StatusCode(200, response);
 
         }
@@ -76,9 +69,6 @@ namespace Authorization.Controllers
 
         }
 
-
-
-
         [HttpPost("register")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -87,7 +77,7 @@ namespace Authorization.Controllers
             // check if ModelState is valid
             if (!ModelState.IsValid)
             {
-                response.Status = "fail";
+                response.Status = "400";
                 response.Data = new { Title = "User Name and Password are required" };
                 return StatusCode(400, response);
             }
@@ -102,18 +92,18 @@ namespace Authorization.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<Response> Login([FromQuery] UserDto request)
+        public async Task<ActionResult<Response>> Login([FromQuery] UserDto request)
         {
             // check if model isn't correct
-            if (!ModelState.IsValid)
+            if (request==null || request.Username == null || request.Password ==null)
             {
-                response.Status = "fail";
+                response.Status = "400";
                 response.Data = new { Title = "User Name and Password are required" };
                 return StatusCode(400, response);
             }
             // check for user
-            var data = _userService.Login(request);
-            return StatusCode(Int16.Parse(data.Result.Status), data.Result);
+            var data = await  _userService.Login(request);
+            return StatusCode(Int16.Parse(data.Status), data);
         }
 
         [HttpPut("changePassword")]

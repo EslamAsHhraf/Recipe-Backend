@@ -11,6 +11,6 @@ namespace Business_Access_Layer.Abstract
     {
         public Byte[] GetImage(string imageName);
         public void DeleteImage(string imageName);
-        public Task<string> SaveImage(IFormFile imageFile);
+        public Task<string> SaveImage(IFormFile imageFile,string fileName);
     }
 }

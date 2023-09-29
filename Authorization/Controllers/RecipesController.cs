@@ -120,37 +120,10 @@ namespace RecipeAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> PostRecipe(IFormFile imageFile, [FromQuery] Recipe recipe)
         {
-            var UserData = await _userService.GetMe();
-            if (UserData == null)
-            {
-                response.Status = "401";
-                response.Data = new { Title = "Untheorized User" };
-                return StatusCode(Int16.Parse(response.Status), response);
-            }
-            if (recipe.CreatedBy != UserData.Id)
-            {
-                response.Data = new { Title = "Unauthorize user" };
-                response.Status = "401";
-                return StatusCode(401, response);
-            }
-            if (imageFile != null)
-            {
-                Task<Recipe> result = _recipesServices.SaveImageRecipe(imageFile, recipe);
-                Recipe recipeResult = await result;
-                var data = await _recipesServices.Create(recipeResult);
 
-                response= data;
-            }
-            else
-            {
-                recipe.ImageFile = "initial-recipe.jpg";
-                var list = await _recipesServices.Create(recipe);
-                response.Data =  list;
-            }
+            var data = _recipesServices.AddRecipe(imageFile, recipe);
 
-
-            response.Status = "201";
-            return StatusCode(201, response);
+            return StatusCode(Int16.Parse(data.Result.Status), data.Result);
 
         }
 

@@ -19,6 +19,7 @@ namespace Business_Access_Layer.Abstract
         public Task<Response> Delete(Recipe recipe);
         public Task<Response> Create(Recipe recipe);
         public Task<Response> SaveImage(IFormFile imageFile, int Id);
-        public Task<Recipe> SaveImageRecipe(IFormFile imageFile, Recipe recipe);
+        public Task<string> SaveImageRecipe(IFormFile imageFile, Recipe recipe);
+        public Task<Response> AddRecipe(IFormFile imageFile, Recipe recipe);
     }
 }

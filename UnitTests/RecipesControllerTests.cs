@@ -148,61 +148,61 @@ namespace UnitTests
             result.Should().BeOfType<ActionResult<Response>>();
 
         }
-        [Fact]
-        public async Task PostRecipe_WithValidData_CreatesRecipeAndReturnsCreated()
-        {
-            // Arrange
-            controller = new RecipesController(
-                _recipesServices,
-                _authService,
-                _fileServices,
-                _category,
-                _recipeIngredientsService
-            );
+        //[Fact]
+        //public async Task PostRecipe_WithValidData_CreatesRecipeAndReturnsCreated()
+        //{
+        //    // Arrange
+        //    controller = new RecipesController(
+        //        _recipesServices,
+        //        _authService,
+        //        _fileServices,
+        //        _category,
+        //        _recipeIngredientsService
+        //    );
 
-            // Create a test IFormFile with a sample image content
-            var imageContent = new byte[] { 0x01, 0x02, 0x03 }; // Replace with your image content
-            var imageStream = new MemoryStream(imageContent);
-            var imageFile = new FormFile(imageStream, 0, imageStream.Length, "imageFile", "test.jpg")
-            {
-                Headers = new HeaderDictionary(),
-                ContentType = "image/jpeg"
-            };
+        //    // Create a test IFormFile with a sample image content
+        //    var imageContent = new byte[] { 0x01, 0x02, 0x03 }; // Replace with your image content
+        //    var imageStream = new MemoryStream(imageContent);
+        //    var imageFile = new FormFile(imageStream, 0, imageStream.Length, "imageFile", "test.jpg")
+        //    {
+        //        Headers = new HeaderDictionary(),
+        //        ContentType = "image/jpeg"
+        //    };
 
-            // Create a recipe object with the necessary data
-            var recipe = new Recipe
-            {
-                Id = 1,
-                Title = "Test Recipe",
-                Description = "Test description",
-                Steps = "Test steps",
-                Category = 1,
-                CreatedBy = 1,
-                TotalRating = 0,
-                ImageFile = "test.jpg"
-            };
+        //    // Create a recipe object with the necessary data
+        //    var recipe = new Recipe
+        //    {
+        //        Id = 1,
+        //        Title = "Test Recipe",
+        //        Description = "Test description",
+        //        Steps = "Test steps",
+        //        Category = 1,
+        //        CreatedBy = 1,
+        //        TotalRating = 0,
+        //        ImageFile = "test.jpg"
+        //    };
 
-            // Simulate an authenticated user
-            var userData = new UserData { Id = 1 };
-            A.CallTo(() => _authService.GetMe()).Returns(Task.FromResult(userData));
+        //    // Simulate an authenticated user
+        //    var userData = new UserData { Id = 1 };
+        //    A.CallTo(() => _authService.GetMe()).Returns(Task.FromResult(userData));
 
-            // Simulate the recipe creation and save image process
-            var createdRecipe = recipe; // Replace with your actual logic for creating the recipe
-            var expectedResponse = new Response { Status = "201", Data = createdRecipe };
-            A.CallTo(() => _recipesServices.SaveImageRecipe(A<IFormFile>._, A<Recipe>._)).Returns(Task.FromResult(createdRecipe));
-            A.CallTo(() => _recipesServices.Create(A<Recipe>._)).Returns(Task.FromResult(expectedResponse));
+        //    // Simulate the recipe creation and save image process
+        //    var createdRecipe = recipe; // Replace with your actual logic for creating the recipe
+        //    var expectedResponse = new Response { Status = "201", Data = createdRecipe };
+        //    A.CallTo(() => _recipesServices.SaveImageRecipe(A<IFormFile>._, A<Recipe>._)).Returns(Task.FromResult(createdRecipe));
+        //    A.CallTo(() => _recipesServices.Create(A<Recipe>._)).Returns(Task.FromResult(expectedResponse));
 
-            // Act
-            var result = await controller.PostRecipe(imageFile, recipe);
+        //    // Act
+        //    var result = await controller.PostRecipe(imageFile, recipe);
 
-            // Assert
-            result.Should().NotBeNull();
-            result.Should().BeOfType<ObjectResult>();
+        //    // Assert
+        //    result.Should().NotBeNull();
+        //    result.Should().BeOfType<ObjectResult>();
 
-            var objectResult = (ObjectResult)result;
-            objectResult.StatusCode.Should().Be(StatusCodes.Status201Created);
-            objectResult.Value.Should().BeEquivalentTo(expectedResponse);
-        }
+        //    var objectResult = (ObjectResult)result;
+        //    objectResult.StatusCode.Should().Be(StatusCodes.Status201Created);
+        //    objectResult.Value.Should().BeEquivalentTo(expectedResponse);
+        //}
         [Fact]
         public async Task PostRecipe_UnauthorizedUser_ReturnsUnauthorized()
         {

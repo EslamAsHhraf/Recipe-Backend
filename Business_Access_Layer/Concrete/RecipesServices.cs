@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Business_Access_Layer.Common;
 using Authorization.Model;
+using Firebase.Auth;
+using static System.Net.Mime.MediaTypeNames;
 
 
 namespace Business_Access_Layer.Concrete
@@ -150,13 +152,16 @@ namespace Business_Access_Layer.Concrete
                 return response;
             }
 
-            if (recipe.ImageFile != string.Empty &&  recipe.ImageFile != "initial.jpg"&& recipe.ImageFile != "initial-recipe.jpg")
+
+            string image = await SaveImageRecipe(imageFile,  recipe);
+            if (image == "")
             {
-                _fileServices.DeleteImage(recipe.ImageFile);
-
+                response.Status = "400";
+                response.Data = new { Title = "Error while update image" };
+                return response;
             }
-
-            recipe.ImageFile = await _fileServices.SaveImage(imageFile);
+            recipe.ImageFile = image;
+            
             await _recipeRepository.Update(recipe);
             
             response.Status = "200";
@@ -171,17 +176,53 @@ namespace Business_Access_Layer.Concrete
             Byte[] b = _fileServices.GetImage(imageName);  // You can use your own method over here.         
             return b;
         }
-        public async Task<Recipe> SaveImageRecipe(IFormFile imageFile, Recipe recipe)
+        public async Task<string> SaveImageRecipe(IFormFile imageFile, Recipe recipe)
         {
-            if (!(recipe.ImageFile == null || recipe.ImageFile == "initial-resipe.jpg"))
-            {
-                _fileServices.DeleteImage(recipe.ImageFile);
 
+            string image  = await _fileServices.SaveImage(imageFile, "recipe" + recipe.Id);
+
+            return image;
+        }
+        public async Task<Response> AddRecipe(IFormFile imageFile, Recipe recipe)
+        {
+            var UserData = await _userService.GetMe();
+            if (UserData == null)
+            {
+                response.Status = "401";
+                response.Data = new { Title = "Untheorized User" };
+                return response;
+            }
+            if (recipe.CreatedBy != UserData.Id)
+            {
+                response.Data = new { Title = "Unauthorize user" };
+                response.Status = "401";
+                return response;
+            }
+            if (imageFile != null)
+            {
+                string image = await SaveImageRecipe(imageFile, recipe);
+                if (image == "")
+                {
+                    response.Status = "400";
+                    response.Data = new { Title = "Error while update image" };
+                    return response;
+                }
+                recipe.ImageFile = image;
+
+                var data = await Create(recipe);
+
+                response = data;
+            }
+            else
+            {
+                recipe.ImageFile = "https://firebasestorage.googleapis.com/v0/b/imagenet-5a741.appspot.com/o/images%2Finitial-recipe.jpg?alt=media&token=11883e37-3aae-4285-a4be-3dc69ebba6a9&_gl=1*13b4q8d*_ga*MTA4MjAxMzE5My4xNjkyMzQ2NDYx*_ga_CW55HF8NVT*MTY5NjAxMTExNS41LjEuMTY5NjAxNjc3NS4xOS4wLjA.";
+                var list = await Create(recipe);
+                response.Data = list;
             }
 
-            recipe.ImageFile = await _fileServices.SaveImage(imageFile);
 
-            return recipe;
+            response.Status = "201";
+            return response;
         }
     }
 }

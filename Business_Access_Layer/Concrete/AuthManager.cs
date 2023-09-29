@@ -81,7 +81,7 @@ namespace Business_Access_Layer.Concrete
             user.Username = request.Username;
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordKey;
-            user.ImageFile = "initial.jpg";
+            user.ImageFile = "https://firebasestorage.googleapis.com/v0/b/imagenet-5a741.appspot.com/o/images%2Finitial.jpg?alt=media&token=0c87e207-4db8-496c-93e9-bb396a17771f&_gl=1*kvi8pc*_ga*MTA4MjAxMzE5My4xNjkyMzQ2NDYx*_ga_CW55HF8NVT*MTY5NjAxMTExNS41LjEuMTY5NjAxNTU2MC4yMy4wLjA.";
             // check if error happened will saving
             if (!await _userRepository.Create(user))
             {
@@ -105,19 +105,9 @@ namespace Business_Access_Layer.Concrete
             }
             else
             {
-                Byte[] imageUser = await GetImage(UserData.Name);
-                if (imageUser == null)
-                {
-                    response.Status = "401";
-                    response.Data = new { Title = "Error in find image" };
-                    return response;
-                }
+        
                 response.Status = "200";
-                response.Data = new
-                {
-                    user = UserData,
-                    image = imageUser
-                };
+                response.Data = UserData;
                 return response;
             }
         }
@@ -253,14 +243,16 @@ namespace Business_Access_Layer.Concrete
             var username = userData.Result.Name;
 
             var user =await _userRepository.GetUser(username);
-            if(user.ImageFile != string.Empty && user.ImageFile!= "initial.jpg" && user.ImageFile != "initial-recipe.jpg")
+        
+           string image = await _fileServices.SaveImage(imageFile,user.Username+ user.Id);
+            if (image == "")
             {
-                _fileServices.DeleteImage(user.ImageFile);
-
+                response.Status = "400";
+                response.Data = new { Title = "Error while update image" };
+                return response;
             }
-         
-            user.ImageFile = await _fileServices.SaveImage(imageFile);
-            if(!_userRepository.updateUser(user))
+            user.ImageFile = image;
+            if (!_userRepository.updateUser(user))
             {
                 response.Status = "400";
                 response.Data = new { Title = "Error while update image" };
@@ -268,7 +260,7 @@ namespace Business_Access_Layer.Concrete
 
             }
             response.Status = "200";
-            response.Data = new { Title = "Success Update image" };
+            response.Data = user;
             return response;
         }
 
@@ -311,10 +303,10 @@ namespace Business_Access_Layer.Concrete
 
         }
 
-        public Tuple<string, int> GetUserById(int Id)
+        public Tuple<string, int, string> GetUserById(int Id)
         {
              var user = _userRepository.GetById(Id);
-             return Tuple.Create(user.Result.Username,user.Result.Id);
+             return Tuple.Create(user.Result.Username,user.Result.Id,user.Result.ImageFile);
         }
         public async Task<Byte[]> GetUserImage(string username)
         {
