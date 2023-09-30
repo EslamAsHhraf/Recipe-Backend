@@ -117,7 +117,7 @@ namespace RecipeAPI.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> PostRecipe(IFormFile imageFile, [FromQuery] Recipe recipe)
+        public ActionResult<Response> PostRecipe(IFormFile imageFile, [FromQuery] Recipe recipe)
         {
 
             var data = _recipesServices.AddRecipe(imageFile, recipe);

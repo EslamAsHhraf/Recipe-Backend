@@ -12,5 +12,6 @@ namespace DomainLayer.Model
 
         public string Name { get; set; }
         public string ImageFile { get; set; }
+        public string Username { get; set; }
     }
 }

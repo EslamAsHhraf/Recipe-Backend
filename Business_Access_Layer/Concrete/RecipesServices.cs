@@ -94,19 +94,6 @@ namespace Business_Access_Layer.Concrete
             response.Data = new { Title = "Deleted" };
             return response;
         }
-        public async Task<Response> Create(Recipe recipe)
-        {
-            var Recipe = await _recipeRepository.Create(recipe);
-            if (Recipe == null)
-            {
-                response.Status = "404";
-                response.Data = new { Title = "Not Found" };
-                return response;
-            }
-            response.Status = "200";
-            response.Data = Recipe;
-            return response;
-        }
         public async Task<Response> SaveImage(IFormFile imageFile, int Id)
         {
             var UserData = await _userService.GetMe();
@@ -196,7 +183,7 @@ namespace Business_Access_Layer.Concrete
             else
             {
                 recipe.ImageFile = "https://firebasestorage.googleapis.com/v0/b/imagenet-5a741.appspot.com/o/images%2Finitial-recipe.jpg?alt=media&token=11883e37-3aae-4285-a4be-3dc69ebba6a9&_gl=1*13b4q8d*_ga*MTA4MjAxMzE5My4xNjkyMzQ2NDYx*_ga_CW55HF8NVT*MTY5NjAxMTExNS41LjEuMTY5NjAxNjc3NS4xOS4wLjA.";
-                var list = await Create(recipe);
+                var list = await _recipeRepository.Create(recipe);
                 response.Data = list;
             }
 
