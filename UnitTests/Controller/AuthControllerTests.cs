@@ -76,10 +76,10 @@ namespace UnitTests.Controller
             // Arrange
 
             controller = new AuthController(_userService);
- 
+
             var expectedData = new { Title = "User Name and Password are required" };
 
-            var fakeResponse = new Response { Status = "400", Data=expectedData };
+            var fakeResponse = new Response { Status = "400", Data = expectedData };
 
             // Act
             ActionResult<Response> result = await controller.Login(null) as ActionResult<Response>;
@@ -124,14 +124,14 @@ namespace UnitTests.Controller
 
             controller = new AuthController(_userService);
 
-            Tuple<string, int,string> myTuple = Tuple.Create("Hello", 42,"image");
+            Tuple<string, int, string> myTuple = Tuple.Create("Hello", 42, "image");
             var expectedData = new
             {
                 name = myTuple.Item1,
                 id = myTuple.Item2,
                 image = myTuple.Item3
             }; ;
-            
+
             var fakeResponse = new Response { Status = "200", Data = expectedData };
             A.CallTo(() => _userService.GetUserById(0)).Returns(myTuple);
 
@@ -158,8 +158,8 @@ namespace UnitTests.Controller
 
             var user = new UserData
             {
-                Id=1,
-                Name="Eslam",
+                Id = 1,
+                Name = "Eslam",
                 ImageFile = "imageFile",
             };
             var expectedData = user;
@@ -187,7 +187,7 @@ namespace UnitTests.Controller
 
             var expectedData = new { Title = "Token not found" };
             var fakeResponse = new Response { Status = "401", Data = expectedData };
-            A.CallTo(() => _userService.WhoLogin()).Returns(fakeResponse) ;
+            A.CallTo(() => _userService.WhoLogin()).Returns(fakeResponse);
 
             // Act
             ActionResult<Response> result = await controller.GetMe() as ActionResult<Response>;
@@ -214,7 +214,7 @@ namespace UnitTests.Controller
             A.CallTo(() => _userService.logout()).Returns(fakeResponse);
 
             // Act
-            ActionResult<Response> result =  controller.Logout() as ActionResult<Response>;
+            ActionResult<Response> result = controller.Logout() as ActionResult<Response>;
             // Assert
             result.Should().BeOfType<ActionResult<Response>>();
 
@@ -341,7 +341,7 @@ namespace UnitTests.Controller
             string newPassword = "100%Eslam";
             var expectedData = new { Title = "Password change successfully" };
             var fakeResponse = new Response { Status = "200", Data = expectedData };
-            A.CallTo(() => _userService.changePassword(oldPassword,newPassword)).Returns(fakeResponse);
+            A.CallTo(() => _userService.changePassword(oldPassword, newPassword)).Returns(fakeResponse);
 
             // Act
             ActionResult<Response> result = controller.ChangePassword(oldPassword, newPassword) as ActionResult<Response>;
@@ -392,7 +392,7 @@ namespace UnitTests.Controller
 
             controller = new AuthController(_userService);
 
-            var expectedData = new { Title = "Update Successfully" }; 
+            var expectedData = new { Title = "Update Successfully" };
             var fakeResponse = new Response { Status = "200", Data = expectedData };
             A.CallTo(() => _userService.SaveImage(imageFile)).Returns(fakeResponse);
 
@@ -412,4 +412,3 @@ namespace UnitTests.Controller
     }
 
 }
-
