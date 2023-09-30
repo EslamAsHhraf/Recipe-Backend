@@ -16,13 +16,13 @@ using Microsoft.Extensions.Hosting;
 
 namespace Business_Access_Layer.Concrete
 {
-    public class AuthManager: IAuthService
+    public class AuthManager : IAuthService
     {
         private readonly IUserRepository<User> _userRepository;
         private readonly IFileServices _fileServices;
         public readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        
+
         private Response response = new Response();
 
         public AuthManager(IUserRepository<User> userRepository, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IFileServices fileServices)
@@ -63,7 +63,7 @@ namespace Business_Access_Layer.Concrete
         public async Task<Response> Register(UserDto request)
         {
             // check uniqueness of user name
-            if (await _userRepository.GetUser(request.Username)!=null)
+            if (await _userRepository.GetUser(request.Username) != null)
             {
                 response.Status = "400";
                 response.Data = new { Title = "User already exists, please try different user name" };
@@ -105,7 +105,7 @@ namespace Business_Access_Layer.Concrete
             }
             else
             {
-        
+
                 response.Status = "200";
                 response.Data = UserData;
                 return response;
@@ -203,7 +203,7 @@ namespace Business_Access_Layer.Concrete
             request.Username = username;
             request.Password = oldPassword;
             User user = await CheckUser(request);
-           
+
             if (user == null)
             {
                 response.Status = "400";
@@ -242,9 +242,9 @@ namespace Business_Access_Layer.Concrete
             }
             var username = userData.Result.Name;
 
-            var user =await _userRepository.GetUser(username);
-        
-           string image = await _fileServices.SaveImage(imageFile,user.Username+ user.Id);
+            var user = await _userRepository.GetUser(username);
+
+            string image = await _fileServices.SaveImage(imageFile, user.Username + user.Id);
             if (image == "")
             {
                 response.Status = "400";
@@ -260,12 +260,21 @@ namespace Business_Access_Layer.Concrete
 
             }
             response.Status = "200";
-            response.Data = new { Title = "Update Successfully" }; 
+            response.Data = user;
             return response;
         }
 
-   
-       
+
+        public async Task<Byte[]> GetImage(string username)
+        {
+            var user = _userRepository.GetUser(username);
+            if (user == null)
+            {
+                return null;
+            }
+            Byte[] b = _fileServices.GetImage(user.Result.ImageFile);   // You can use your own method over here.         
+            return b;
+        }
         public bool MatchPasswordHash(string passwordText, byte[] password, byte[] passwordKey)
         {
             using (var hmac = new HMACSHA512(passwordKey))
@@ -296,10 +305,20 @@ namespace Business_Access_Layer.Concrete
 
         public Tuple<string, int, string> GetUserById(int Id)
         {
-             var user = _userRepository.GetById(Id);
-             return Tuple.Create(user.Result.Username,user.Result.Id,user.Result.ImageFile);
+            var user = _userRepository.GetById(Id);
+            return Tuple.Create(user.Result.Username, user.Result.Id, user.Result.ImageFile);
         }
-       
+        public async Task<Byte[]> GetUserImage(string username)
+        {
+            var user = await _userRepository.GetUser(username);
+            if (user == null)
+            {
+                return null;
+            }
+
+            Byte[] b = _fileServices.GetImage(user.ImageFile);  // You can use your own method over here.         
+            return b;
+        }
     }
 }
 

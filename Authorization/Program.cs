@@ -51,7 +51,7 @@ builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(conne
 builder.Services.AddCors(options => options.AddPolicy(name: "RecipeOrigins",
             policy =>
             {
-                policy.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+                policy.WithOrigins("http://localhost:4200", "https://iyummyrecipe.web.app").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
             }
         ));
 builder.Services.AddAuthentication(x =>
@@ -105,6 +105,7 @@ var app = builder.Build();
 app.Use((ctx, next) =>
 {
     ctx.Response.Headers["Access-Control-Allow-Origin"] = "http://localhost:4200";
+    ctx.Response.Headers["Access-Control-Allow-Origin"] += ",https://iyummyrecipe.web.app"; // Add your new URL here
     return next();
 });
 

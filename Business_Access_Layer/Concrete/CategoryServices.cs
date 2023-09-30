@@ -44,6 +44,20 @@ namespace Business_Access_Layer.Concrete
             response.Data = category;
             return response;
         }
+        public async Task<Response> PostCategory(Category cat)
+        {
+            var category = await _categoryRepository.Create(cat);
+            if (category == null)
+            {
+                response.Status = "404";
+                response.Data = new { Title = "Not Found" };
+                return response;
+            }
+            response.Status = "200";
+            response.Data = category;
+            return response;
+        }
+
     }
 }
 

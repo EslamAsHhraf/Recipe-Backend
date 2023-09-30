@@ -23,7 +23,7 @@ namespace RecipeAPI.Controllers
         private readonly IAuthService _userService;
         private Response response = new Response();
 
-        public RecipesController( IRecipesServices recipesServices, IAuthService userService, IFileServices fileServices,
+        public RecipesController(IRecipesServices recipesServices, IAuthService userService, IFileServices fileServices,
             ICategory categoryServices, IRecipeIngredientsService RecipeIngredientsServices)
         {
             _recipesServices = recipesServices;
@@ -36,7 +36,7 @@ namespace RecipeAPI.Controllers
         [HttpGet]
         public ActionResult<Response> GetAllRecipes()
         {
-            var data= _recipesServices.GetAllRecipes();
+            var data = _recipesServices.GetAllRecipes();
             return StatusCode(Int16.Parse(data.Result.Status), data.Result);
         }
 
@@ -48,11 +48,11 @@ namespace RecipeAPI.Controllers
             {
                 return StatusCode(Int16.Parse(recipeResponse.Status), recipeResponse);
             }
-            Recipe recipe =(Recipe) _recipesServices.GetRecipeById(id).Result.Data;
+            Recipe recipe = (Recipe)_recipesServices.GetRecipeById(id).Result.Data;
 
-            IEnumerable<RecipeIngredients> ingredients = (IEnumerable<RecipeIngredients>) _RecipeIngredientsServices.GetRecipeIngredients(recipe).Result.Data;
+            IEnumerable<RecipeIngredients> ingredients = (IEnumerable<RecipeIngredients>)_RecipeIngredientsServices.GetRecipeIngredients(recipe).Result.Data;
             var Createdby = _userService.GetUserById(recipe.CreatedBy);
-            Category Category = (Category) _categoryServices.GetCategoryById(recipe.Category).Result.Data;
+            Category Category = (Category)_categoryServices.GetCategoryById(recipe.Category).Result.Data;
             var data = Tuple.Create(recipe, ingredients, Createdby, Category);
             if (data == null)
             {
@@ -104,7 +104,7 @@ namespace RecipeAPI.Controllers
             {
                 return NotFound();
             }
-            if(ingredients != null)
+            if (ingredients != null)
             {
                 var DeleteResponse = _RecipeIngredientsServices.DeleteRecipeIngredients((IEnumerable<RecipeIngredients>)ingredients);
             }
@@ -115,7 +115,7 @@ namespace RecipeAPI.Controllers
             ;
         }
 
-      
+
         [HttpPost]
         public async Task<IActionResult> PostRecipe(IFormFile imageFile, [FromQuery] Recipe recipe)
         {
@@ -141,9 +141,9 @@ namespace RecipeAPI.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> UpdateImage(IFormFile ImageFile,int id)
+        public async Task<IActionResult> UpdateImage(IFormFile ImageFile, int id)
         {
-            
+
             if (ImageFile == null)
             {
                 response.Status = "404";
@@ -161,5 +161,5 @@ namespace RecipeAPI.Controllers
 }
 
 
-      
+
 

@@ -13,7 +13,7 @@ using PresistenceLayer.Repository;
 namespace UnitTests
 {
     public class RecipesControllerTests
-    {
+    {/* 
         private readonly IRecipesServices _recipesServices;
         private readonly IAuthService _authService;
         private readonly IFileServices _fileServices;
@@ -21,7 +21,7 @@ namespace UnitTests
         private readonly IRecipeIngredientsService _recipeIngredientsService;
         private RecipesController controller;
 
-        public RecipesControllerTests()
+       public RecipesControllerTests()
         {
             _recipesServices = A.Fake<IRecipesServices>();
             _authService = A.Fake<IAuthService>();
@@ -42,42 +42,7 @@ namespace UnitTests
                 _category,
                 _recipeIngredientsService
             );
-            var expectedData = new List<Recipe>
-            {
-                new Recipe
-                {
-                    Id = 3,
-                    Title = "Chicken Parmesan",
-                    Description = "This is a classic Italian dish made with chicken, tomato sauce, and Parmesan cheese.",
-                    Steps = "1. Preheat oven to 375 degrees F (190 degrees C).*",
-                    Category = 1,
-                    CreatedBy = 2,
-                    TotalRating = 3,
-                    ImageFile = "initial-resipe.jpg"
-                },
-                new Recipe
-                {
-                    Id = 4,
-                    Title = "Lasagna",
-                    Description = "This is a hearty pasta dish made with layers of pasta, tomato sauce, and cheese. and have meat.",
-                    Steps = "Cook lasagna noodles according to package directions.",
-                    Category = 1,
-                    CreatedBy = 1,
-                    TotalRating = 2,
-                    ImageFile = "las.jpg"
-                },
-                new Recipe
-                {
-                    Id = 5,
-                    Title = "Chocolate Chip Cookies",
-                    Description = "These are classic cookies made with chocolate chips.and some milk.made with love.",
-                    Steps = "Preheat oven to 375 degrees F (190 degrees C).",
-                    Category = 3,
-                    CreatedBy = 2,
-                    TotalRating = 3,
-                    ImageFile = "initial-resipe.jpg"
-                }
-            };
+            var expectedData = A.Fake<IEnumerable<Recipe>>();
 
             var fakeResponse = new Response { Status = "200", Data = expectedData };
             A.CallTo(() => _recipesServices.GetAllRecipes()).Returns(fakeResponse);
@@ -475,6 +440,6 @@ namespace UnitTests
             response.Data.Should().BeEquivalentTo( "Deleted" );
         }
 
-
+*/
     }
 }

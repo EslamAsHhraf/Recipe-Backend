@@ -19,34 +19,34 @@ namespace Business_Access_Layer.Concrete
         private readonly IRecipes _recipesRepository;
         private Response response = new Response();
 
-        public RecipesServices(IRepository<Recipe> recipeRepository, IAuthService userService, 
-             IFileServices fileServices,IRecipes recipesRepository)
+        public RecipesServices(IRepository<Recipe> recipeRepository, IAuthService userService,
+             IFileServices fileServices, IRecipes recipesRepository)
         {
             _recipesRepository = recipesRepository;
-            _userService= userService;
+            _userService = userService;
             _fileServices = fileServices;
             _recipeRepository = recipeRepository;
             _recipeRepository = recipeRepository;
         }
-       
+
         public async Task<Response> GetMyRecipes()
         {
-            UserData data= await _userService.GetMe();
-            if(data==null)
+            UserData data = await _userService.GetMe();
+            if (data == null)
             {
                 response.Status = "401";
                 response.Data = new { Title = "Unauthorized" };
                 return response;
             }
 
-            var myRecipes =  _recipesRepository.GetMyRecipes(data.Id);
-          
+            var myRecipes = _recipesRepository.GetMyRecipes(data.Id);
+
             response.Status = "200";
             response.Data = myRecipes;
             return response;
         }
 
-     
+
         public async Task<Response> GetAllRecipes()
         {
             var Recipes = _recipeRepository.GetAll();
@@ -56,7 +56,7 @@ namespace Business_Access_Layer.Concrete
                 response.Data = new { Title = "No Content" };
                 return response;
             }
-           
+
             response.Status = "200";
             response.Data = Recipes;
             return response;
@@ -131,7 +131,7 @@ namespace Business_Access_Layer.Concrete
             }
 
 
-            string image = await SaveImageRecipe(imageFile,  recipe);
+            string image = await SaveImageRecipe(imageFile, recipe);
             if (image == "")
             {
                 response.Status = "400";
@@ -139,20 +139,20 @@ namespace Business_Access_Layer.Concrete
                 return response;
             }
             recipe.ImageFile = image;
-            
+
             await _recipeRepository.Update(recipe);
-            
+
             response.Status = "200";
             response.Data = new { Title = "Success Update image" };
             return response;
         }
 
-       
-  
+
+
         public async Task<string> SaveImageRecipe(IFormFile imageFile, Recipe recipe)
         {
 
-            string image  = await _fileServices.SaveImage(imageFile, "recipe" + recipe.Id);
+            string image = await _fileServices.SaveImage(imageFile, "recipe" + recipe.Id);
 
             return image;
         }
@@ -173,18 +173,25 @@ namespace Business_Access_Layer.Concrete
             }
             if (imageFile != null)
             {
-                string image = await SaveImageRecipe(imageFile, recipe);
+                recipe.ImageFile = "";
+                var Recipe = await _recipeRepository.Create(recipe);
+                if (Recipe == null)
+                {
+                    response.Status = "400";
+                    response.Data = new { Title = "Error in create" };
+                    return response;
+                }
+                string image = await SaveImageRecipe(imageFile, Recipe);
                 if (image == "")
                 {
                     response.Status = "400";
                     response.Data = new { Title = "Error while update image" };
                     return response;
                 }
-                recipe.ImageFile = image;
+                Recipe.ImageFile = image;
+                return await Update(Recipe);
 
-                var data = await Create(recipe);
 
-                response = data;
             }
             else
             {

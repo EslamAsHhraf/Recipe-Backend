@@ -12,7 +12,7 @@ namespace Business_Access_Layer.Abstract
     {
         public Task<Response> GetCategories();
         public Task<Response> GetCategoryById(int Id);
-
+        public Task<Response> PostCategory(Category category);
 
     }
 }

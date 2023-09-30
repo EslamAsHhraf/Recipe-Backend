@@ -29,7 +29,7 @@ namespace Business_Access_Layer.Concrete
             var favourites = _favouriteRepository.GetAll();
 
             var MyFavourite = favourites.Where(user => user.AuthorId == id).ToList();
-            
+
             response.Status = "200";
             response.Data = MyFavourite;
             return response;
@@ -50,17 +50,17 @@ namespace Business_Access_Layer.Concrete
         public async Task<Response> DeleteFavourite(int favouriteid)
         {
             var favourite = await _favouriteRepository.GetById(favouriteid);
-            if(favourite == null)
+            if (favourite == null)
             {
                 response.Status = "404";
                 response.Data = new { Title = "Not Created" };
                 return response;
             }
             _favouriteRepository.Delete(favourite);
-        
-                response.Status = "200";
-                response.Data = new { Title = "Deleted" };
-                return response;
+
+            response.Status = "200";
+            response.Data = new { Title = "Deleted" };
+            return response;
         }
         public async Task<Response> GetRecipesFavourite(int userid)
         {
@@ -79,7 +79,7 @@ namespace Business_Access_Layer.Concrete
                 response.Data = new { Title = "Not found" };
                 return response;
             }
-           
+
             response.Status = "200";
             response.Data = Recipes;
             return response;

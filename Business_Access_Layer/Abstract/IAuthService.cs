@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Business_Access_Layer.Abstract
 {
-    public interface IAuthService 
+    public interface IAuthService
     {
         public Task<User> CheckUser(UserDto request);
         public Task<Response> Login(UserDto user);
@@ -25,9 +25,11 @@ namespace Business_Access_Layer.Abstract
         public void SetJWT(string encrypterToken);
         public Task<Response> changePassword(string oldPassword, string newPassword);
         public Task<Response> SaveImage(IFormFile imageFile);
+        public Task<Byte[]> GetImage(string username);
         public void encryptPassword(string password, out byte[] passwordHash, out byte[] passwordKey);
         public bool MatchPasswordHash(string passwordText, byte[] password, byte[] passwordKey);
         public Tuple<string, int, string> GetUserById(int id);
+        public Task<Byte[]> GetUserImage(string username);
     }
 }
 

@@ -1,5 +1,6 @@
 ﻿using Business_Access_Layer.Abstract;
 using Business_Access_Layer.Common;
+using DomainLayer.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace RecipeAPI.Controllers
@@ -18,6 +19,13 @@ namespace RecipeAPI.Controllers
         public async Task<ActionResult<Response>> GetAllCategories()
         {
             var response= await  _categoryServices.GetCategories();
+            return StatusCode(Int16.Parse(response.Status), response);
+
+        }
+        [HttpPost]
+        public async Task<ActionResult<Response>> postCategory([FromBody] Category cat)
+        {
+            var response = await _categoryServices.PostCategory(cat);
             return StatusCode(Int16.Parse(response.Status), response);
 
         }

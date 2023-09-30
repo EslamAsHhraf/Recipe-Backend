@@ -20,7 +20,7 @@ namespace Authorization.Controllers
         private IAuthService _userService;
 
 
-        public AuthController( IAuthService userService)
+        public AuthController(IAuthService userService)
 
         {
             _userService = userService;
@@ -36,14 +36,15 @@ namespace Authorization.Controllers
                 response.Data = new { Title = "Cannot find user" };
                 return StatusCode(401, response);
             }
-       
+
             response.Status = "200";
-            response.Data = new {
+            response.Data = new
+            {
                 name = User.Item1,
                 id = User.Item2,
                 image = User.Item3
             };
-           
+
             return StatusCode(200, response);
 
         }
@@ -51,9 +52,9 @@ namespace Authorization.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
-        public async  Task<ActionResult<Response>> GetMe()
+        public async Task<ActionResult<Response>> GetMe()
         {
-            var data =  await _userService.WhoLogin();
+            var data = await _userService.WhoLogin();
             return StatusCode(Int16.Parse(data.Status), data);
 
         }
@@ -64,7 +65,7 @@ namespace Authorization.Controllers
         public ActionResult<Response> Logout()
         {
             var data = _userService.logout();
-            
+
             return StatusCode(Int16.Parse(data.Result.Status), data.Result);
 
         }
@@ -75,7 +76,7 @@ namespace Authorization.Controllers
         public ActionResult<Response> Register(UserDto request)
         {
             // check if ModelState is valid
-            if (request==null || request.Username == "" || request.Password == "") 
+            if (!ModelState.IsValid)
             {
                 response.Status = "400";
                 response.Data = new { Title = "User Name and Password are required" };
@@ -84,7 +85,7 @@ namespace Authorization.Controllers
 
             var data = _userService.Register(request);
             return StatusCode(Int16.Parse(data.Result.Status), data.Result);
-    
+
         }
 
 
@@ -95,14 +96,14 @@ namespace Authorization.Controllers
         public async Task<ActionResult<Response>> Login([FromQuery] UserDto request)
         {
             // check if model isn't correct
-            if (request==null || request.Username == null || request.Password ==null)
+            if (request == null || request.Username == null || request.Password == null)
             {
                 response.Status = "400";
                 response.Data = new { Title = "User Name and Password are required" };
                 return StatusCode(400, response);
             }
             // check for user
-            var data = await  _userService.Login(request);
+            var data = await _userService.Login(request);
             return StatusCode(Int16.Parse(data.Status), data);
         }
 
@@ -110,14 +111,12 @@ namespace Authorization.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public ActionResult<Response> ChangePassword([Required] string oldPassword, [Required] string newPassword )
+        public ActionResult<Response> ChangePassword([Required] string oldPassword, [Required] string newPassword)
         {
-            if (oldPassword == null || newPassword==null)
+            if (!ModelState.IsValid)
             {
                 // Handle validation errors
-                response.Status = "400";
-                response.Data = new { Title = "oldPassword and newPassword are required" };
-                return StatusCode(400, response);
+                return BadRequest(ModelState);
             }
 
             var data = _userService.changePassword(oldPassword, newPassword);
@@ -128,7 +127,7 @@ namespace Authorization.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<Response>> UpdateImage( IFormFile ImageFile)
+        public async Task<IActionResult> UpdateImage(IFormFile ImageFile)
         {
             if (ImageFile == null)
             {
@@ -141,5 +140,6 @@ namespace Authorization.Controllers
             return StatusCode(Int16.Parse(data.Result.Status), data.Result);
         }
 
-    }}
+    }
+}
 
