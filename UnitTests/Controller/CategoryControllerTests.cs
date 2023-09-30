@@ -12,7 +12,7 @@ using Business_Access_Layer.Concrete;
 using FakeItEasy;
 using FluentAssertions;
 
-namespace UnitTests
+namespace UnitTests.Controller
 {
     public class CategoryControllerTests
     {
@@ -54,6 +54,37 @@ namespace UnitTests
                                                                      // Extract the data from the Response
             var responseData = (Response)resultValue.Value;
             responseData.Data.Should().BeOfType<List<Category>>(); // Check if the data is of type List<Category>
+            responseData.Status.Should().BeEquivalentTo("200"); // Check if the data is of type List<Category>
+
+        }
+
+        [Fact]
+        public async Task postCategory_ReturnsExpectedData()
+        {
+            // Arrange
+            var data =
+                    new Category { Id = 1, Title = "Main Course" };
+
+
+            var fakeResponse = new Response { Status = "200", Data = data };
+
+            A.CallTo(() => _category.PostCategory(data)).Returns(fakeResponse);
+
+            var controller = new CategoryController(_category);
+
+            // Act
+            var result = await controller.postCategory(data);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeOfType<ActionResult<Response>>();
+
+            // Access the Value from the ObjectResult
+            var resultValue = (ObjectResult)result.Result;
+            resultValue.Value.Should().BeEquivalentTo(fakeResponse); // Check if the result.Value matches the expected response
+                                                                     // Extract the data from the Response
+            var responseData = (Response)resultValue.Value;
+            responseData.Data.Should().BeOfType<Category>(); // Check if the data is of type List<Category>
             responseData.Status.Should().BeEquivalentTo("200"); // Check if the data is of type List<Category>
 
         }
