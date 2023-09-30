@@ -75,7 +75,7 @@ namespace Authorization.Controllers
         public ActionResult<Response> Register(UserDto request)
         {
             // check if ModelState is valid
-            if (!ModelState.IsValid)
+            if (request==null || request.Username == "" || request.Password == "") 
             {
                 response.Status = "400";
                 response.Data = new { Title = "User Name and Password are required" };
@@ -112,10 +112,12 @@ namespace Authorization.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public ActionResult<Response> ChangePassword([Required] string oldPassword, [Required] string newPassword )
         {
-            if (!ModelState.IsValid)
+            if (oldPassword == null || newPassword==null)
             {
-            // Handle validation errors
-            return BadRequest(ModelState);
+                // Handle validation errors
+                response.Status = "400";
+                response.Data = new { Title = "oldPassword and newPassword are required" };
+                return StatusCode(400, response);
             }
 
             var data = _userService.changePassword(oldPassword, newPassword);
@@ -126,7 +128,7 @@ namespace Authorization.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> UpdateImage( IFormFile ImageFile)
+        public async Task<ActionResult<Response>> UpdateImage( IFormFile ImageFile)
         {
             if (ImageFile == null)
             {

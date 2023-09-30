@@ -260,21 +260,12 @@ namespace Business_Access_Layer.Concrete
 
             }
             response.Status = "200";
-            response.Data = user;
+            response.Data = new { Title = "Update Successfully" }; 
             return response;
         }
 
    
-        public async Task<Byte[]> GetImage(string username)
-        {
-            var user = _userRepository.GetUser(username);
-            if (user == null)
-            {
-                return null;
-            }
-            Byte[] b = _fileServices.GetImage(user.Result.ImageFile);   // You can use your own method over here.         
-            return b;
-        }
+       
         public bool MatchPasswordHash(string passwordText, byte[] password, byte[] passwordKey)
         {
             using (var hmac = new HMACSHA512(passwordKey))
@@ -308,17 +299,7 @@ namespace Business_Access_Layer.Concrete
              var user = _userRepository.GetById(Id);
              return Tuple.Create(user.Result.Username,user.Result.Id,user.Result.ImageFile);
         }
-        public async Task<Byte[]> GetUserImage(string username)
-        {
-            var user =await  _userRepository.GetUser(username);
-            if (user == null)
-            {
-                return null;
-            }
-
-            Byte[] b = _fileServices.GetImage(user.ImageFile);  // You can use your own method over here.         
-            return b;
-        }
+       
     }
 }
 

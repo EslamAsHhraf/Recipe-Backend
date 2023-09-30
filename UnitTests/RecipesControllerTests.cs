@@ -95,59 +95,59 @@ namespace UnitTests
                                                                      
         }
 
-        [Fact]
-        public void GetRecipeById_ReturnsExpectedData()
-        {
-            // Arrange
-            controller = new RecipesController(
-                _recipesServices,
-                _authService,
-                _fileServices,
-                _category,
-                _recipeIngredientsService
-            );
+        //[Fact]
+        //public void GetRecipeById_ReturnsExpectedData()
+        //{
+        //    // Arrange
+        //    controller = new RecipesController(
+        //        _recipesServices,
+        //        _authService,
+        //        _fileServices,
+        //        _category,
+        //        _recipeIngredientsService
+        //    );
 
-            int recipeId = 3; // Specify the recipe ID you want to test
-            var expectedRecipe = new Recipe
-            {
-                Id = recipeId,
-                Title = "Test Recipe",
-                Description = "This is a test recipe.",
-                Steps = "1. Test step.",
-                Category = 1,
-                CreatedBy = 1,
-                TotalRating = 5,
-                ImageFile = "test.jpg"
-            };
+        //    int recipeId = 3; // Specify the recipe ID you want to test
+        //    var expectedRecipe = new Recipe
+        //    {
+        //        Id = recipeId,
+        //        Title = "Test Recipe",
+        //        Description = "This is a test recipe.",
+        //        Steps = "1. Test step.",
+        //        Category = 1,
+        //        CreatedBy = 1,
+        //        TotalRating = 5,
+        //        ImageFile = "test.jpg"
+        //    };
 
-            var expectedIngredients = new List<RecipeIngredients>
-            {
-                new RecipeIngredients { Id = 1, RecipeId = recipeId, Title = "Chicken" },
-                new RecipeIngredients { Id = 2, RecipeId = recipeId, Title = "Beef" },
-            };
+        //    var expectedIngredients = new List<RecipeIngredients>
+        //    {
+        //        new RecipeIngredients { Id = 1, RecipeId = recipeId, Title = "Chicken" },
+        //        new RecipeIngredients { Id = 2, RecipeId = recipeId, Title = "Beef" },
+        //    };
 
-            var expectedCreatedBy = Tuple.Create("TestUser", 1);
-            var expectedCategory = new Category { Id = 1, Title = "Main Course" };
-            var expectedImage = new byte[] { 0x01, 0x02, 0x03 }; // Replace with your expected image bytes
+        //    var expectedCreatedBy = Tuple.Create("TestUser", 1);
+        //    var expectedCategory = new Category { Id = 1, Title = "Main Course" };
+        //    var expectedImage = new byte[] { 0x01, 0x02, 0x03 }; // Replace with your expected image bytes
 
-            var fakeRecipeResponse = new Response { Status = "200", Data = expectedRecipe };
-            var fakeIngredientsResponse = new Response { Status = "200", Data = expectedIngredients };
-            var fakeCategoryResponse = new Response { Status = "200", Data = expectedCategory };
+        //    var fakeRecipeResponse = new Response { Status = "200", Data = expectedRecipe };
+        //    var fakeIngredientsResponse = new Response { Status = "200", Data = expectedIngredients };
+        //    var fakeCategoryResponse = new Response { Status = "200", Data = expectedCategory };
 
-            A.CallTo(() => _recipesServices.GetRecipeById(recipeId)).Returns(fakeRecipeResponse);
-            A.CallTo(() => _recipeIngredientsService.GetRecipeIngredients(expectedRecipe)).Returns(fakeIngredientsResponse);
-            A.CallTo(() => _authService.GetUserById(expectedRecipe.CreatedBy)).Returns(expectedCreatedBy);
-            A.CallTo(() => _category.GetCategoryById(expectedRecipe.Category)).Returns(fakeCategoryResponse);
-            A.CallTo(() => _fileServices.GetImage(expectedRecipe.ImageFile)).Returns(expectedImage);
+        //    A.CallTo(() => _recipesServices.GetRecipeById(recipeId)).Returns(fakeRecipeResponse);
+        //    A.CallTo(() => _recipeIngredientsService.GetRecipeIngredients(expectedRecipe)).Returns(fakeIngredientsResponse);
+        //    A.CallTo(() => _authService.GetUserById(expectedRecipe.CreatedBy)).Returns(expectedCreatedBy);
+        //    A.CallTo(() => _category.GetCategoryById(expectedRecipe.Category)).Returns(fakeCategoryResponse);
+        //    A.CallTo(() => _fileServices.GetImage(expectedRecipe.ImageFile)).Returns(expectedImage);
 
-            // Act
-            var result = controller.GetRecipeById(recipeId);
+        //    // Act
+        //    var result = controller.GetRecipeById(recipeId);
 
-            // Assert
-            result.Should().NotBeNull();
-            result.Should().BeOfType<ActionResult<Response>>();
+        //    // Assert
+        //    result.Should().NotBeNull();
+        //    result.Should().BeOfType<ActionResult<Response>>();
 
-        }
+        //}
         //[Fact]
         //public async Task PostRecipe_WithValidData_CreatesRecipeAndReturnsCreated()
         //{

@@ -15,28 +15,16 @@ namespace Business_Access_Layer.Concrete
 {
     public class FileServices:IFileServices
     {
-        private readonly IWebHostEnvironment _hostEnvironment;
+
         private static string ApiKey = "AIzaSyAeiPs8hJAXqkh2amJI75CpXksPOvDWh68";
         private static string Bucket = "imagenet-5a741.appspot.com";
         private static string AuthEmail = "es@gmail.com";
         private static string AuthPassword = "asdf12";
-        public FileServices(IWebHostEnvironment hostEnvironment)
+        public FileServices()
         {
-            _hostEnvironment = hostEnvironment;
-        }
-        public Byte[] GetImage(string imageName)
-        {
-            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
 
-            Byte[] b = System.IO.File.ReadAllBytes(imagePath);   // You can use your own method over here.         
-            return b;
         }
-        public void DeleteImage(string imageName)
-        {
-            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
-            if (System.IO.File.Exists(imagePath))
-                System.IO.File.Delete(imagePath);
-        }
+       
         public async Task<string> SaveImage(IFormFile imageFile, string fileName)
         {
             var stream = new MemoryStream();
