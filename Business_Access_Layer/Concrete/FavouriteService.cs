@@ -73,16 +73,17 @@ namespace Business_Access_Layer.Concrete
               join fav in MyFavourite on recipe.Id equals fav.RecipeId
               select recipe;
 
-            if (Recipes == null)
+            if (Recipes.Any())
             {
-                response.Status = "404";
-                response.Data = new { Title = "Not found" };
+                response.Status = "200";
+                response.Data = Recipes;
                 return response;
+                
             }
-
-            response.Status = "200";
-            response.Data = Recipes;
+            response.Status = "404";
+            response.Data = new { Title = "Not found" };
             return response;
+
         }
 
 
