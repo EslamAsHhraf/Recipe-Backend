@@ -1,9 +1,7 @@
-
 using Business_Access_Layer.Abstract;
 using DomainLayer.Interfaces;
 using DomainLayer.Model;
 using Business_Access_Layer.Common;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Business_Access_Layer.Concrete
 {

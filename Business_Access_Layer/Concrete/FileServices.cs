@@ -24,19 +24,6 @@ namespace Business_Access_Layer.Concrete
         {
             _hostEnvironment = hostEnvironment;
         }
-        public Byte[] GetImage(string imageName)
-        {
-            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
-
-            Byte[] b = System.IO.File.ReadAllBytes(imagePath);   // You can use your own method over here.         
-            return b;
-        }
-        public void DeleteImage(string imageName)
-        {
-            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
-            if (System.IO.File.Exists(imagePath))
-                System.IO.File.Delete(imagePath);
-        }
         public async Task<string> SaveImage(IFormFile imageFile, string fileName)
         {
             var stream = new MemoryStream();
@@ -62,8 +49,6 @@ namespace Business_Access_Layer.Concrete
 
             task.Progress.ProgressChanged += (s, e) => Console.WriteLine($"Progress: {e.Percentage} %");
 
-            // cancel the upload
-            // cancellation.Cancel();
 
             try
             {

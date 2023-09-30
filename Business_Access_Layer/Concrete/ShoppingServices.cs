@@ -74,13 +74,13 @@ namespace Business_Access_Layer.Concrete
             if (data == null)
             {
                 response.Status = "401";
-                response.Data = new { Title = "Untheorized User" };
+                response.Data = new { Title = "Untheorized user" };
                 return response;
             }
             if (data.Id != _object.CreatedBy)
             {
                 response.Status = "401";
-                response.Data = new { Title = "Unauthorize user" };
+                response.Data = new { Title = "Unauthorized user" };
                 return response;
             }
             if (quantity > _object.QuantityShopping)
@@ -101,6 +101,12 @@ namespace Business_Access_Layer.Concrete
         public async Task<Response> AddShopping(List<Shopping> shopping)
         {
             var UserData = await _userService.GetMe();
+            if (UserData == null)
+            {
+                response.Data = new { Title = "Unauthorize user" };
+                response.Status = "401";
+                return response;
+            }
             foreach (var entity in shopping)
             {
                 if (entity.CreatedBy != UserData.Id)
