@@ -102,7 +102,7 @@ namespace UnitTests.Controller
 
             var expectedData = new { Title = "Cannot find user" };
 
-            var fakeResponse = new Response { Status = "401", Data = expectedData };
+            var fakeResponse = new Response { Status = "404", Data = expectedData };
             A.CallTo(() => _userService.GetUserById(0)).Returns(null);
 
             // Act
@@ -114,7 +114,7 @@ namespace UnitTests.Controller
             var responseData = (Response)resultValue.Value;
             // Access the Value from the ObjectResult
             Assert.NotNull(responseData);
-            Assert.Equal("401", responseData.Status);
+            Assert.Equal("404", responseData.Status);
             fakeResponse.Should().BeEquivalentTo(responseData);
         }
         [Fact]

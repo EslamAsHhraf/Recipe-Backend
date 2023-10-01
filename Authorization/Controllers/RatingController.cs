@@ -4,7 +4,7 @@ using DomainLayer.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace RecipeAPI.Controllers
+namespace RecipeAPI.Controllerst
 {
     [Route("api/rating")]
     public class RatingController : Controller
