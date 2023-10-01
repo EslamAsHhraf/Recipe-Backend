@@ -32,7 +32,7 @@ namespace Authorization.Controllers
             var User = _userService.GetUserById(id);
             if (User == null)
             {
-                response.Status = "401";
+                response.Status = "404";
                 response.Data = new { Title = "Cannot find user" };
                 return StatusCode(401, response);
             }

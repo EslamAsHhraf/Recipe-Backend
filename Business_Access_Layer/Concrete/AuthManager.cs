@@ -295,6 +295,14 @@ namespace Business_Access_Layer.Concrete
         public Tuple<string, int, string> GetUserById(int Id)
         {
             var user = _userRepository.GetById(Id);
+
+            // Check if user is null or user.Result is null before accessing properties
+            if (user == null || user.Result == null)
+            {
+                return null;
+            }
+
+            // Access properties after ensuring user and user.Result are not null
             return Tuple.Create(user.Result.Username, user.Result.Id, user.Result.ImageFile);
         }
 

@@ -39,6 +39,12 @@ namespace RecipeAPI.Controllers
             var data = _recipesServices.GetAllRecipes();
             return StatusCode(Int16.Parse(data.Result.Status), data.Result);
         }
+        [HttpGet("user/{userid}")]
+        public ActionResult<Response> GetUserRecipes(int userid)
+        {
+            var data = _recipesServices.GetUSerRecipes(userid);
+            return StatusCode(Int16.Parse(data.Result.Status), data.Result);
+        }
 
         [HttpGet("{id}")]
         public ActionResult<Response> GetRecipeById(int id)

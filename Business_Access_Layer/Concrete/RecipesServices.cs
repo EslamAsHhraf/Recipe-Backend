@@ -7,6 +7,7 @@ using Business_Access_Layer.Common;
 using Authorization.Model;
 using Firebase.Auth;
 using static System.Net.Mime.MediaTypeNames;
+using System.Collections.Generic;
 
 
 namespace Business_Access_Layer.Concrete
@@ -131,6 +132,27 @@ namespace Business_Access_Layer.Concrete
 
             response.Status = "200";
             response.Data = new { Title = "Success Update image" };
+            return response;
+        }
+        public async Task<Response> GetUSerRecipes(int id)
+        {
+            var user = _userService.GetUserById(id);
+            if(user == null)
+            {
+                response.Status = "404";
+                response.Data = new { Title = "User Not Found" };
+                return response;
+            }
+            var Recipes =  _recipeRepository.GetAll();
+            var userRecipes = Recipes.Where(recipe => recipe.CreatedBy == id).ToList();
+            if (userRecipes == null)
+            {
+                response.Status = "404";
+                response.Data = new { Title = "Not Found" };
+                return response;
+            }
+            response.Status = "200";
+            response.Data = userRecipes;
             return response;
         }
 
