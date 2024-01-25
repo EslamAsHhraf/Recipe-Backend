@@ -19,4 +19,4 @@ PresistenceLayer/bin/*
 UnitTests/bin/*
 UnitTests/obj/*
 UnitTests/.vs/*
-
+.vs/*

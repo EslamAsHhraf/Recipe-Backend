@@ -52,6 +52,7 @@ Yummy is interactive platform for recipe management, meal planning, and social i
 </li>
 </ol>
 <li>You can view <a href="https://app.swaggerhub.com/apis-docs/EslamAsHhraf/Yummy/1.0.0">API Doc</a></li>
+<li>The project has unit test</li>
 </ul>
 <hr style="background-color: #4b4c60"></hr>
 
