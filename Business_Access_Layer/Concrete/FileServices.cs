@@ -16,10 +16,10 @@ namespace Business_Access_Layer.Concrete
     public class FileServices : IFileServices
     {
         private readonly IWebHostEnvironment _hostEnvironment;
-        private static string ApiKey = "AIzaSyAeiPs8hJAXqkh2amJI75CpXksPOvDWh68";
-        private static string Bucket = "imagenet-5a741.appspot.com";
-        private static string AuthEmail = "es@gmail.com";
-        private static string AuthPassword = "asdf12";
+        private static string ApiKey = "token";
+        private static string Bucket = "fire base";
+        private static string AuthEmail = "email";
+        private static string AuthPassword = "password";
         public FileServices(IWebHostEnvironment hostEnvironment)
         {
             _hostEnvironment = hostEnvironment;
